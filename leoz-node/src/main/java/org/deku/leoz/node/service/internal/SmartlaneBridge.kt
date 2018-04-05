@@ -11,7 +11,6 @@ import org.deku.leoz.model.Interval
 import org.deku.leoz.model.TourRouteMeta
 import org.deku.leoz.model.TourStopRouteMeta
 import org.deku.leoz.service.internal.LocationServiceV2
-import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.Tour
 import org.deku.leoz.service.internal.TourServiceV1.TourOptimizationOptions
 import org.deku.leoz.service.internal.UserService
@@ -44,6 +43,7 @@ import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
 import kotlin.NoSuchElementException
 import kotlin.concurrent.withLock
+
 
 /**
  * Bridge operations between leoz and smartlane
@@ -129,6 +129,7 @@ class SmartlaneBridge {
         })
     }
 
+
     /**
      * Smartlane custom id
      */
@@ -137,10 +138,13 @@ class SmartlaneBridge {
             /** Domain tour id */
             val id: Long? = null,
             /** Domain tour uid. Required for uniquely mapping tours in shared container */
-            val uid: String
+            val shortUid: String
     ) {
         companion object {
             private val SEPARATOR = "/"
+
+            /** Helper to create smartlane short uid from uuid */
+            fun UUID.toSmartlaneUid(): String = this.mostSignificantBits.shr(8 * 4).toInt().toHexString()
 
             /** Deserialize from smartlane */
             fun deserialize(value: String): CustomId {
@@ -150,21 +154,30 @@ class SmartlaneBridge {
                             when (it.size) {
                             // Custom id with uid only
                                 1 -> CustomId(
-                                        uid = it.get(0))
+                                        shortUid = it.get(0))
                                 else -> CustomId(
                                         id = it.get(0).toLong(),
-                                        uid = it.get(1))
+                                        shortUid = it.get(1))
                             }
                         }
+            }
+
+            fun create(
+                    id: Long? = null,
+                    uid: UUID): CustomId {
+                return CustomId(
+                        id = id,
+                        shortUid = uid.toSmartlaneUid()
+                )
             }
         }
 
         /** Serialize to smartlane */
         fun serialize(): String =
                 if (id == null)
-                    uid
+                    shortUid
                 else
-                    arrayOf(id, uid).joinToString(SEPARATOR)
+                    arrayOf(id, shortUid).joinToString(SEPARATOR)
 
         override fun toString(): String =
                 this.serialize()
@@ -357,7 +370,7 @@ class SmartlaneBridge {
 
         return routeApi.getRouteByCustomIdSubstring(
                 *tours.map {
-                    CustomId(uid = it.uid!!).serialize()
+                    CustomId.create(uid = UUID.fromString(it.uid)).serialize()
                 }.toTypedArray()
         )
                 .composeRest(domain)
@@ -378,15 +391,15 @@ class SmartlaneBridge {
                     val customId = CustomId.deserialize(route.customId)
 
                     // Backreference tours from parsed custom id
-                    tours.firstOrNull { it.uid == customId.uid }
+                    tours.firstOrNull { it.uid?.startsWith(customId.shortUid) ?: false }
                             ?.also { tour ->
                                 // Update route with complete custom id
                                 routeApi.patchRouteById(
                                         route.id,
                                         Route().also {
-                                            it.customId = CustomId(
+                                            it.customId = CustomId.create(
                                                     id = tour.id,
-                                                    uid = tour.uid!!
+                                                    uid = UUID.fromString(tour.uid)
                                             ).serialize()
                                         }
                                 )
@@ -438,13 +451,11 @@ class SmartlaneBridge {
      * Optimize a tour
      * @param tour Tour to optimize
      * @param options Optimization options
-     * @param uidSupplier A supplier generating uid's for newly created tours
      * @return Single observable of optimized tours
      */
     fun optimize(
             tour: Tour,
-            options: TourOptimizationOptions,
-            uidSupplier: () -> String
+            options: TourOptimizationOptions
     ): Single<List<Tour>> {
         val domain = domain(customerId)
 
@@ -472,7 +483,8 @@ class SmartlaneBridge {
                         val stops = route.deliveries
                                 .sortedBy { it.orderindex }
                                 .map { delivery ->
-                                    tour.stops.first { it.uid == delivery.customId }
+                                    val stops = tour.stops ?: listOf()
+                                    stops.first { it.uid == delivery.customId }
                                             .also {
                                                 it.route = TourStopRouteMeta(
                                                         eta = Interval(delivery.etaFrom, delivery.etaTo),
@@ -484,23 +496,31 @@ class SmartlaneBridge {
                                             }
                                 }
 
+                        val tourOrders = tour.orders ?: listOf()
+
                         val orders = stops
                                 .flatMap { it.tasks }
                                 .map { it.orderId }.distinct()
-                                .map { orderId -> tour.orders.first { it.id == orderId } }
+                                .map { orderId -> tourOrders.first { it.id == orderId } }
 
                         // Determine optimized tour id / uid
                         val id: Long?
                         val uid: String
+                        val parentId: Long?
+                        val customId: String?
                         when (inPlaceUpdate) {
                             true -> {
                                 uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
                                 id = tour.id ?: throw IllegalArgumentException("Id required for in place update")
+                                parentId = tour.parentId
+                                customId = tour.customId
                             }
                             false -> {
                                 // Generate uid for new tour
-                                uid = uidSupplier()
+                                uid = UUID.randomUUID().toString()
                                 id = null
+                                parentId = tour.id
+                                customId = null
                             }
                         }
 
@@ -510,7 +530,8 @@ class SmartlaneBridge {
                                 nodeUid = tour.nodeUid,
                                 userId = tour.userId,
                                 stationNo = tour.stationNo,
-                                parentId = tour.id,
+                                customId = customId,
+                                parentId = parentId,
                                 date = tour.date,
                                 optimized = now,
                                 stops = stops,
@@ -535,9 +556,9 @@ class SmartlaneBridge {
                                     routeApi.patchRouteById(
                                             routes[index].id,
                                             Route().also {
-                                                it.customId = CustomId(
+                                                it.customId = CustomId.create(
                                                         id = optimizedTour.id,
-                                                        uid = optimizedTour.uid!!
+                                                        uid = UUID.fromString(optimizedTour.uid)
                                                 ).serialize()
                                             }
                                     )
@@ -584,7 +605,9 @@ class SmartlaneBridge {
                 if (it.count() > 0) it else null
             } ?: listOf(TourOptimizationOptions.Vehicle())
 
-            it.deliverydata = this.stops
+            val stops = this.stops ?: listOf()
+
+            it.deliverydata = stops
                     .map { stop ->
                         Routedeliveryinput().also {
                             stop.address?.also { address ->
@@ -602,7 +625,7 @@ class SmartlaneBridge {
                                 address.countryCode = address.countryCode
 
                                 if (!omitLoads)
-                                    it.load = stop.weight?.let { (it * 100.0).toInt() }
+                                    it.load = stop.weight?.let { Math.ceil(it).toInt() }
                             }
 
                             // Track stop via custom id
@@ -698,7 +721,7 @@ class SmartlaneBridge {
                 }
             }
 
-            it.vehcapacities = vehicles.map { (it.capacity * 100).toInt() }
+            it.vehcapacities = vehicles.map { Math.ceil(it.capacity).toInt() }
         }
     }
 }

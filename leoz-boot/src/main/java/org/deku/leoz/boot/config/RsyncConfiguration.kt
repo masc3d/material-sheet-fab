@@ -8,7 +8,9 @@ import com.github.salomonbrys.kodein.*
 class RsyncConfiguration : org.deku.leoz.config.RsyncConfiguration() {
     companion object {
         val module = Kodein.Module {
-            bind<RsyncConfiguration>() with eagerSingleton { RsyncConfiguration() }
+            bind<RsyncConfiguration>() with singleton {
+                RsyncConfiguration()
+            }
         }
     }
 }

@@ -1,0 +1,86 @@
+package org.deku.leoz.node.service.internal
+
+import org.deku.leoz.config.Rest
+import org.deku.leoz.model.UserRole
+import org.deku.leoz.node.config.PersistenceConfiguration
+import org.deku.leoz.node.data.repository.NodeRepository
+import org.deku.leoz.node.data.repository.UserRepository
+import org.deku.leoz.service.internal.ConfigurationService
+import org.deku.leoz.service.internal.UserService
+import org.jooq.DSLContext
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
+import sx.rs.RestProblem
+import sx.util.toNullable
+import javax.inject.Inject
+import javax.ws.rs.Path
+import javax.ws.rs.core.Context
+import javax.ws.rs.core.HttpHeaders
+import javax.ws.rs.core.Response
+
+/**
+ * Configuration service
+ * Created by masc on 17.03.18.
+ */
+@Component
+@Path("internal/v1/configuration")
+class ConfigurationService: ConfigurationService {
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
+    @Inject
+    @Qualifier(PersistenceConfiguration.QUALIFIER)
+    private lateinit var dsl: DSLContext
+
+    @Inject
+    private lateinit var userService: UserService
+
+    @Inject
+    private lateinit var userRepository: UserRepository
+
+    @Inject
+    private lateinit var nodeRepository: NodeRepository
+
+    @Context
+    private lateinit var httpHeaders: HttpHeaders
+
+    override fun getUserConfiguration(userId: Int): String {
+        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
+        apiKey ?:
+        throw RestProblem(status = Response.Status.UNAUTHORIZED)
+
+        val authorizedUserRecord = userRepository.findByKey(apiKey)
+        authorizedUserRecord ?:
+        throw RestProblem(status = Response.Status.UNAUTHORIZED)
+
+        val targetUserRecord = userRepository.findById(userId.toLong())
+                .toNullable()
+                ?: throw RestProblem(title = "User not found", status = Response.Status.NOT_FOUND)
+
+        if (targetUserRecord.keyId != authorizedUserRecord.keyId) {
+            if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
+                if (authorizedUserRecord.debitorId != targetUserRecord.debitorId) {
+                    throw RestProblem(title = "No access to this user", status = Response.Status.FORBIDDEN)
+                } else {
+                    val authRole = UserRole.valueOf(authorizedUserRecord.role)
+                    val targetRole = UserRole.valueOf(targetUserRecord.role)
+                    if (authRole != UserRole.POWERUSER) {
+                        if (targetRole >= authRole) {
+                            throw RestProblem(title = "No access to this user", status = Response.Status.FORBIDDEN)
+                        }
+                    }
+                }
+            }
+        }
+
+        return targetUserRecord.config?.toString() ?: "{}"
+    }
+
+    override fun getNodeConfiguration(nodeUid: String): String {
+        val node = nodeRepository.findByUid(nodeUid)
+                ?: throw RestProblem(title = "Invalid Node UID", detail = "Node UID could not be found", status = Response.Status.NOT_FOUND)
+
+        return node.config?.toString() ?: "{}"
+    }
+}

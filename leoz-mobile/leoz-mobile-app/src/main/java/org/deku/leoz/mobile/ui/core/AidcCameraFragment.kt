@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.CompositeAidcReader
+import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.view.setBackgroundTintRes
 import sx.android.view.setIconTintRes
 
@@ -82,8 +84,7 @@ class AidcCameraFragment : Fragment<Any>() {
         super.onResume()
 
         this.cameraReader.torchProperty
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.fab_aidc_camera_torch.setIconTintRes(
                             if (it.value)
@@ -93,7 +94,7 @@ class AidcCameraFragment : Fragment<Any>() {
                 }
 
         this.isPinnedEventSubject
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.fab_aidc_camera_pin.also { fab ->
                         when (it) {

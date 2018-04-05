@@ -4,13 +4,13 @@ version '1.0'
 buildscript {
     ext {
         v_activemq = '5.15.3'
-        v_artemis = '2.4.0'
+        v_artemis = '2.5.0'
         v_kodein = '4.1.0'
-        v_kotlin = '1.2.30'
-        v_kryo = '4.0.1'
+        v_kotlin = '1.2.31'
+        v_kryo = '4.0.2'
         v_kryo_serializers = '0.42'
         v_protostuff = '1.5.3'
-        v_spring = '5.0.4.RELEASE'
+        v_spring = '5.0.5.RELEASE'
     }
 
     dependencies {

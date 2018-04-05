@@ -42,14 +42,14 @@ class ApplicationConfiguration {
     }
 
     @get:Bean
-    val storage: Storage = Kodein.global.instance()
+    val storage: Storage by lazy { Kodein.global.instance<Storage>() }
 
     @get:Bean
-    val logConfiguration: LogConfiguration = Kodein.global.instance()
+    val logConfiguration: LogConfiguration by lazy { Kodein.global.instance<LogConfiguration>() }
 
     @get:Lazy
     @get:Bean
-    val app: Application = Kodein.global.instance()
+    val app: Application by lazy { Kodein.global.instance<Application>() }
 
     @get:Lazy
     @get:Bean

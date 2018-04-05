@@ -1,25 +1,28 @@
 package org.deku.leoz.central.service.internal
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.ObjectMapper
+import org.deku.leoz.central.Application
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.JooqMailQueueRepository
 import org.deku.leoz.central.data.repository.JooqStationRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.setHashedPassword
+import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.verifyPassword
 import org.deku.leoz.central.data.repository.toUser
 import org.deku.leoz.model.AllowedStations
+import org.deku.leoz.model.UserActivity
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.internal.UserService.User
-import org.deku.leoz.time.toDateWithoutTime
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import sx.mq.MqChannel
+import sx.mq.MqHandler
 import sx.rs.RestProblem
 import sx.time.toSqlDate
 import javax.inject.Inject
@@ -34,7 +37,11 @@ import javax.ws.rs.core.Response
  */
 @Component
 @Path("internal/v1/user")
-class UserService : UserService {
+@Profile(Application.PROFILE_CENTRAL)
+class UserService :
+        org.deku.leoz.service.internal.UserService,
+        MqHandler<Any> {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -71,20 +78,20 @@ class UserService : UserService {
                 val userRecList = userRepository.findByDebitorId(debitor_id)
                         ?: throw RestProblem(
                                 status = Response.Status.NOT_FOUND,
-                                title = "no user found by debitor-id")
+                                title = "No user found by debitor-id")
                 if (userRecList.isEmpty())
                     throw RestProblem(
                             status = Response.Status.NOT_FOUND,
-                            title = "no user found by debitor-id")
+                            title = "No user found by debitor-id")
                 val user = mutableListOf<User>()
                 userRecList.forEach {
 
                     if (authorizedUser.role == UserRole.ADMIN.name) {
-                        user.add(it.toUser())
+                        user.add(it.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(it.id) })
                     } else {
                         if (authorizedUser.debitorId == it.debitorId) {
                             if (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value) {
-                                user.add(it.toUser())
+                                user.add(it.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(it.id) })
                             }
                         }
                     }
@@ -96,17 +103,17 @@ class UserService : UserService {
                 val userRecord = userRepository.findByMail(email)
                         ?: throw RestProblem(
                                 status = Response.Status.NOT_FOUND,
-                                title = "no user found by email")
+                                title = "No user found by email")
 
                 if (UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
-                    return listOf(userRecord.toUser())
+                    return listOf(userRecord.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(userRecord.id) })
                 if ((UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value) &&
                         (authorizedUser.debitorId == userRecord.debitorId)) {
-                    return listOf(userRecord.toUser())
+                    return listOf(userRecord.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(userRecord.id) })
                 } else {
                     throw RestProblem(
                             status = Response.Status.FORBIDDEN,
-                            title = "user found but no permission returning this user")
+                            title = "User found but no permission returning this user")
                 }
             }
             else -> {
@@ -127,7 +134,7 @@ class UserService : UserService {
         if (rec != null) {
             throw RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = "email exists")
+                    title = "Email exists")
         }
 
         if (user.debitorId == null) {
@@ -160,13 +167,13 @@ class UserService : UserService {
         val phone = user.phone
         val mobilePhone = user.phoneMobile
 
-        val allowsStations = AllowedStations()
+        //var allowsStations = List<Int>?//AllowedStations()
         val userStations = user.allowedStations
-        if (userStations != null) {
-            allowsStations.allowedStations = userStations.map { j -> j.toString() }.toList()
-        }
-        val mapper = ObjectMapper()
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+//        if (userStations != null) {
+//            allowsStations.allowedStations = userStations.map { j -> j.toString() }.toList()
+//        }
+        //val mapper = ObjectMapper()
+        //mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
 
         var isNew = false
         var rec = userRepository.findByMail(email)
@@ -179,7 +186,7 @@ class UserService : UserService {
             if (!user.email.equals(email)) {
                 throw  RestProblem(
                         status = Response.Status.BAD_REQUEST,
-                        title = "multiple email for new record")
+                        title = "Multiple email for new record")
             }
         } else {
             if (rec.debitorId == null) rec.debitorId = authorizedUser.debitorId
@@ -189,13 +196,13 @@ class UserService : UserService {
                 if (rec.debitorId != authorizedUser.debitorId)
                     throw  RestProblem(
                             status = Response.Status.FORBIDDEN,
-                            title = "login user can not change user - debitorId")
+                            title = "Login user can not change user - debitorId")
             }
 
             if (UserRole.valueOf(authorizedUser.role!!).value < UserRole.valueOf(rec.role).value) {
                 throw  RestProblem(
                         status = Response.Status.FORBIDDEN,
-                        title = "login user can not create/change user - no permission")
+                        title = "Login user can not create/change user - no permission")
             }
 
             //if (user.email != null) {
@@ -203,7 +210,7 @@ class UserService : UserService {
                 if (userRepository.mailExists(user.email)) {
                     throw  RestProblem(
                             status = Response.Status.BAD_REQUEST,
-                            title = "duplicate email")
+                            title = "Duplicate email")
                 }
             }
             //}
@@ -223,7 +230,7 @@ class UserService : UserService {
                 if (userRepository.aliasExists(testAlias, testDebitor)) {
                     throw  RestProblem(
                             status = Response.Status.BAD_REQUEST,
-                            title = "duplicate alias or debitorId")
+                            title = "Duplicate alias or debitorId")
                 }
             }
         }
@@ -231,22 +238,22 @@ class UserService : UserService {
         if (isNew) {
             alias ?: throw  RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = "no alias")
+                    title = "No alias")
             userRole ?: throw  RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = "no user role")
+                    title = "No user role")
             password ?: throw  RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = "no password")
+                    title = "No password")
             firstName ?: throw  RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = "no first name")
+                    title = "No first name")
             lastName ?: throw  RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = "no last name")
+                    title = "No last name")
             phone ?: throw  RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = "no phone")
+                    title = "No phone")
 
             if (user.active == null)
                 user.active = false
@@ -254,7 +261,7 @@ class UserService : UserService {
             if (userRepository.mailExists(user.email))
                 throw RestProblem(
                         status = Response.Status.BAD_REQUEST,
-                        title = "duplicate email")
+                        title = "Duplicate email")
 
             if (debitor == null)
                 debitor = authorizedUser.debitorId
@@ -262,18 +269,18 @@ class UserService : UserService {
             if (debitor == null)
                 throw RestProblem(
                         status = Response.Status.BAD_REQUEST,
-                        title = "missing debitor of login user")
+                        title = "Missing debitor of login user")
 
             if (userRepository.aliasExists(alias, debitor))
                 throw RestProblem(
                         status = Response.Status.BAD_REQUEST,
-                        title = "duplicate alias/debitor")
+                        title = "Duplicate alias/debitor")
         }
 
         if (!UserRole.values().any { it.name == authorizedUser.role })
             throw  RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = "login user role unknown")
+                    title = "Login user role unknown")
 
         if (debitor != null) {
 
@@ -281,7 +288,7 @@ class UserService : UserService {
                 if (authorizedUser.debitorId != debitor) {
                     throw  RestProblem(
                             status = Response.Status.FORBIDDEN,
-                            title = "login user can not change debitorId")
+                            title = "Login user can not change debitorId")
                 }
             }
         }
@@ -290,27 +297,29 @@ class UserService : UserService {
             if (!UserRole.values().any { it.name == userRole })
                 throw  RestProblem(
                         status = Response.Status.BAD_REQUEST,
-                        title = "user role unknown")
+                        title = "User role unknown")
 
             if (UserRole.valueOf(authorizedUser.role!!).value < UserRole.valueOf(userRole).value) {
                 throw  RestProblem(
                         status = Response.Status.FORBIDDEN,
-                        title = "login user can not create/change user - no permission")
+                        title = "Login user can not create/change user - no permission")
             }
         }
 
         rec ?: throw  RestProblem(
                 status = Response.Status.BAD_REQUEST,
-                title = "not found")
+                title = "Not found")
 
         //if ((user.email != null) && (user.email != "@"))
         if (user.email != "@") {
-            rec.email = user.email
-            if (password == null)
-                throw RestProblem(
-                        status = Response.Status.CONFLICT,
-                        title = "On login-change you have to provide a password"
-                )
+            if (rec.email != user.email) {
+                rec.email = user.email
+                if (password == null)
+                    throw RestProblem(
+                            status = Response.Status.CONFLICT,
+                            title = "On login-change you have to provide a password"
+                    )
+            }
         }
         if (debitor != null)
             rec.debitorId = debitor
@@ -327,18 +336,22 @@ class UserService : UserService {
         if (user.active != null) {
             rec.active = user.isActive
             if (user.active == true) {
+                // TODO: intransparent. expiry check should be done against one definitive field.
                 if (user.expiresOn == null) {
-                    if (java.util.Date() > rec.expiresOn) {
-                        throw RestProblem(
-                                status = Response.Status.CONFLICT,
-                                title = "expiresOn invalid to activate user"
-                        )
+                    // TODO: what if both are null?!
+                    if (rec.expiresOn != null) {
+                        if (java.util.Date() > rec.expiresOn) {
+                            throw RestProblem(
+                                    status = Response.Status.CONFLICT,
+                                    title = "ExpiresOn invalid to activate user"
+                            )
+                        }
                     }
                 } else {
                     if (java.util.Date() > user.expiresOn) {
                         throw RestProblem(
                                 status = Response.Status.CONFLICT,
-                                title = "expiresOn invalid to activate user"
+                                title = "ExpiresOn invalid to activate user"
                         )
                     }
                 }
@@ -360,8 +373,57 @@ class UserService : UserService {
 
 //todo read from mst_station_user
 //        rec.allowedStations = stations
-
         rec.store()
+
+
+        //check auth? evtl erst ab powerUser?
+
+        if (userStations != null) {
+            val allowedStations = stationRepository.findAllowedStationsByUserId(rec.id)
+
+            if (userStations != allowedStations) {
+                if (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.POWERUSER.value) {
+
+                    val possibleStations = stationRepository.findStationsByDebitorId(rec.debitorId).map { x->x.toInt() }
+
+                    userStations.forEach {
+                        if (!possibleStations.contains(it))
+                            throw  RestProblem(
+                                    status = Response.Status.CONFLICT,
+                                    title = "Allowed station mismatch debitor ")
+                        if (!allowedStations.contains(it)) {
+                            //Insert into mst_station_user
+                            val recStation = dsl.newRecord(Tables.MST_STATION_USER)
+                            recStation.userId = rec.id
+                            val stationId = stationRepository.findStationIdByDepotNr(it)
+                            stationId ?: throw RestProblem(
+                                    status = Response.Status.NOT_FOUND,
+                                    title = "Station with No [$it] not found"
+                            )
+                            recStation.stationId = stationId
+                            recStation.store()
+                        }
+                    }
+                    allowedStations.forEach {
+                        if (!userStations.contains(it)) {
+                            //delete from mst_station_user
+                            val stationId = stationRepository.findStationIdByDepotNr(it)
+                            if (stationId != null) {
+                                dsl.deleteFrom(Tables.MST_STATION_USER)
+                                        .where(Tables.MST_STATION_USER.USER_ID.eq(rec.id))
+                                        .and(Tables.MST_STATION_USER.STATION_ID.eq(stationId))
+                                        .execute()
+                            }
+                        }
+                    }
+
+                } else {
+                    throw  RestProblem(
+                            status = Response.Status.FORBIDDEN,
+                            title = "Login user can not set/change allowedStations - no permission")
+                }
+            }
+        }
 
         if (sendAppLink) {
             sendDownloadLink(userRepository.findByMail(user.email)!!.id!!)
@@ -369,12 +431,14 @@ class UserService : UserService {
     }
 
     override fun getById(userId: Int): User {
-        val u = userRepository.findById(userId) ?: throw RestProblem(
-                status = Response.Status.NOT_FOUND,
-                title = "User with ID [$userId] not found"
-        )
+        val u = userRepository.findById(userId)
+                ?: throw NoSuchElementException("User with ID [$userId] not found")
 
         return this.get(email = u.email).first()
+    }
+
+    override fun getIdsByDebitor(debitorId: Int): List<Int> {
+        return userRepository.findUserIdsByDebitor(debitorId)
     }
 
     override fun sendDownloadLink(userId: Int): Boolean {
@@ -395,8 +459,20 @@ class UserService : UserService {
         return true
     }
 
-    override fun changePassword(oldPassword: String, newPassword: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    @Transactional(PersistenceConfiguration.QUALIFIER)
+    override fun changePassword(userId: Int, oldPassword: String, newPassword: String) {
+        val userRecord = this.userRepository.findById(userId)
+
+        userRecord ?:
+        throw RestProblem(title = "User does not exist")
+
+        // Verify credentials
+        if (!userRecord.verifyPassword(oldPassword))
+            throw RestProblem(
+                    title = "User authentication failed",
+                    status = Response.Status.UNAUTHORIZED)
+        userRecord.setHashedPassword(newPassword)
+        userRecord.store()
     }
 
     override fun getConfigurationById(userId: Int): String {
@@ -408,5 +484,20 @@ class UserService : UserService {
 
         return configurationService.getUserConfiguration(authorizedUser.id
                 ?: throw RestProblem(status = Response.Status.NOT_FOUND))
+    }
+
+    @MqHandler.Types(
+            UserService.DataProtectionActivity::class
+    )
+    override fun onMessage(message: Any, replyChannel: MqChannel?) {
+        when (message) {
+            is UserService.DataProtectionActivity -> {
+                try {
+                    userRepository.logUserActivity(userId = message.userId, activity = UserActivity.DATA_PROTECTION_POLICY_ACCEPTED, date = message.ts_activity)
+                } catch (e: Exception) {
+                    log.error(e.message, e)
+                }
+            }
+        }
     }
 }

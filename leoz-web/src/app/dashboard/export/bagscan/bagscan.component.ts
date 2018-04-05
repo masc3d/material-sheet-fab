@@ -10,7 +10,7 @@ import {
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/filter';
+import { filter, takeUntil } from 'rxjs/operators';
 
 import { LazyLoadEvent, SelectItem } from 'primeng/api';
 import { ElectronService } from '../../../core/electron/electron.service';
@@ -118,14 +118,18 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     this.setEmptyBagIdChangedResp();
 
     this.openPackages$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( packages: Package[] ) => {
         this.openPackagesArr = packages;
         this.openPackcount = this.openPackagesArr.length;
       } );
 
     this.bagscanService.allPackages$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( packages: Package[] ) => {
         const packagesLoaded = packages
           .filter( ( p: Package ) => p.loadinglistNo > 0 )
@@ -143,7 +147,9 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
       } );
 
     this.bagscanService.loadlists$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( selectItems: SelectItem[] ) => {
         this.baglistItems = selectItems;
         this.baglists = this.createBaglistItems( this.baglistItems );
@@ -161,7 +167,9 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     } );
 
     this.bagscanService.activeLoadinglist$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( activeLoadinglist: Exportlist ) => {
         // console.log('this.activeBaglist changed...', activeLoadinglist);
         this.activeBaglist = activeLoadinglist;
@@ -169,7 +177,9 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
       } );
 
     this.bagscanService.activeBagData$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( activeBagData: BagData ) => {
         this.activeBagData = activeBagData;
         // fill and activate or deactivate Fields depending on BagData
@@ -228,25 +238,35 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
 
   private registerKeyboardEvents() {
     this.keyUpService.keyUpEvents$
-      .filter( ( ev: KeyboardEvent ) => ev.key === 'F2' )
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        filter( ( ev: KeyboardEvent ) => ev.key === 'F2' ),
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( () => this.startPacking() );
     this.keyUpService.keyUpEvents$
-      .filter( ( ev: KeyboardEvent ) => ev.key === 'F3' )
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        filter( ( ev: KeyboardEvent ) => ev.key === 'F3' ),
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( () => this.clearFields() );
     this.keyUpService.keyUpEvents$
-      .filter( ( ev: KeyboardEvent ) => ev.key === 'F5' )
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        filter( ( ev: KeyboardEvent ) => ev.key === 'F5' ),
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( () => this.finishBag() );
     this.keyUpService.keyUpEvents$
-      .filter( ( ev: KeyboardEvent ) => ev.key === 'F7' )
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        filter( ( ev: KeyboardEvent ) => ev.key === 'F7' ),
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( () => this.saveEmergencySeal() );
-    this.keyUpService.keyUpEvents$
-      .filter( ( ev: KeyboardEvent ) => ev.key === 'F10' )
-      .takeUntil( this.ngUnsubscribe )
-      .subscribe( () => this.switchSeal() );
+    // this.keyUpService.keyUpEvents$
+    //   .pipe(
+    //     filter( ( ev: KeyboardEvent ) => ev.key === 'F10' ),
+    //     takeUntil( this.ngUnsubscribe )
+    //   )
+    //   .subscribe( () => this.switchSeal() );
   }
 
   private createBaglistItems( selectItems: SelectItem[] ) {

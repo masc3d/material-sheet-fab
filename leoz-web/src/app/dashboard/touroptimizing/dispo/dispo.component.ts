@@ -1,17 +1,22 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { takeUntil } from 'rxjs/operators';
+
 import { Message } from 'primeng/components/common/api';
+import { SortEvent } from 'primeng/api';
+import * as moment from 'moment';
 
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { MsgService } from '../../../shared/msg/msg.service';
 import { TouroptimizingService } from '../touroptimizing.service';
 import { Tour } from '../../../core/models/tour.model';
-import { roundDecimals } from '../../../core/math/roundDecimals';
 import { BrowserCheck } from '../../../core/auth/browser-check';
 import { PrintingService } from '../../../core/printing/printing.service';
 import { StoplistReportingService } from '../../../core/reporting/stoplist-reporting.service';
 import { Vehicle } from '../../../core/models/vehicle.model';
+import { compareCustom } from '../../../core/compare-fn/custom-compare';
+import { roundDecimalsAsString } from '../../../core/math/roundDecimals';
 
 
 @Component( {
@@ -22,19 +27,16 @@ import { Vehicle } from '../../../core/models/vehicle.model';
 
 export class DispoComponent extends AbstractTranslateComponent implements OnInit {
 
-  @Input()
-  withInitialGeneration: boolean;
-
   checkAll: boolean;
-  toursOrderCount: number;
-  toursParcelCount: number;
-  toursTotalWeight: number;
-  toursQuota: number;
   tours: Tour[];
-
+  filteredTours: Tour[];
   toursLoading$: Observable<boolean>;
+
   public msgs$: Observable<Message[]>;
-  selectedOptimizableTourIds: Tour[] = []; // tours with more than one shipment
+  public sticky$: Observable<boolean>;
+
+  selectedTours: Tour[] = [];
+  selectedOptimizableTours: Tour[] = []; // tours with more than one shipment
 
   notMicrodoof: boolean;
 
@@ -48,6 +50,14 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   kombiMaxKg: number;
   bikeMaxKg: number;
 
+  latestSortField: string = null;
+  latestSortOrder = 0;
+
+  dateFormatMedium: string;
+
+  dateFormat: string;
+  tourDateFilter: Date;
+
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
                protected touroptimizingService: TouroptimizingService,
@@ -58,98 +68,58 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     super( translate, cd, msgService );
   }
 
+
   ngOnInit() {
     super.ngOnInit();
 
+    this.tourDateFilter = new Date();
+
     this.notMicrodoof = this.browserCheck.browser === 'handsome Browser';
-    this.toursOrderCount = 0;
-    this.toursParcelCount = 0;
-    this.toursTotalWeight = 0;
-    this.toursQuota = 0;
     this.toursLoading$ = this.touroptimizingService.toursLoading$;
 
     this.tours = [];
+    this.filteredTours = [];
     this.touroptimizingService.tours$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( tours: Tour[] ) => {
-        this.tours = this.sortAndGroupTours( tours );
-        this.toursOrderCount = this.countOrders( this.tours );
-        this.toursParcelCount = this.countParcels( this.tours );
-        this.toursTotalWeight = roundDecimals( this.sumWeights( this.tours ), 100 );
-        this.toursQuota = this.getToursQuota( this.tours );
+        this.tours.length = 0;
+        if (this.latestSortField !== null) {
+          this.tours.push( ...tours.sort( ( data1, data2 ) => {
+            return compareCustom( this.latestSortOrder, data1[ this.latestSortField ], data2[ this.latestSortField ] );
+          } ) );
+        } else {
+          const sortedAndGrouped = this.invertTreeAndFlatten( this.convert2Tree( tours ) );
+          this.tours.push( ...sortedAndGrouped );
+        }
+        this.filterToursByDeliveryDate();
         this.cd.markForCheck();
       } );
-    this.touroptimizingService.latestDeliverylistModification$
-      .takeUntil( this.ngUnsubscribe )
-      .subscribe( ( someTimestamp: number ) => {
-        if (this.tours && this.tours.length > 0
-          && new Date( this.tours[ 0 ].created ).getTime() < someTimestamp) {
-          this.msgService.info( 'tours-most-likely-outdated' );
-        }
-      } );
-    this.touroptimizingService.getTours( this.withInitialGeneration );
+    this.touroptimizingService.getTours();
 
-    this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe, this.withInitialGeneration );
-    this.touroptimizingService.initSSEtourWhatever( this.ngUnsubscribe, this.withInitialGeneration );
+    this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe );
+    this.touroptimizingService.initSSEtourChanges( this.ngUnsubscribe );
+  }
+
+  private filterToursByDeliveryDate() {
+    this.filteredTours.length = 0;
+    this.filteredTours.push( ...this.tours.filter( tour => moment( tour.date ).isSame( this.tourDateFilter, 'day' ) ) );
+  }
+
+  customSort( event: SortEvent ) {
+    if (event.field) {
+      this.latestSortField = event.field;
+      this.latestSortOrder = event.order;
+      event.data.sort( ( data1, data2 ) => {
+        return compareCustom( event.order, data1[ event.field ], data2[ event.field ] );
+      } );
+    }
   }
 
   getTours() {
-    this.touroptimizingService.getTours( this.withInitialGeneration );
-  }
-
-  resetTours() {
-    this.msgService.clear();
-    const tourIds = this.tours.map( tour => tour.id );
-    this.touroptimizingService.deleteTours( tourIds );
-    this.checkAll = false;
-  }
-
-  private sortAndGroupTours( tours: Tour[] ): Tour[] {
-    // split in parent and child tours and sort both arrays id descending
-    const sortIdDesc = function ( t1: Tour, t2: Tour ) {
-      return t1.id > t2.id ? -1 : 1;
-    };
-    // tours that are optimized within themselves have their own id as parentId
-    const parentTours = tours
-      .filter( tour => !tour.parentId || tour.id === tour.parentId )
-      .sort( sortIdDesc );
-    const childTours = tours
-      .filter( tour => tour.parentId && tour.id !== tour.parentId )
-      .sort( sortIdDesc );
-    // join arrays => add cildren after parent
-    const sortedTours = [];
-    parentTours.forEach( parent => {
-      sortedTours.push( parent );
-      sortedTours.push( ...childTours.filter( child => child.parentId === parent.id ) );
-    } );
-    return sortedTours;
-  }
-
-  private getToursQuota( tours: Tour[] ) {
-    return tours.length > 0
-      ? roundDecimals( (tours.filter( tour => tour.optimized ).length) / (tours.length) * 100, 1 )
-      : 0;
-  }
-
-  private sumWeights( tours: Tour[] ) {
-    return tours.length > 0
-      ? tours.map( ( tour: Tour ) => tour.totalWeight )
-        .reduce( ( a: number, b: number ) => a + b )
-      : 0;
-  }
-
-  private countParcels( tours: Tour[] ) {
-    return tours.length > 0
-      ? tours.map( ( tour: Tour ) => tour.totalPackages )
-        .reduce( ( a: number, b: number ) => a + b )
-      : 0;
-  }
-
-  private countOrders( tours: Tour[] ) {
-    return tours.length > 0
-      ? tours.map( ( tour: Tour ) => tour.totalShipments )
-        .reduce( ( a: number, b: number ) => a + b )
-      : 0;
+    this.touroptimizingService.showSpinner();
+    this.touroptimizingService.getTours();
   }
 
   changeCheckAllTours( evt: { checked: boolean } ) {
@@ -157,42 +127,25 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   protected optimizeTours() {
-    /**
-     * ALEX: Values should come from the service
-     */
-    // this.optimizeTodayAndFuture
-    // this.optimizeTraffic => traffic: true
-    // this.optimizeExistingtours = => vehicles[{capacity: 0}]
-    // this.optimizeSplitTours
-    // this.sprinterMaxKg => vehicles[{capacity: 1200}]
-    // this.caddyMaxKg => vehicles[{capacity: 500}]
-    // this.kombiMaxKg => vehicles[{capacity: 350}]
-    // this.bikeMaxKg => vehicles[{capacity: 30}]
-    this.selectedOptimizableTourIds = this.tours
-      .filter( tour => tour.selected && tour.orders.length > 1 );
-    if (this.selectedOptimizableTourIds.length === 0) {
-      this.msgService.info( 'no_optimizable_tours_selected' );
+    this.selectedTours = this.filteredTours
+      .filter( tour => tour.selected );
+    this.selectedOptimizableTours = this.selectedTours
+      .filter( tour => tour.orders.length > 1 );
+    if (this.selectedOptimizableTours.length === 0) {
+      this.msgService.info( 'no_optimizable_tours_selected', false, false );
     } else {
-      const selectedTourIds = this.tours
-        .filter( tour => tour.selected )
+      const selectedTourIds = this.selectedOptimizableTours
         .map( tour => tour.id );
-      // const selectedNotOptimizedTourIds = this.tours
-      //   .filter( tour => tour.selected && !tour.optimized )
-      //   .map( tour => tour.id );
-      // if (selectedNotOptimizedTourIds.length > 0) {
-        let vehicles = [];
-        if (this.optimizeSplitTours) {
-          vehicles = this.addVehicles(this.sprinterMaxKg, Vehicle.SPRINTER, vehicles );
-          vehicles = this.addVehicles(this.caddyMaxKg, Vehicle.CADDY, vehicles );
-          vehicles = this.addVehicles(this.kombiMaxKg, Vehicle.STATION_WAGON, vehicles );
-          vehicles = this.addVehicles(this.bikeMaxKg, Vehicle.BIKE, vehicles );
-        }
-        this.touroptimizingService.optimizeAndReinitTours( selectedTourIds,
-          vehicles.length > 0 ? vehicles : [ Vehicle.SPRINTER ],
-          this.optimizeTraffic, this.optimizeExistingtours, this.dontShiftOneDayFromNow);
-      // } else {
-      //   this.msgService.info( 'optimizing_optimized_tours_not_possible' );
-      // }
+      let vehicles = [];
+      if (this.optimizeSplitTours) {
+        vehicles = this.addVehicles( this.sprinterMaxKg, Vehicle.SPRINTER, vehicles );
+        vehicles = this.addVehicles( this.caddyMaxKg, Vehicle.CADDY, vehicles );
+        vehicles = this.addVehicles( this.kombiMaxKg, Vehicle.STATION_WAGON, vehicles );
+        vehicles = this.addVehicles( this.bikeMaxKg, Vehicle.BIKE, vehicles );
+      }
+      this.touroptimizingService.optimizeAndReinitTours( selectedTourIds,
+        vehicles.length > 0 ? vehicles : [ Vehicle.SPRINTER ],
+        this.optimizeTraffic, this.optimizeExistingtours, this.dontShiftOneDayFromNow );
     }
     this.checkAll = false;
   }
@@ -211,15 +164,25 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   preview() {
-    this.reporting( false );
+    this.createReport( false );
   }
 
   saving() {
-    this.reporting( true );
+    this.createReport( true );
+  }
+
+  createReport( saveReport ) {
+    this.selectedTours = this.filteredTours
+      .filter( tour => tour.selected );
+    if (this.selectedTours && this.selectedTours.length === 0) {
+      this.msgService.info( 'no_tours_selected', false, false );
+    } else {
+      this.reporting( saveReport );
+    }
   }
 
   protected reporting( saving: boolean ) {
-    const listsToPrint = this.tours.filter( tour => tour.selected );
+    const listsToPrint = this.filteredTours.filter( tour => tour.selected );
 
     const filename = 'sl_' + listsToPrint.map( tour => tour.id ).join( '_' );
     this.printingService.printReports( this.reportingService
@@ -228,22 +191,141 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   optimizeDialog() {
-    this.selectedOptimizableTourIds = this.tours
-      .filter( tour => tour.selected && tour.orders.length > 1 );
-    if (this.selectedOptimizableTourIds.length === 0) {
-      this.msgService.info( 'no_optimizable_tours_selected' );
+    this.displayOptimizationOptions = false;
+    this.selectedTours = this.filteredTours
+      .filter( tour => tour.selected );
+    this.selectedOptimizableTours = this.selectedTours
+      .filter( tour => tour.orders && tour.orders.length > 1 );
+    if (this.selectedOptimizableTours.length === 0) {
+      this.msgService.info( 'no_optimizable_tours_selected', false, false );
     } else {
       this.displayOptimizationOptions = true;
     }
+    this.cd.markForCheck();
   }
 
   acceptOptimizationOptions() {
     this.optimizeTours();
     this.displayOptimizationOptions = false;
+    this.cd.markForCheck();
   }
 
   rejectOptimizationOptions() {
     this.displayOptimizationOptions = false;
+    this.cd.markForCheck();
+  }
+
+  formatTourDurationTime( duration: number ): string {
+    if (duration > 0) {
+      return moment.utc( duration * 1000 ).format( 'HH:mm:ss' )
+    }
+    return '';
+  }
+
+  roundDecimalsAsStringWrapper( input: number ): string {
+    return roundDecimalsAsString( input, 10, true );
+  }
+
+  tourDateFilterPrevDay() {
+    this.tourDateFilter = moment( this.tourDateFilter )
+      .subtract( 1, 'days' )
+      .toDate();
+    this.filterToursByDeliveryDate();
+  }
+
+  tourDateFilterNextDay() {
+    this.tourDateFilter = moment( this.tourDateFilter )
+      .add( 1, 'days' )
+      .toDate();
+    this.filterToursByDeliveryDate();
+  }
+
+  private invertTree( toursTree: Map<number, Tour> ): Tour[] {
+    return Array.from( toursTree ).reverse().map( numberTourPair => numberTourPair[ 1 ] );
+  }
+
+  private flatten( tours: Tour[], flattenedTours: Tour[] ): Tour[] {
+    tours.forEach( tour => {
+      flattenedTours.push( tour );
+      if (tour.children) {
+        this.flatten( tour.children, flattenedTours );
+      }
+    } );
+    return flattenedTours;
+  }
+
+  private invertTreeAndFlatten( toursTree: Map<number, Tour> ): Tour[] {
+    const inverted = this.invertTree( toursTree );
+    return this.flatten( inverted, [] );
+  }
+
+  private convert2Tree( tours: Tour[] ): Map<number, Tour> {
+    const toursTree = new Map<number, Tour>();
+    /**
+     * Initial sort is necessary for the conversion and the conversion only works,
+     * if parent tourIds are smaller numbers than the childIds.
+     */
+    const sortedTours = tours.sort( ( t1: Tour, t2: Tour ) => t1.id - t2.id );
+    const tourIdLookupMap = new Map<number, Tour>();
+    const tourToParentMapping = new Map<number, number>();
+    const tourToChildrenMapping = new Map<number, number[]>();
+
+    // filling the maps for later iteration and lookup
+    sortedTours.forEach( tour => {
+      const tourId = tour.id;
+      const parentId = tour.parentId;
+      tourIdLookupMap.set( tourId, tour );
+      tourToParentMapping.set( tourId, parentId );
+      if (parentId) {
+        const childIds = tourToChildrenMapping.has( parentId )
+          ? tourToChildrenMapping.get( parentId )
+          : [];
+        childIds.push( tourId );
+        tourToChildrenMapping.set( parentId, childIds )
+      }
+    } );
+
+    tourToParentMapping.forEach( ( parentId: number, tourId: number ) => {
+      if (!parentId) {
+        this.rootTourTreeEntry( toursTree, tourId, tourIdLookupMap, tourToChildrenMapping );
+      }
+    } );
+
+    return toursTree;
+  }
+
+  private rootTourTreeEntry( toursTree: Map<number, Tour>, tourId: number,
+                             tourIdLookupMap: Map<number, Tour>, tourToChildrenMapping: Map<number, number[]> ) {
+    // insert entry in toursTree as root
+    const rootTour = tourIdLookupMap.get( tourId );
+    toursTree.set( tourId, rootTour );
+    // check if tour has children
+    if (tourToChildrenMapping.has( tourId )) {
+      // iterate over childs and create entries recursively
+      tourToChildrenMapping.get( tourId )
+        .forEach( childId => {
+          const child = tourIdLookupMap.get( childId );
+          this.appendChild( toursTree, rootTour, child, tourIdLookupMap, tourToChildrenMapping );
+        } );
+    }
+  }
+
+  private appendChild( toursTreeResult: Map<number, Tour>, parent: Tour, tour: Tour,
+                       tourIdLookupMap: Map<number, Tour>, tourToChildrenMapping: Map<number, number[]> ) {
+    if (parent.children) {
+      parent.children.push( tour );
+    } else {
+      parent.children = [ tour ];
+    }
+    // check if tour has children
+    if (tourToChildrenMapping.has( tour.id )) {
+      // iterate over childs and create entries recursively
+      tourToChildrenMapping.get( tour.id )
+        .forEach( childId => {
+          const child = tourIdLookupMap.get( childId );
+          this.appendChild( toursTreeResult, tour, child, tourIdLookupMap, tourToChildrenMapping );
+        } );
+    }
   }
 }
 

@@ -114,12 +114,4 @@ open class ScreenFragment<P> : Fragment<P>() {
         super.onPause()
         this.listener.onScreenFragmentPause(this)
     }
-
-    fun setLanguage(countryCode: CountryCode) {
-        this.context.setLocale(countryCode.toLocale())
-    }
-
-    fun resetLanguage() {
-        this.context.resetLocale()
-    }
 }

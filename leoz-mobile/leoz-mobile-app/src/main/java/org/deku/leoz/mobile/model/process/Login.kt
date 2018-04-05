@@ -16,11 +16,14 @@ import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.entity.UserEntity
 import org.deku.leoz.mobile.model.entity.create
 import org.deku.leoz.mobile.model.repository.OrderRepository
+import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.service.internal.AuthorizationService
+import org.deku.leoz.service.internal.UserService
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
 import sx.android.rx.observeOnMainThread
+import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
 import sx.text.parseHex
 import java.net.ConnectException
@@ -43,6 +46,7 @@ class Login {
     private val sharedPrefs: SharedPreferences by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
+    private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
     private val restConfiguration: RestClientFactory by Kodein.global.lazy.instance()
@@ -192,10 +196,21 @@ class Login {
 
             user
         }
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThread()
                 .doOnNext {
                     // Store authenticated user in property
                     this.authenticatedUser = it
+
+                    // TODO uncomment when message will be processed in backend (leoz-central version > 0.193-SNAPSHOT)
+//                    mqttChannels.central.transient.channel().send(
+//                            message = UserService.DataProtectionActivity(
+//                                    scope = UserService.DataProtectionActivity.Scope.MOBILE,
+//                                    userId = it.id,
+//                                    ts_activity = it.lastLoginTime ?: Date(),
+//                                    confirmed = true,
+//                                    policyVersion = 0
+//                            )
+//                    )
                 }
                 .toHotIoObservable(this.log)
 

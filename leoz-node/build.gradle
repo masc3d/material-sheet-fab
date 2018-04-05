@@ -16,8 +16,7 @@ import sx.platform.OperatingSystem
 
 buildscript {
     ext {
-        v_aspectj = '1.8.11'
-        v_querydsl = '4.1.4'
+        v_aspectj = '1.9.0'
         v_jaxb = '2.3.0'
     }
 
@@ -133,6 +132,8 @@ dependencies {
             project(':leoz-node-data'),
             project(':leoz-smartlane'),
 
+            "net.sf.barcode4j:barcode4j:2.1",
+
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
@@ -175,7 +176,7 @@ dependencies {
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
             "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$v_jackson",
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",
-            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson_kt",
+            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson",
 
             "org.zalando:problem:$v_rest_problem",
             "org.zalando:jackson-datatype-problem:$v_rest_problem",
@@ -239,7 +240,7 @@ dependencies {
             "org.javassist:javassist:$v_javassist",
 
             // pdfbox
-            "org.apache.pdfbox:pdfbox:2.0.8",
+            "org.apache.pdfbox:pdfbox:2.0.9",
 
             // Tika, content analysis framework
             "org.apache.tika:tika-core:$v_apache_tika",

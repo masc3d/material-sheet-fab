@@ -1,9 +1,12 @@
 package org.deku.leoz.mobile.ui.process
 
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -12,6 +15,7 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
@@ -21,9 +25,14 @@ import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.ui.core.Fragment
+import org.deku.leoz.mobile.ui.dialog.PrivacyDisclaimerDialog
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
 import sx.android.hideSoftInput
+import java.lang.IllegalStateException
+import java.util.*
+import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
 import java.util.concurrent.TimeUnit
 import javax.mail.internet.AddressException
 import javax.mail.internet.InternetAddress
@@ -38,15 +47,21 @@ class LoginFragment : Fragment<Any>() {
     private val internalLoginRegex: Regex = Regex(pattern = "^276[0-9]{5}$")
     private val login: Login by Kodein.global.lazy.instance()
 
+    private var privacyDisclaimerAccepted = false
+
+    private val privacyResultSubject: PublishSubject<Date> = PublishSubject.create()
+
     interface Listener {
         /** Called when it's appropriate to show progress indication */
         fun onLoginPending() {}
 
         fun onLoginFailed() {}
         fun onLoginSuccessful() {}
+
+        fun onPrivacyRejected() {}
     }
 
-    private val listener by lazy { this.activity as? Listener }
+    private val listener by listenerDelegate<Listener>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
@@ -87,7 +102,7 @@ class LoginFragment : Fragment<Any>() {
 
         // Actions triggering login
 
-        val rxLoginTrigger =
+        val rxPrivacyTrigger =
                 Observable.merge(listOf(
                         RxTextView.editorActions(this.uxPassword)
                                 .map { Unit }
@@ -99,19 +114,43 @@ class LoginFragment : Fragment<Any>() {
                         this.syntheticLoginSubject
                 ))
 
-        rxLoginTrigger
-                .observeOn(AndroidSchedulers.mainThread())
+        val rxLoginTrigger =
+                Observable.merge(listOf(
+                        this.privacyResultSubject
+                ))
+
+        rxPrivacyTrigger
+                .observeOnMainThread()
                 .switchMap {
                     Observable.fromCallable {
                         // Verify all fields
-                        if (listOf(
-                                        validateMailAddress(),
-                                        validatePassword()
-                                ).any { it == false }) {
+                            if (listOf(
+                                validateMailAddress(),
+                                validatePassword()
+                            ).any { it == false }) {
                             throw IllegalArgumentException("Validation failed")
+                            }
                         }
                     }
+                .subscribe {
+                    queryPrivacyConfirmation()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    {
+                                        if (!privacyDisclaimerAccepted)
+                                            this.listener?.onPrivacyRejected()
+                                        else
+                                            privacyResultSubject.onNext(Date())
+                                    },
+                                    {
+
+                                    }
+                            )
                 }
+
+        rxLoginTrigger
+                .observeOn(AndroidSchedulers.mainThread())
                 .switchMap {
                     login.authenticate(
                             email = uxMailaddress.text.toString(),
@@ -142,8 +181,7 @@ class LoginFragment : Fragment<Any>() {
                 }
                 // Retrying the entire observable (including required triggers, eg. user input)
                 .retry()
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     when {
                         it.pending == true -> {
@@ -204,5 +242,31 @@ class LoginFragment : Fragment<Any>() {
         this.uxMailaddress.setText(email)
         this.uxPassword.setText(password)
         this.syntheticLoginSubject.onNext(Unit)
+    }
+
+    private fun queryPrivacyConfirmation(): Completable {
+        return Completable.create {
+            val completable = it
+
+            privacyDisclaimerAccepted = false
+
+            MaterialDialog.Builder(this.context).also {
+                it.title(R.string.data_protection)
+                it.icon(ContextCompat.getDrawable(this.context, R.drawable.ic_search_data)!!)
+                it.checkBoxPrompt("Ich akzeptiere die Erklärung", false, { _, checked ->
+                    privacyDisclaimerAccepted = checked
+                })
+                it.content(R.string.privacy_disclaimer_text)
+                it.cancelable(false)
+                it.positiveText(R.string.proceed)
+                it.negativeText(R.string.cancel)
+                it.onNegative { dialog, which ->
+                    completable.onError(IllegalStateException("Policy must be accepted to continue"))
+                }
+                it.onPositive { dialog, which ->
+                    completable.onComplete()
+                }
+            }.show()
+        }
     }
 }

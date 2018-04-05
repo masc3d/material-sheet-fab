@@ -17,11 +17,9 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
-import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.SelectableAdapter
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_tour_stop_detail.*
 import org.deku.leoz.mobile.BR
@@ -34,7 +32,7 @@ import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.appointmentTimeLeft
 import org.deku.leoz.mobile.model.entity.hasValidPhoneNumber
 import org.deku.leoz.mobile.model.mobile
-import org.deku.leoz.mobile.model.process.DeliveryList
+import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
@@ -47,6 +45,7 @@ import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.Device
 import sx.android.aidc.*
+import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.time.TimeSpan
@@ -66,13 +65,13 @@ class StopDetailsScreen
         fun onStopDetailUnitNumberInput(unitNumber: UnitNumber)
     }
 
-    private val listener by lazy { this.activity as? Listener }
+    private val listener by listenerDelegate<Listener>()
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val feedback: Feedback by Kodein.global.lazy.instance()
 
     // Model classes
-    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
+    private val tour: Tour by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     private val timer: sx.android.ui.Timer by Kodein.global.lazy.instance()
@@ -274,15 +273,13 @@ class StopDetailsScreen
         )
 
         aidcReader.readEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.onAidcRead(it)
                 }
 
         this.activity.actionEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     when (it) {
                         R.id.action_deliver_continue -> {
@@ -337,7 +334,7 @@ class StopDetailsScreen
         this.syntheticInputs = listOf(
                 SyntheticInput(
                         name = "Parcels",
-                        entries = this.deliveryList.loadedParcels.blockingFirst().value.map {
+                        entries = this.tour.loadedParcels.blockingFirst().value.map {
                             val unitNumber = DekuUnitNumber.parse(it.number).value
                             SyntheticInput.Entry(
                                     symbologyType = SymbologyType.Interleaved25,

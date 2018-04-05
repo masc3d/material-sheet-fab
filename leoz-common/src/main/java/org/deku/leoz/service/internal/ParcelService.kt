@@ -11,6 +11,7 @@ import sx.rs.auth.ApiKey
 import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 /**
  * Parcel service
@@ -22,14 +23,26 @@ import javax.ws.rs.core.MediaType
 @Api(value = "Parcel service")
 @ApiKey(false)
 interface ParcelServiceV1 {
+
     companion object {
         const val EVENT = 1
         const val STATION_NO = "station-no"
         const val LOADINGLIST_NO = "loadinglist-no"
         const val SCANCODE = "parcel-no"
+        const val PARCEL_ID = "parcel-id"
+        const val PARCEL_REF = "parcel-ref"
+        const val PARCEL_WEB_REF = "parcel-web-ref"
         const val BAG_ID = "bag-id"
+        const val CONSIGNEE_ZIPCODE = "consignee-zipcode"
     }
 
+    data class Additionalinfo(
+            var recipient: String? = null,
+            var damagedFileUIDs: List<String>? = null,
+            var pictureFileUID: String? = null,
+            var pictureLocation: String? = null,
+            var pictureFileName: String? = null
+    )
     /**
      * Event message sent by nodes/devices
      */
@@ -98,13 +111,51 @@ interface ParcelServiceV1 {
             var note: String = ""
     )
 
+    // Proposal
+    data class ParcelWebStatus(
+            var parcelNo: Long = 0,
+            var status: List<ParcelStatus> = listOf(),
+            var consignee: String? = null,
+            var signatory: String? = null
+    )
+
+    // Proposal
     @GET
-    @Path("/{$SCANCODE}/status")
+    @Path("/")
+    @ApiOperation(value = "Find parcel", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun findParcels(
+            @QueryParam(value = SCANCODE) @ApiParam("Scancode") scanCode: String,
+            @QueryParam(value = PARCEL_REF) @ApiParam("Reference") reference: String
+    ): List<OrderService.Order.Parcel>
+
+    @GET
+    @Path("/{$PARCEL_ID}")
+    @ApiOperation(value = "Find parcel", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun findParcel(
+            @PathParam(value = PARCEL_ID) @ApiParam("Parcel ID") parcelId: Long
+    ): OrderService.Order.Parcel?
+
+    // Proposal
+    @GET
+    @Path("/webstatus")
+    @ApiOperation(value = "Get web status (public)")
+    fun getWebStatus(
+            @PathParam(PARCEL_WEB_REF) @ApiParam(value = "Search reference (eg. parcel-no, customer-reference)", required = true) searchRef: String,
+            @PathParam(CONSIGNEE_ZIPCODE) @ApiParam(value = "Zip code of consignee. If given, more information are provided.", required = false) zipCode: String?
+    ): List<ParcelWebStatus>
+
+    @GET
+    @Path("/{$PARCEL_ID}/status")
     @ApiOperation(value = "Get status", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getStatus(
-            @PathParam(SCANCODE) @ApiParam(value = "Scancode") scanCode: String
+            @PathParam(PARCEL_ID) @ApiParam(value = "Unique Parcel Identifier") scanCode: String
     ): List<ParcelStatus>
 
-
+    @GET
+    @Path("/{$PARCEL_ID}/label")
+    @ApiOperation(value = "Get label", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getLabel(
+            @PathParam(PARCEL_ID) @ApiParam(value = "Unique Parcel Identifier") parcelId: Long
+    ): Response
 }
 

@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { Router } from '@angular/router';
+import { takeUntil } from 'rxjs/operators';
 
 import { MenuItem, SelectItem } from 'primeng/api';
 
@@ -9,7 +11,6 @@ import { AbstractTranslateComponent } from 'app/core/translate/abstract-translat
 import { environment } from '../../../environments/environment';
 import { AuthenticationService } from '../../core/auth/authentication.service';
 import { Station } from '../../core/auth/station.model';
-import { Router } from '@angular/router';
 import { BagscanGuard } from '../../core/auth/bagscan.guard';
 import { ElectronService } from '../../core/electron/electron.service';
 import { MsgService } from '../../shared/msg/msg.service';
@@ -41,6 +42,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
 
   items: MenuItem[];
   myEmail: string;
+  allowedStations: number[];
 
   debitorStations: SelectItem[];
   activeStation: Station;
@@ -74,21 +76,27 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
     }
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
     this.myEmail = currUser.user.email;
+    this.allowedStations = currUser.user.allowedStations;
 
     this.auth.debitorStations$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( debitorStations: Station[] ) => {
-        this.debitorStations = [];
-        if (debitorStations) {
-          debitorStations.forEach( ( station: Station ) => {
-            this.debitorStations.push( { label: station.stationNo.toString(), value: station } );
-          } );
-        }
+        this.debitorStations = !debitorStations
+          ? []
+          : debitorStations
+            .filter( ( station: Station ) => this.allowedStations.indexOf( station.stationNo ) >= 0 )
+            .map( ( station: Station ) => {
+              return { label: station.stationNo.toString(), value: station };
+            } );
         this.cd.markForCheck();
       } );
 
     this.auth.activeStation$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( activeStation: Station ) => {
         this.activeStation = activeStation;
       } );
@@ -102,6 +110,8 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
   }
 
   private createItems(): MenuItem[] {
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+    this.allowedStations = currUser.user.allowedStations;
     const closeMenu = () => {
       if (this.document && this.document.body) {
         this.renderer.removeClass( this.document.body, 'isOpenMenu' );
@@ -113,57 +123,48 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
 
     items.push( {
       label: this.translate.instant( 'home' ),
-      icon: '',
       routerLink: 'home',
       command: closeMenu
     } );
+    if (this.allowedStations.length > 0) {
+      if (this.roleGuard.isDriver() || this.roleGuard.isPoweruser() || this.roleGuard.isUser()) {
+        items.push( {
+          label: this.translate.instant( 'dispo' ),
+          items: [
+            {
+              label: this.translate.instant( 'tour' ),
+              routerLink: 'tour',
+              command: closeMenu
+            }
+          ]
+        } );
+      }
 
-    if (this.roleGuard.isDriver() || this.roleGuard.isPoweruser() || this.roleGuard.isUser()) {
-      items.push( {
-        label: this.translate.instant( 'dispo' ),
-        items: [
-          {
-            label: this.translate.instant( 'tour' ),
-            icon: '',
-            routerLink: 'tour',
-            command: closeMenu
-          }
-        ]
-      } );
+      if (this.roleGuard.isPoweruser() || this.roleGuard.isUser()) {
+        items.push( {
+          label: this.translate.instant( 'management' ),
+          items: [
+            {
+              label: this.translate.instant( 'co-worker' ),
+              routerLink: 'user',
+              command: closeMenu
+            }
+          ]
+        } );
+      }
     }
-
-    if (this.roleGuard.isPoweruser() || this.roleGuard.isUser()) {
-      items.push( {
-        label: this.translate.instant( 'management' ),
-        items: [
-          {
-            label: this.translate.instant( 'co-worker' ),
-            icon: '',
-            routerLink: 'user',
-            command: closeMenu
-          }
-        ]
-      } );
-    }
-
     items.push( {
       label: this.translate.instant( 'logout' ),
-      icon: '',
       routerLink: '/logout',
       command: closeMenu
     } );
-
-    // items.push( {
-    //   label: this.translate.instant( 'stationloading' ),
-    //   icon: '',
-    //   routerLink: '/dashboard/stationloading/loadinglistscan',
-    //   command: closeMenu
-    // } );
 
     return items;
   }
 
   private createItemsLeo1(): MenuItem[] {
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+    this.allowedStations = currUser.user.allowedStations;
     const closeMenu = () => {
       if (this.document && this.document.body) {
         this.renderer.removeClass( this.document.body, 'isOpenMenu' );
@@ -175,264 +176,240 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
 
     items.push( {
       label: this.translate.instant( 'home' ),
-      icon: '',
       routerLink: 'home',
       command: closeMenu
     } );
 
-    items.push( {
-      label: this.translate.instant( 'dailybusiness' ),
-      items: [
-        {
-          label: this.translate.instant( 'record-order' ),
-          icon: '',
-          routerLink: '/dashboard/order/orderform',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'lists' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'dispo' ),
-          icon: '',
-          routerLink: '/dashboard/pickupdispo',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'shipmentcockpit' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        }
-      ]
-    } );
+    if (this.allowedStations.length > 0) {
+      items.push( {
+        label: this.translate.instant( 'orders' ),
+        items: [
+          {
+            label: this.translate.instant( 'recording' ),
+            routerLink: 'order/orderform',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'action dispatch' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'standing orders' ),
+            routerLink: '/',
+            command: closeMenu
+          }
+        ]
+      } );
 
-    items.push( {
-      label: this.translate.instant( 'scans' ),
-      items: [
-        {
-          label: this.translate.instant( 'importscan' ),
-          icon: '',
-          routerLink: '/dashboard/importscan/importscanquick',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'i-point' ),
-          icon: '',
-          routerLink: '/dashboard/ipointscan/ipointscanlist',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'loadingscan' ),
-          icon: '',
-          routerLink: '/dashboard/export/loadinglistscan',
-          command: closeMenu
-        },
-      ]
-    } );
+      items.push( {
+        label: this.translate.instant( 'disposition' ),
+        items: [
+          {
+            label: this.translate.instant( 'inbound disposition' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'tour planning' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'tour optimization' ),
+            routerLink: 'touroptimizing/officedispo',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'outbound disposition' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'reprint stoplist' ),
+            routerLink: '/',
+            command: closeMenu
+          }
+        ]
+      } );
 
-    items.push( {
-      label: this.translate.instant( 'importdispo' ),
-      items: [
-        {
-          label: this.translate.instant( 'tourplanning' ),
-          icon: '',
-          routerLink: '/dashboard/tourzipmapping',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'touroptimizing' ),
-          icon: '',
-          routerLink: '/dashboard/touroptimizing/officedispo',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'deliverydispo' ),
-          icon: '',
-          routerLink: '/dashboard/deliverydispo',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'deliveryscan' ),
-          icon: '',
-          routerLink: '/dashboard/deliveryscan',
-          command: closeMenu
-        },
-      ]
-    } );
+      items.push( {
+        label: this.translate.instant( 'scanning' ),
+        items: [
+          {
+            label: this.translate.instant( 'inbound scan' ),
+            routerLink: 'importscan/importscanquick',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'outbound scan' ),
+            routerLink: 'export/loadinglistscan',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'depot entry' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'stoplist scan' ),
+            routerLink: '/',
+            command: closeMenu
+          }
+        ]
+      } );
 
-    items.push( {
-      label: this.translate.instant( 'shipmentinfo' ),
-      items: [
-        {
-          label: this.translate.instant( 'shipmentstatus' ),
-          icon: '',
-          routerLink: '/dashboard/stateofshipments',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'datafilter' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'record-delivery-data' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'statistics' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'pod-reprints' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-      ]
-    } );
+      items.push( {
+        label: this.translate.instant( 'track & trace' ),
+        items: [
+          {
+            label: this.translate.instant( 'shipment information' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'vehicle tracing' ),
+            routerLink: 'tour',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'stoplist backinput' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'shipment cockpit' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'line haul' ),
+            routerLink: '/',
+            command: closeMenu
+          }
+        ]
+      } );
 
-    items.push( {
-      label: this.translate.instant( 'client-management' ),
-      items: [
-        {
-          label: this.translate.instant( 'client-data' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'addresspool' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'periodic-shipments' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'promotion-shipments' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-      ]
-    } );
+      items.push( {
+        label: this.translate.instant( 'administration' ),
+        items: [
+          {
+            label: this.translate.instant( 'customer administration' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'user administration' ),
+            routerLink: 'user',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'addresspool' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'mobileX' ),
+            routerLink: '/',
+            command: closeMenu
+          }
+        ]
+      } );
 
-    if (this.roleGuard.isPoweruser() || this.roleGuard.isUser()) {
-      const officeManagementItems = [
+      const settingsItems = [
         {
-          label: this.translate.instant( 'co-worker' ),
-          icon: '',
-          routerLink: 'user',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'favourites' ),
-          icon: '',
+          label: this.translate.instant( 'startpage' ),
           routerLink: 'favourites',
+          command: closeMenu
+        },
+        {
+          label: this.translate.instant( 'communication' ),
+          routerLink: '/',
           command: closeMenu
         } ];
       if (this.electronService.isElectron()) {
-        officeManagementItems.push( {
-          label: this.translate.instant( 'printer-setup' ),
-          icon: '',
-          routerLink: 'printers',
+        settingsItems.push( {
+          label: this.translate.instant( 'printer administration' ),
+          routerLink: '/',
           command: closeMenu
         } );
       }
-      officeManagementItems.push( {
-        label: this.translate.instant( 'password-management' ),
-        icon: '',
-        routerLink: '',
+      settingsItems.push( {
+        label: this.translate.instant( 'comports' ),
+        routerLink: '/',
+        command: closeMenu
+      } );
+      settingsItems.push( {
+        label: this.translate.instant( 'interfaces' ),
+        routerLink: '/',
+        command: closeMenu
+      } );
+      settingsItems.push( {
+        label: this.translate.instant( 'change password' ),
+        routerLink: 'changepassword',
         command: closeMenu
       } );
       items.push( {
-        label: this.translate.instant( 'office-management' ),
-        items: officeManagementItems
+        label: this.translate.instant( 'settings' ),
+        items: settingsItems
       } );
-    }
-
-    items.push( {
-      label: this.translate.instant( 'communication' ),
-      items: [
-        {
-          label: this.translate.instant( 'notification' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        }
-      ]
-    } );
-
-    items.push( {
-      label: this.translate.instant( 'accessoires' ),
-      items: [
-        {
-          label: this.translate.instant( 'stationlist' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'townsearch' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'dataexport' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'documents' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        }
-      ]
-    } );
-
-    if (this.roleGuard.isDriver() || this.roleGuard.isPoweruser() || this.roleGuard.isUser()) {
       items.push( {
-        label: this.translate.instant( 'tracking' ),
+        label: this.translate.instant( 'addons' ),
         items: [
           {
-            label: this.translate.instant( 'tour' ),
-            icon: '',
-            routerLink: 'tour',
+            label: this.translate.instant( 'routing' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'stationfinder' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'datafilter' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'print lists' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'search location' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'export/import data' ),
+            routerLink: '/',
+            command: closeMenu
+          },
+          {
+            label: this.translate.instant( 'request data' ),
+            routerLink: '/',
+            command: closeMenu
+          }
+        ]
+      } );
+
+      items.push( {
+        label: this.translate.instant( 'statistics' ),
+        items: [
+          {
+            label: this.translate.instant( 'quality' ),
+            routerLink: '/',
             command: closeMenu
           }
         ]
       } );
     }
-
     items.push( {
       label: this.translate.instant( 'logout' ),
-      icon: '',
       routerLink: '/logout',
       command: closeMenu
     } );
-
-    // items.push( {
-    //   label: this.translate.instant( 'stationloading' ),
-    //   icon: '',
-    //   routerLink: '/dashboard/stationloading/loadinglistscan',
-    //   command: closeMenu
-    // } );
 
     return items;
   }

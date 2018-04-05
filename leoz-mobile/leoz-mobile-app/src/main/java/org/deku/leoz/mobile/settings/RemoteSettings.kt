@@ -25,7 +25,8 @@ class RemoteSettings(private val map: sx.ConfigurationMap) {
 
     @sx.ConfigurationMapPath("remote.ntp")
     inner class Ntp {
-        val host: String by map.value("time.gls-group.eu")
+        val host: String by map.value("time.google.com")
+        val hostInternal: String by map.value("time")
     }
 
     val http = Http()

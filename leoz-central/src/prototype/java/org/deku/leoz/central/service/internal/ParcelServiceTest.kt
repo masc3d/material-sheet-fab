@@ -32,26 +32,18 @@ import java.nio.file.StandardCopyOption
         ParcelServiceConfiguration::class,
         ParcelServiceConfiguration.Settings::class,
         org.deku.leoz.central.service.internal.ParcelServiceV1::class,
-        org.deku.leoz.central.service.internal.UserService::class,
-        org.deku.leoz.central.service.internal.BagService::class,
-        org.deku.leoz.node.service.pub.RoutingService::class,
-        org.deku.leoz.node.service.internal.StationService::class,
-        kotlin.String::class,
-        org.slf4j.LoggerFactory::class,
-        org.deku.leoz.Storage::class,
-        org.deku.leoz.node.Storage::class,
         org.deku.leoz.central.service.internal.ParcelProcessingService::class,
-        org.deku.leoz.central.service.internal.ConfigurationService::class,
+        org.deku.leoz.node.service.pub.DocumentService::class,
         RouteRepository::class,
-        CountryRepository::class,
-        CountryRepositoryImpl::class
+        CountryRepository::class
+
 ))
 class ParcelServiceTest {
     @Inject
     lateinit var parcelService: org.deku.leoz.central.service.internal.ParcelServiceV1
 
-    @Inject
-    private lateinit var storage: Storage
+//    @Inject
+//    private lateinit var storage: Storage
 
 
     @Test

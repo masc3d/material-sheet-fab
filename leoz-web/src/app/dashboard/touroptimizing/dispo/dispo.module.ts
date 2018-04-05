@@ -8,13 +8,13 @@ import { ButtonModule } from 'primeng/button';
 import { DataScrollerModule } from 'primeng/datascroller';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { TabViewModule } from 'primeng/tabview';
+import { TableModule } from 'primeng/table';
 import { ToggleButtonModule } from 'primeng/primeng';
 import { DialogModule } from 'primeng/dialog';
 
 import { SharedModule } from '../../../shared/shared.module';
 import { TouroptimizingService } from '../touroptimizing.service';
 import { DispoComponent } from './dispo.component';
-import { TourlistitemComponent } from './tourlistitem.component';
 
 @NgModule( {
   imports: [
@@ -28,15 +28,14 @@ import { TourlistitemComponent } from './tourlistitem.component';
     DataScrollerModule,
     TabViewModule,
     TabMenuModule,
+    TableModule,
     DialogModule
   ],
   declarations: [
     DispoComponent,
-    TourlistitemComponent
   ],
   exports: [
     DispoComponent,
-    TourlistitemComponent
   ],
   providers: [
     TouroptimizingService

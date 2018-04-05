@@ -34,4 +34,7 @@ object Headers {
 
     val parcels: Drawable
         get() = createHeaderDrawable(R.mipmap.img_parcels_1, 0.3)
+
+    val delivery: Drawable
+        get() = createHeaderDrawable(R.mipmap.img_deliver_1, 0.5)
 }

@@ -3,7 +3,7 @@ logging:
    level:
       ROOT: INFO
       org.deku.leoz: DEBUG
-      sx.mq: DEBUG
+      sx: DEBUG
 
 # User settings
 user:
@@ -25,6 +25,7 @@ remote:
    # NTP Server
    ntp:
       host: 'time.google.com'
+      host-internal: 'time.gls-group.eu'
 
 # Database settings
 database:

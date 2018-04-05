@@ -6,6 +6,6 @@ import org.deku.leoz.mobile.ui.core.Dialog
 /**
  * Created by phpr on 24.06.2017.
  */
-class PrivacyDisclaimerDialog : Dialog(dialogLayoutId = R.layout.main_content) {
+class PrivacyDisclaimerDialog : Dialog(dialogLayoutId = R.layout.dialog_privacy_disclaimer) {
 
 }

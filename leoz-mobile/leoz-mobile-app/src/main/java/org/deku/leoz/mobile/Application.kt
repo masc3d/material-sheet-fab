@@ -2,10 +2,12 @@ package org.deku.leoz.mobile
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.multidex.MultiDexApplication
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatDelegate
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.android.androidModule
@@ -16,9 +18,11 @@ import com.github.salomonbrys.kodein.erased.singleton
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
+import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.service.LocationServiceGMS
+import org.deku.leoz.mobile.settings.LocationSettings
 import org.deku.leoz.mobile.ui.core.BaseActivity
 import org.slf4j.LoggerFactory
 
@@ -31,6 +35,8 @@ open class Application : MultiDexApplication() {
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
+    private val locationSettings: LocationSettings by Kodein.global.lazy.instance()
+    private val login: Login by Kodein.global.lazy.instance()
     //private val locationProviderChangedReceiver: LocationProviderChangedReceiver by Kodein.global.lazy.instance()
 
     internal val bundle = Bundle()
@@ -107,6 +113,15 @@ open class Application : MultiDexApplication() {
             eu.davidea.flexibleadapter.utils.Log.setLevel(
                     eu.davidea.flexibleadapter.utils.Log.Level.SUPPRESS)
         }
+
+        this.login.authenticatedUserProperty
+                .subscribe {
+                    if (it.value == null) {
+                        this.stopLocationServices()
+                    } else {
+                        this.startLocationSerivces()
+                    }
+                }
     }
 
     override fun onTerminate() {
@@ -168,6 +183,21 @@ open class Application : MultiDexApplication() {
     fun isServiceRunning(serviceClass: Class<*>): Boolean {
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         return manager.getRunningServices(Integer.MAX_VALUE).any { serviceClass.name == it.service.className }
+    }
+
+    fun startLocationSerivces() {
+        when {
+            (locationSettings.useGoogleLocationService && !this.isServiceRunning(LocationServiceGMS::class.java)) -> {
+                ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceGMS::class.java))
+            }
+
+            (!locationSettings.useGoogleLocationService && !this.isServiceRunning(LocationService::class.java)) -> {
+                ContextCompat.startForegroundService(this, Intent(applicationContext, LocationService::class.java))
+            }
+            else -> {
+                log.debug("LocationService already running.")
+            }
+        }
     }
 
     /**

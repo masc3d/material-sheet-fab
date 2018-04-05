@@ -129,24 +129,27 @@ abstract class BaseLocationService: Service() {
 
     override fun onCreate() {
         super.onCreate()
+        log.trace("ONCREATE")
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             gnssStatusCallback = object : GnssStatus.Callback() {
                 override fun onSatelliteStatusChanged(status: GnssStatus?) {
-                    locationServices.locationSettingsChangedEventProperty.onNext(Unit)
+                    locationServices.locationSettingsChangedEventSubject.onNext(Unit)
                 }
             }
         } else {
             @Suppress("DEPRECATION")
             gpsStatusListener = GpsStatus.Listener {
                 when (it) {
-                    GpsStatus.GPS_EVENT_STOPPED -> locationServices.locationSettingsChangedEventProperty.onNext(Unit)
+                    GpsStatus.GPS_EVENT_STOPPED -> locationServices.locationSettingsChangedEventSubject.onNext(Unit)
                 }
             }
         }
     }
 
     override fun onDestroy() {
+        log.trace("ONDESTROY")
+
         this.unregisterBroadcastReceiver()
         stopForeground(true)
 

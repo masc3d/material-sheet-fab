@@ -4,14 +4,19 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.support.annotation.RequiresApi
+import android.telephony.TelephonyManager
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import org.slf4j.LoggerFactory
 import sx.text.toHexString
 import java.util.*
+
+
+
 
 /**
  * Generic android device class, exposing device specific information like ids and serials
@@ -166,6 +171,26 @@ open class Device(private val context: Context) {
                 }
             }
         } catch (e: SecurityException) {
+            false
+        }
+    }
+
+    val isM2MConnected: Boolean by lazy {
+        val telephonyManager = this.context.getTelephonyManager()
+        try {
+            if (telephonyManager.simState == TelephonyManager.SIM_STATE_READY) {
+                log.trace("SimOperator [${telephonyManager.simOperator}] SimOperatorName [${telephonyManager.simOperatorName}]")
+                val simMcc = telephonyManager.simOperator.substring(0, 3)
+                val simMnc = telephonyManager.simOperator.substring(3)
+                log.debug("SIM-MCC [$simMcc] SIM-MNC [$simMnc]")
+                // RETURN
+                (simMcc == "901" && simMnc == "28")
+            } else {
+                false
+            }
+
+        } catch (e: Exception) {
+            log.warn("SimOperator information could not be determined", e)
             false
         }
     }

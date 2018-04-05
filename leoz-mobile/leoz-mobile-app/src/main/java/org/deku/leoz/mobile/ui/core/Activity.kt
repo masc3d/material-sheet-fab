@@ -81,6 +81,7 @@ import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.view.setIconTint
 import sx.android.view.setIconTintRes
 import sx.log.slf4j.trace
@@ -626,6 +627,15 @@ abstract class Activity : BaseActivity(),
                 // (this.application as Application).stopLocationServices()
                 this.login.logout()
             }
+
+            R.id.nav_data_policy -> {
+                MaterialDialog.Builder(this).also {
+                    it.neutralText(R.string.dismiss)
+                    it.icon(ContextCompat.getDrawable(this.applicationContext, R.drawable.ic_search_data)!!)
+                    it.title(R.string.data_protection)
+                    it.content(R.string.privacy_disclaimer_text)
+                }.show()
+            }
         }
 
         this.uxDrawerLayout.closeDrawer(GravityCompat.START)
@@ -803,8 +813,7 @@ abstract class Activity : BaseActivity(),
                                 }
                     }
                 }
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribeBy(
                         onNext = {
                             it.value?.also { event ->
@@ -832,8 +841,10 @@ abstract class Activity : BaseActivity(),
                     val user = it.value
                     when {
                         user != null -> {
-                            this.uxNavView.menu
-                                    .findItem(R.id.nav_logout).isVisible = true
+                            this.uxNavView.menu.also {
+                                it.findItem(R.id.nav_logout).isVisible = true
+                                it.findItem(R.id.nav_camera).isVisible = true
+                            }
 
                             // Update navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.VISIBLE
@@ -841,8 +852,10 @@ abstract class Activity : BaseActivity(),
                             navHeaderView.uxStationId.text = "-_-"
                         }
                         else -> {
-                            this.uxNavView.menu
-                                    .findItem(R.id.nav_logout).isVisible = false
+                            this.uxNavView.menu.also {
+                                it.findItem(R.id.nav_logout).isVisible = false
+                                it.findItem(R.id.nav_camera).isVisible = false
+                            }
 
                             // Hide navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.GONE
@@ -862,8 +875,7 @@ abstract class Activity : BaseActivity(),
         //region AIDC
         this.aidcReader.enabledProperty
                 .distinctUntilChanged()
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe { enabled ->
                     log.debug("AIDC reader ${if (enabled.value) "enabled" else "disabled"}")
                     val aidcActionItem = this.uxActionOverlay.items
@@ -892,8 +904,7 @@ abstract class Activity : BaseActivity(),
         this.aidcReader.bindActivity(this)
 
         this.cameraReader.readEvent
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
                     this.feedback.acknowledge()
 
@@ -904,8 +915,7 @@ abstract class Activity : BaseActivity(),
                 }
 
         this.locationServices.locationSettingsChangedEvent
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
                     log.trace("Location settings change detected")
                     checkLocationSettings()
@@ -915,8 +925,7 @@ abstract class Activity : BaseActivity(),
                 .interval(5, TimeUnit.MINUTES)
                 .map { this.ntpTime.deviation.toOptional() }
                 .filterSome()
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe { deviation ->
                     log.trace("TrueTime observable emit value [$deviation]")
                     if (deviation.abs() > Duration.ofSeconds(150)) {

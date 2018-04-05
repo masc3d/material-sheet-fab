@@ -3,7 +3,9 @@ package org.deku.leoz.service.internal
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserPreferenceKey
+import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
+import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -28,12 +30,15 @@ interface UserService {
         const val DEBITOR_NR = "debitor-nr"
         //const val DEBITOR_NO = "debitor-no"
         //const val Rest.AUTH_APIKEY_NAME = "x-api-key"
+        const val OLD_PASSWORD="old-password"
+        const val NEW_PASSWORD="new-password"
     }
 
     /**
      * Created by 27694066 on 25.04.2017.
      */
     @ApiModel(description = "User Model")
+    @Serializable(0x4b4e300fc8dec6)
     data class User(
             @get:ApiModelProperty(value = "User id")
             var id: Int? = null,
@@ -80,6 +85,7 @@ interface UserService {
             //@get:ApiModelProperty(example = "[\"220\",\"221\"]", required = false, value = "allowed stations")
             //@get:ApiModelProperty(example = ["220","221"], required = false, value = "allowed stations")
             //@get:ApiModelProperty(example = "220,221", dataType = "Array<String>", required = false, value = "allowed stations")
+            //@get:ApiModelProperty(example = "[220,221]", required = false, value = "allowed stations")
             @get:ApiModelProperty(example = "[220,221]", required = false, value = "allowed stations")
             var allowedStations: List<Int>? = null,
 
@@ -100,6 +106,19 @@ interface UserService {
         enum class Type(val value: String) {
             WEB_UI("WEB_UI_PREFERENCE"),
             MOBILE("MOBILE_PREFERENCE")
+        }
+    }
+
+    @Serializable(0x226a3e74f8e3)
+    data class DataProtectionActivity(
+            val scope: DataProtectionActivity.Scope,
+            val userId: Int,
+            val ts_activity: Date,
+            val confirmed: Boolean,
+            val policyVersion: Int
+    ) {
+        enum class Scope {
+            MOBILE
         }
     }
 
@@ -163,8 +182,9 @@ interface UserService {
     @Path("/{$USER_ID}/changePassword")
     @ApiOperation(value = "Change users password")
     fun changePassword(
-            @ApiParam(value = "old_password") oldPassword: String,
-            @ApiParam(value = "new_password") newPassword: String
+            @PathParam(value = USER_ID) @ApiParam(value = "Users identifier", required = true) userId: Int,
+            @QueryParam(value = OLD_PASSWORD) @ApiParam(value = "old_password", required = true) oldPassword: String,
+            @QueryParam(value = NEW_PASSWORD) @ApiParam(value = "new_password", required = true) newPassword: String
     )
 
     @GET
@@ -178,4 +198,9 @@ interface UserService {
     @Path("/auth/configuration")
     @ApiOperation(value = "Get user configuration for current user")
     fun getCurrentUserConfiguration(): String
+
+    @GET
+    @Path("/id")
+    @ApiOperation(value = "Get user id(s) by debitor id")
+    fun getIdsByDebitor(@QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id",required = true) debitorId: Int): List<Int>
 }

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 import { ipcRenderer, PrinterInfo } from 'electron';
 import * as fs from 'fs';
-import { Subject } from 'rxjs/Subject';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class ElectronService {
@@ -12,7 +12,7 @@ export class ElectronService {
   public fs: typeof fs;
 
   private printersSubject = new BehaviorSubject<PrinterInfo[]>([]);
-  public printers$ = this.printersSubject.asObservable().distinctUntilChanged();
+  public printers$ = this.printersSubject.asObservable().pipe(distinctUntilChanged());
 
   constructor() {
     if (this.isElectron()) {

@@ -18,7 +18,7 @@ import javax.inject.Inject
 @Lazy(false)
 class MqServiceConfiguration {
     @Inject
-    private lateinit var messageListenerConfiguration: MqListenerConfiguration
+    private lateinit var mqListenerConfiguration: MqListenerConfiguration
 
     @Inject
     private lateinit var logService: LogService
@@ -64,7 +64,7 @@ class MqServiceConfiguration {
     @PostConstruct
     fun onInitialize() {
         // Register message handlers
-        this.messageListenerConfiguration.apply {
+        this.mqListenerConfiguration.apply {
             centralQueueDelegates.forEach {
                 centralQueueListener.addDelegate(it)
             }

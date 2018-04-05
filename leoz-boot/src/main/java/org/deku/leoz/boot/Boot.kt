@@ -223,7 +223,6 @@ class Boot {
         val discoveryTask: Observable<Any>
         // Discovery task
         if (!settings.rsyncHost.isNullOrEmpty() && !settings.httpHost.isNullOrEmpty()) {
-            log.info("Skipping discovery")
             discoveryTask = Observable.empty()
         } else {
             discoveryTask = (if (settings.discover)

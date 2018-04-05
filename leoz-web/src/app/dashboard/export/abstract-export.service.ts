@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
 import { SelectItem } from 'primeng/api';
 
@@ -15,7 +16,6 @@ import { Shipment } from '../../core/models/shipment.model';
 import { sumAndRound } from '../../core/math/sumAndRound';
 import { WorkingdateService } from '../../core/workingdate.service';
 import { InetConnectionService } from '../../core/inet-connection.service';
-import { User } from '../user/user.model';
 
 @Injectable()
 export abstract class AbstractExportService {
@@ -43,10 +43,10 @@ export abstract class AbstractExportService {
     loadlistNo: null,
     packages: []
   } );
-  public activeLoadinglist$ = this.activeLoadinglistSubject.asObservable().distinctUntilChanged();
+  public activeLoadinglist$ = this.activeLoadinglistSubject.asObservable().pipe(distinctUntilChanged());
 
   public allLoadlistsSubject = new BehaviorSubject<Exportlist[]>( [] );
-  public allLoadlists$ = this.allLoadlistsSubject.asObservable().distinctUntilChanged();
+  public allLoadlists$ = this.allLoadlistsSubject.asObservable().pipe(distinctUntilChanged());
 
   public activeLoadinglistTmp: Exportlist;
 
@@ -152,9 +152,11 @@ export abstract class AbstractExportService {
     return this.http.patch( this.scanUrl, null, {
       observe: 'response',
       params: params
-    } ).map( ( response: HttpResponse<any> ) => {
-      return response;
-    } );
+    } ).pipe(
+      map( ( response: HttpResponse<any> ) => {
+        return response;
+      } )
+    );
   }
 
   setActiveLoadinglist( selected: number, label: string = null ) {

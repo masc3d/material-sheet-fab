@@ -18,7 +18,6 @@ class DiscoveryConfiguration {
                         bundleType = BundleType.LEOZ_BOOT,
                         passive = true
                 )
-                service.start()
                 service
             }
         }

@@ -208,35 +208,19 @@
 
     <string name="please_wait">Please wait</string>
 
-    <string name="privacy_disclaimer_text" translatable="false">
-        Datenschutzerklärung
-
-Die Nutzung unserer Seite ist ohne eine Angabe von personenbezogenen Daten möglich. Für die Nutzung einzelner Services unserer Seite können sich hierfür abweichende Regelungen ergeben, die in diesem Falle nachstehend gesondert erläutert werden. Ihre personenbezogenen Daten (z.B. Name, Anschrift, E-Mail, Telefonnummer, u.ä.) werden von uns nur gemäß den Bestimmungen des deutschen Datenschutzrechts verarbeitet. Daten sind dann personenbezogen, wenn sie eindeutig einer bestimmten natürlichen Person zugeordnet werden können. Die rechtlichen Grundlagen des Datenschutzes finden Sie im Bundesdatenschutzgesetz (BDSG) und dem Telemediengesetz (TMG). Nachstehende Regelungen informieren Sie insoweit über die Art, den Umfang und Zweck der Erhebung, die Nutzung und die Verarbeitung von personenbezogenen Daten durch den Anbieter
-
-[Name und Anschrift des Betreibers]
-
-[Telefonnummer des Betreibers]
-
-[E-Mail des Betreibers]
-
-Wir weisen darauf hin, dass die internetbasierte Datenübertragung Sicherheitslücken aufweist, ein lückenloser Schutz vor Zugriffen durch Dritte somit unmöglich ist.
-
-Serverdaten
-
-Aus technischen Gründen werden u.a. folgende Daten, die Ihr Internet-Browser an uns bzw. an unseren Webspace-Provider übermittelt, erfasst (sogenannte Serverlogfiles):
-
-- Browsertyp und -version
-- verwendetes Betriebssystem
-- Webseite, von der aus Sie uns besuchen (Referrer URL)
-- Webseite, die Sie besuchen
-- Datum und Uhrzeit Ihres Zugriffs
-- Ihre Internet Protokoll (IP)-Adresse.
-
-Diese anonymen Daten werden getrennt von Ihren eventuell angegebenen personenbezogenen Daten gespeichert und lassen so keine Rückschlüsse auf eine bestimmte Person zu. Sie werden zu statistischen Zwecken ausgewertet, um unseren Internetauftritt und unsere Angebote optimieren zu können.
-
-Kontaktmöglichkeit
-
-Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder über ein Kontaktformular in Verbindung zu treten. In diesem Fall werden die vom Nutzer gemachten Angaben zum Zwecke der Bearbeitung seiner Kontaktaufnahme gespeichert. Eine Weitergabe an Dritte erfolgt nicht. Ein Abgleich der so erhobenen Daten mit Daten, die möglicherweise durch andere Komponenten unserer Seite erhoben werden, erfolgt ebenfalls nicht.
+    <string name="privacy_disclaimer_text">
+        mobileX ist eine Software Applikation (im Folgenden „mobileX“) der DER KURIER GmbH &amp; Co. KG, Dörrwiese 2, 36286 Neuenstein (im Folgenden „DER KURIER“).\n
+        DER KURIER respektiert Ihr Recht auf Datenschutz und richtet sich nach den geltenden Gesetzen und Regelungen zum Schutz persönlicher Daten. Der Zweck dieser Datenschutzerklärung besteht darin, Sie darüber zu informieren, welche Daten DER KURIER mit mobileX erhebt und wie diese erfassten persönlichen Daten verwendet werden. Für die ordnungsgemäße Funktion von mobileX verwendet DER KURIER Standortinformationen ihres Gerätes. Hierfür ist es erforderlich, dass die Ortungsfunktion Ihres Geräts eingeschaltet ist.
+        mobileX sendet die von Ihnen eingegebenen Daten (u.a. Scans, Fotodokumentation, Standortdaten, Informationen zur Geräteidentifizierung) an DER KURIER. Zusätzlich kann der Ihnen zugeordnete DER KURIER Systempartner die erfassten Daten, sowie den Standort und die Route bis zu 90 Tage zu Dispositions- und Optimierungszwecken einsehen. Diese Informationen können auch Sie als mobileX Nutzer mit ihrem persönlichen Login über command.derkurier.de jederzeit einsehen.
+        Durch Ihre Genehmigung ermöglichen Sie mobileX die Verwendung Ihrer Informationen und Aktivierung der nachfolgend genannten Funktionen:\n
+        \t-	Kamera\n
+        \t-	Speicher\n
+        \t-	Standort\n
+        \t-	Telefon\n
+        \t-	Datenverbindung\n
+        Alle Daten werden verschlüsselt über das Internet gesendet. Je nach Gerät wird die eigene Funk-Verbindung oder eine WLAN-Verbindung verwendet. Hierbei können je nach Vertrag bei Ihrem Mobilfunkanbieter Kosten entstehen. Wenn keine Internetverbindung verfügbar ist, werden die Informationen für einen späteren Upload sicher auf Ihrem Gerät gespeichert.
+        Darüber hinaus benötigen wir Ihre Genehmigung zur Erhebung und Verwendung Ihrer Daten. Wenn Sie uns diese Genehmigung nicht erteilen, werden keine Informationen an DER KURIER gesendet. Sie haben auch jederzeit die Möglichkeit Ihre erteilte Zustimmung im Nachhinein zu widerrufen. In diesem Fall kann mobileX nicht mehr verwendet werden.
+        Zusätzlich verwenden wir die Daten zur technischen Diagnose, um Betrug und Missbrauch zu erkennen und um die Qualität unserer Dienste zu verbessern. Diese Daten werden nur zu diesem Zweck und für einen begrenzten Zeitraum erfasst, nach welchem sie automatisch gelöscht werden. DER KURIER bemüht sich intensiv darum, das ihre Daten vor unbefugtem Zugriff auf oder vor unbefugter Veränderung, Weitergabe oder Zerstörung von Daten zu schützen. DER KURIER wird zu keinem Zeitpunkt die erhobenen Informationen für Dritte freigeben und sie nicht für andere Zwecke, sofern dies nicht durch rechtliche Verfahren ausdrücklich und in rechtmäßiger Weise angeordnet wird, verwenden.
     </string>
 
     <string name="proceed">Proceed</string>
@@ -361,4 +345,6 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="warehouse">Warehouse</string>
 
     <string name="yes_start_tour">Yes, start tour</string>
+    <string name="data_protection_policy">Data protection policy</string>
+    <string name="data_protection">Data protecion</string>
 </resources>

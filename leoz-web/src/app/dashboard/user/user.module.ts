@@ -7,6 +7,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
 import { FieldsetModule } from 'primeng/fieldset';
 import { InputTextModule } from 'primeng/inputtext';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 import { SharedModule } from '../../shared/shared.module';
 import { UserRoutingModule } from './user-routing.module';
@@ -15,7 +16,6 @@ import { UserComponent } from './user.component';
 import { UserFormComponent } from './user-form/user-form.component';
 import { UserListComponent } from './user-list/user-list.component';
 import { UserService } from './user.service';
-import { UserFilterPipe } from './user.pipe';
 
 @NgModule( {
   imports: [
@@ -27,13 +27,13 @@ import { UserFilterPipe } from './user.pipe';
     FieldsetModule,
     CheckboxModule,
     UserRoutingModule,
-    CalendarModule
+    CalendarModule,
+    MultiSelectModule
   ],
   declarations: [
     UserComponent,
     UserFormComponent,
-    UserListComponent,
-    UserFilterPipe
+    UserListComponent
   ],
   exports: [ UserComponent ],
   providers: [ UserService ]

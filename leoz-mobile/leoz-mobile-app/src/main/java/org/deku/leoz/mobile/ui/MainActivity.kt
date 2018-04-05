@@ -23,6 +23,7 @@ import org.deku.leoz.mobile.ui.core.Activity
 import org.deku.leoz.mobile.ui.process.LoginFragment
 import org.deku.leoz.mobile.ui.process.MainScreen
 import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
 
 class MainActivity
     :
@@ -112,8 +113,7 @@ class MainActivity
                             .map { update }
 
                 }
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
                     it.apk.install(this)
                 }
@@ -142,6 +142,19 @@ class MainActivity
                 .duration(Snackbar.LENGTH_SHORT)
                 .build()
                 .show()
+    }
+
+    override fun onPrivacyRejected() {
+        feedback.error()
+
+        MaterialDialog.Builder(this).also {
+            it.title("Data policy rejected")
+            it.content("This service / app can not be used without accepting the data protection policy. The app will close now.")
+            it.neutralText(R.string.dismiss)
+            it.onNeutral { dialog, which ->
+                this.app.terminate()
+            }
+        }.show()
     }
     //endregion
 }

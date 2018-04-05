@@ -23,6 +23,7 @@ import sx.rx.retryWithExponentialBackoff
 import sx.rx.toHotCache
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.properties.Delegates
@@ -132,7 +133,7 @@ class MqttDispatcher(
             when (it) {
                 is MqttRxClient.Status.ConnectionLost -> {
                     log.warn("Connection lost [${it.cause?.message ?: "-"}]")
-                    this@MqttDispatcher.connect()
+                    this.reconnect()
                 }
 
                 is MqttRxClient.Status.ConnectionComplete -> {
@@ -209,7 +210,7 @@ class MqttDispatcher(
                             .doOnNext {
                                 log.debug { "Topic triggered [${it}|" }
                             }
-                            .concatMap { trigger ->
+                            .concatMap { _ ->
                                 val sw = Stopwatch.createUnstarted()
                                 var count: Int = 0
 
@@ -225,7 +226,7 @@ class MqttDispatcher(
                                         .publishToWire()
 
                                         .doOnComplete {
-                                            log.info { "Dequeued ${count} in [${sw}]" }
+                                            log.info { "Dequeued ${count} for [${topic}] in [${sw}]" }
                                         }
 
                                         // Subscribe on topic specific scheduler
@@ -242,6 +243,9 @@ class MqttDispatcher(
                                 }
 
                                 log.error("Dequeue encountered error [${message}]")
+
+                                // On dequeue errors, perform reconnect if applicable
+                                this.reconnect()
                             }
                 }
                 .doFinally {
@@ -322,29 +326,44 @@ class MqttDispatcher(
      */
     override fun connect(): Completable {
         this.lock.withLock {
-            log.info("Starting connection cycle")
-            // RxClient observables are hot, thus need to defer in order to re-subscribe properly on retry
-            this.connectionSubscription = Completable
-                    .defer {
-                        log.info { "Attempting connection to ${this.client.uri}" }
-                        this.client.connect()
-                    }
-                    .onErrorComplete {
-                        when (it) {
-                        // Avoid retries when already connected
-                            is MqttException -> it.reasonCode == REASON_CODE_CLIENT_CONNECTED.toInt()
-                            else -> false
+            // Don't start another connection subscription if one is already active
+            if (this.connectionSubscription == null) {
+                log.info("Starting connection cycle")
+                // RxClient observables are hot, thus need to defer in order to re-subscribe properly on retry
+                this.connectionSubscription = Completable
+                        .defer {
+                            log.info { "Attempting connection to ${this.client.uri}" }
+                            this.client.connect()
                         }
-                    }
-                    .retryWithExponentialBackoff(
-                            initialDelay = Duration.ofSeconds(2),
-                            maximumDelay = Duration.ofMinutes(2),
-                            action = { retry, delay, error ->
-                                log.error("Connection failed. [${error.message}] Retry [${retry}] in ${delay}")
-                            })
-                    .subscribe()
-
+                        .onErrorComplete {
+                            when (it) {
+                            // Avoid retries when already connected
+                                is MqttException -> it.reasonCode == REASON_CODE_CLIENT_CONNECTED.toInt()
+                                else -> false
+                            }
+                        }
+                        .retryWithExponentialBackoff(
+                                initialDelay = Duration.ofSeconds(2),
+                                maximumDelay = Duration.ofMinutes(2),
+                                action = { retry, delay, error ->
+                                    log.error("Connection failed. [${error.message}] Retry [${retry}] in ${delay}")
+                                })
+                        .subscribe()
+            }
             return Completable.complete()
+        }
+    }
+
+    /**
+     * Reconnect (if connection subscription is active)
+     */
+    private fun reconnect() {
+        this.lock.withLock {
+            val hasConnectionSubscription = this.connectionSubscription != null
+
+            this.disconnect(forcibly = true)
+            if (hasConnectionSubscription)
+                this.connect()
         }
     }
 

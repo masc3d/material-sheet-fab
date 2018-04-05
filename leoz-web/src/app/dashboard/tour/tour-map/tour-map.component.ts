@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import 'rxjs/add/operator/takeUntil';
+import { takeUntil } from 'rxjs/operators';
 
 import { MapComponent } from '@yaga/leaflet-ng2';
 import * as L from 'leaflet';
@@ -75,7 +75,9 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
 
     this.allCustomMarkers = [];
     this.tourService.displayMarker$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( displayMarker: boolean ) => {
         this.displayMarker = displayMarker;
         if (!displayMarker) {
@@ -84,7 +86,9 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
       } );
 
     this.tourService.allMarkers$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( allMarkers: MarkerModel[] ) => {
         this.removeAllCustomMarkers();
         if (allMarkers.length > 0) {
@@ -108,7 +112,9 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
       } );
 
     this.tourService.displayRoute$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( displayRoute: boolean ) => {
         if (!displayRoute) {
           this.routeGeoJson = this.createGeoJson( [] );
@@ -116,7 +122,9 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
       } );
 
     this.tourService.activeMarker$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( activeMarker: MarkerModel ) => {
         switch (activeMarker.position.vehicleType) {
           case Position.VehicleType.BIKE:
@@ -155,7 +163,9 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
       } );
 
     this.tourService.activeRoute$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( activeRoute: Position[] ) => {
         this.routeGeoJson = this.createGeoJson( activeRoute );
         if (this.bbox) {

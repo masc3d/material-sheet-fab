@@ -20,23 +20,15 @@ import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.net.TrustingSSLSocketFactory
 import sx.rs.LoggingFilter
-import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.net.URI
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
-import javax.net.ssl.HostnameVerifier
-import javax.net.ssl.SSLContext
-import javax.net.ssl.SSLSession
-import javax.net.ssl.TrustManager
-import javax.net.ssl.X509TrustManager
+import javax.net.ssl.*
 import javax.ws.rs.client.ClientRequestContext
 import javax.ws.rs.client.ClientRequestFilter
-import javax.ws.rs.client.WebTarget
 import javax.ws.rs.core.HttpHeaders
-import javax.ws.rs.sse.SseEvent
-import javax.ws.rs.sse.SseEventSource
 
 /**
  * Ignoring X509 trust manager, typically used when disabling SSL certificate checks
@@ -251,6 +243,7 @@ class FeignClient(
                         readTimeout.toMillis().toInt()))
                 .encoder(this.encoder)
                 .decoder(this.decoder)
+                // TODO: temporarily customized feign client with workaround for https://github.com/OpenFeign/feign/issues/669
                 .contract(JAXRSContract())
                 .also {
                     when {

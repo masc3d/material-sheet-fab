@@ -57,6 +57,8 @@ import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
+import sx.android.rx.observeOnMainThreadWithLifecycle
 import sx.android.ui.flexibleadapter.SimpleVmHeaderItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHolder
@@ -80,7 +82,7 @@ class TourScreen
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val feedback: Feedback by Kodein.global.lazy.instance()
 
-    private val listener by lazy { this.activity as? Listener }
+    private val listener by listenerDelegate<Listener>()
 
     private val sharedPrefs: SharedPreferences by Kodein.global.lazy.instance()
     private val tourSettings: TourSettings by Kodein.global.lazy.instance()
@@ -139,8 +141,7 @@ class TourScreen
         )
 
         aidcReader.readEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.onAidcRead(it)
                 }
@@ -550,8 +551,7 @@ class TourScreen
                     // `Single`s that may be disposed before completion must be converted to observables
                     // in order to mitigate https://github.com/trello/RxLifecycle/issues/217
                     .toObservable()
-                    .bindToLifecycle(this)
-                    .observeOnMainThread()
+                    .observeOnMainThreadWithLifecycle(this)
                     .doFinally {
                         progressDialog.dismiss()
                     }
@@ -566,7 +566,7 @@ class TourScreen
                                             result.tour?.also { optimizedTour ->
                                                 val pendingStops = this.tour.pendingStops.blockingFirst().value
 
-                                                optimizedTour.stops.map { optimizedStop ->
+                                                optimizedTour.stops!!.map { optimizedStop ->
                                                     pendingStops.first { it.tasks.first().order.id == optimizedStop.tasks.first().orderId }
                                                 }
                                                         .also {

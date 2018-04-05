@@ -22,7 +22,7 @@ assertJvmVersion(v_jvm)
 
 buildscript {
     ext {
-        v_android_gradle = '3.0.1'
+        v_android_gradle = '3.1.0'
     }
 
     repositories {

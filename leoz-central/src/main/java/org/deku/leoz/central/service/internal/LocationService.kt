@@ -1,6 +1,7 @@
 package org.deku.leoz.central.service.internal
 
 import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.central.Application
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadNodeGeopositionRecord
@@ -15,6 +16,7 @@ import org.deku.leoz.service.internal.LocationServiceV2
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import sx.log.slf4j.trace
 import sx.log.slf4j.warn
@@ -37,6 +39,7 @@ import javax.ws.rs.core.Response
  */
 @Component
 @Path("internal/v2/location")
+@Profile(Application.PROFILE_CENTRAL)
 class LocationServiceV2 :
         org.deku.leoz.service.internal.LocationServiceV2,
         MqHandler<Any> {
@@ -367,7 +370,7 @@ class LocationServiceV2 :
                     }
                 }
             }
-            lastSpeed = posList[i].speed
+            lastSpeed = posList[i].speed?: 0.0
         }
 
         return gpsList

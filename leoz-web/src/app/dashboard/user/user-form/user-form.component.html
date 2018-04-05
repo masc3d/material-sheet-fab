@@ -69,13 +69,17 @@
         <div>{{'role' | translate}}:</div>
         <p-dropdown [options]="roleOptions" formControlName="role" placeholder="&nbsp;"></p-dropdown>
       </div>
-      <div class="ui-g-12 ui-md-3">
+      <div class="ui-g-12 ui-md-2">
         <div>{{'active' | translate}}:</div>
         <p-dropdown [options]="stateOptions" formControlName="active" placeholder="&nbsp;"></p-dropdown>
       </div>
-      <div class="ui-g-12 ui-md-3">
+      <div class="ui-g-12 ui-md-2">
         <div>{{'expires_on' | translate}}:</div>
-        <p-calendar [showIcon]="true" [readonlyInput]="true" [dateFormat]="dateFormatPrimeng" [locale]="locale" formControlName="expiresOn"></p-calendar>
+        <p-calendar [showIcon]="true" [dateFormat]="dateFormatPrimeng" [locale]="locale" formControlName="expiresOn"></p-calendar>
+      </div>
+      <div class="ui-g-12 ui-md-2">
+        <div>{{'assigned stations' | translate}}:</div>
+        <p-multiSelect [options]="assignableStations" defaultLabel="&nbsp;" formControlName="allowedStations"></p-multiSelect>
       </div>
 
       <div class="ui-g-12 ui-md-6" style="padding: 0;">

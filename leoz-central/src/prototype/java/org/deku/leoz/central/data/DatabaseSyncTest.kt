@@ -33,6 +33,7 @@ class DatabaseSyncTest {
         val sw = Stopwatch.createStarted()
         try {
             this.dbSync.sync(true)
+                    .blockingAwait()
         } finally {
             log.info(String.format("Took %s", sw.toString()))
         }

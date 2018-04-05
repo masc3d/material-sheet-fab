@@ -34,6 +34,8 @@ dependencies {
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
+
 
             // Kodein
             "com.github.salomonbrys.kodein:kodein:$v_kodein",
@@ -74,7 +76,7 @@ dependencies {
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",
             "com.fasterxml.jackson.core:jackson-core:$v_jackson",
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
-            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson_kt",
+            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson",
 
             // Webservice host libraries (leobridge)
             "org.glassfish.grizzly:grizzly-http-server:$v_grizzly",

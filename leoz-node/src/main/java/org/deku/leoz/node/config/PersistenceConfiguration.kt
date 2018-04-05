@@ -1,7 +1,8 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.node.Storage
-import org.deku.leoz.node.data.jpa.EclipseLinkCustomizer
+import org.deku.leoz.node.data.jpa.EclipselinkDescriptorCustomizer
+import org.deku.leoz.node.data.jpa.EclipselinkSessionListener
 import org.eclipse.persistence.config.BatchWriting
 import org.eclipse.persistence.config.PersistenceUnitProperties
 import org.eclipse.persistence.platform.database.H2Platform
@@ -27,7 +28,6 @@ import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter
-import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import java.io.File
 import java.util.*
@@ -50,8 +50,6 @@ import javax.sql.DataSource
 class PersistenceConfiguration {
     companion object {
         const val QUALIFIER = "db_embedded"
-        const val QUALIFIER_JOOQ = "db_embedded_jooq"
-        const val QUALIFIER_SERVER = "db_embedded_server"
     }
 
     private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java.name)
@@ -135,7 +133,7 @@ class PersistenceConfiguration {
     //region JPA
     @Bean
     @Qualifier(QUALIFIER)
-    fun transactionManager(emf: EntityManagerFactory): PlatformTransactionManager {
+    fun transactionManager(emf: EntityManagerFactory): JpaTransactionManager {
         val transactionManager = JpaTransactionManager()
         transactionManager.entityManagerFactory = emf
         transactionManager.dataSource = this.dataSource
@@ -233,8 +231,14 @@ class PersistenceConfiguration {
             // Setup event listeners for all entity classes
             properties.set(
                     "${PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_}${bd.beanClassName}",
-                    EclipseLinkCustomizer::class.java.canonicalName)
+                    EclipselinkDescriptorCustomizer::class.java.canonicalName)
         }
+
+        // Setup session event listener for eg. setting type converters during runtime initialization
+        properties.set(
+                PersistenceUnitProperties.SESSION_EVENT_LISTENER_CLASS,
+                EclipselinkSessionListener::class.java.canonicalName
+        )
         //endregion
 
         em.setJpaProperties(properties)
@@ -246,22 +250,22 @@ class PersistenceConfiguration {
 
     //region JOOQ
     @get:Bean
-    @get:Qualifier(QUALIFIER_JOOQ)
+    @get:Qualifier(QUALIFIER)
     val jooqTransactionAwareDataSourceProxy: TransactionAwareDataSourceProxy
         get() = TransactionAwareDataSourceProxy(this.dataSource)
 
     @get:Bean
-    @get:Qualifier(QUALIFIER_JOOQ)
+    @get:Qualifier(QUALIFIER)
     val jooqTransactionManager: DataSourceTransactionManager
         get() = DataSourceTransactionManager(this.dataSource)
 
     @get:Bean
-    @get:Qualifier(QUALIFIER_JOOQ)
+    @get:Qualifier(QUALIFIER)
     val jooqConnectionProvider: DataSourceConnectionProvider
         get() = DataSourceConnectionProvider(this.jooqTransactionAwareDataSourceProxy)
 
     @get:Bean
-    @get:Qualifier(QUALIFIER_JOOQ)
+    @get:Qualifier(QUALIFIER)
     val dsl: DefaultDSLContext
         get() {
             val settings = org.jooq.conf.Settings().withStatementType(StatementType.PREPARED_STATEMENT)
@@ -269,22 +273,8 @@ class PersistenceConfiguration {
         }
     //endregion
 
-    /**
-     * Migrate flyway schema version table from `schema_version` (<= 4.x) to `flyway_schema_history` (>= 5.x)
-     */
-    @Deprecated("Required by leoz-central <= 0.147, leoz-node <= 0.74")
-    private fun migrateFLywaySchemaVersionTable() {
-        this.dataSource.connection.use { cn ->
-            cn.createStatement().use {
-                it.execute("ALTER TABLE IF EXISTS \"schema_version\" RENAME TO \"flyway_schema_history\"")
-            }
-        }
-    }
-
     @PostConstruct
     fun onInitialize() {
-        this.migrateFLywaySchemaVersionTable()
-
         // Migrate schema
         log.info("Migrating embedded data source schema")
         val flyway = Flyway()

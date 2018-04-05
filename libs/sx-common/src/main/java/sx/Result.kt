@@ -40,4 +40,7 @@ class Result<T> private constructor (
 
     /** Indicates if result has result */
     val hasValue = (_value != null)
+
+    override fun toString(): String =
+            "Result(value=${_value}, error=${error})"
 }

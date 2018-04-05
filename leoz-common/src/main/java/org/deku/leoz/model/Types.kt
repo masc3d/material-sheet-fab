@@ -542,3 +542,7 @@ enum class DelayedAppointmentReason(val value: Int) {
     VEHICLE_BREAKDOWN(3),
     OTHER(100)
 }
+
+enum class UserActivity(val value: String) {
+    DATA_PROTECTION_POLICY_ACCEPTED("data protection policy accepted")
+}
