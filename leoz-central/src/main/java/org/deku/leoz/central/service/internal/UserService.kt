@@ -9,6 +9,8 @@ import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.setHashedPassword
 import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.verifyPassword
 import org.deku.leoz.central.data.repository.toUser
+import org.deku.leoz.model.AllowedStations
+import org.deku.leoz.model.UserActivity
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.service.internal.UserService
@@ -490,7 +492,11 @@ class UserService :
     override fun onMessage(message: Any, replyChannel: MqChannel?) {
         when (message) {
             is UserService.DataProtectionActivity -> {
-
+                try {
+                    userRepository.logUserActivity(userId = message.userId, activity = UserActivity.DATA_PROTECTION_POLICY_ACCEPTED, date = message.ts_activity)
+                } catch (e: Exception) {
+                    log.error(e.message, e)
+                }
             }
         }
     }
