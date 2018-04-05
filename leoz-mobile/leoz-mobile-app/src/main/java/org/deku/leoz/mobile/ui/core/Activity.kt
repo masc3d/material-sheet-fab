@@ -841,8 +841,10 @@ abstract class Activity : BaseActivity(),
                     val user = it.value
                     when {
                         user != null -> {
-                            this.uxNavView.menu
-                                    .findItem(R.id.nav_logout).isVisible = true
+                            this.uxNavView.menu.also {
+                                it.findItem(R.id.nav_logout).isVisible = true
+                                it.findItem(R.id.nav_camera).isVisible = true
+                            }
 
                             // Update navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.VISIBLE
@@ -850,8 +852,10 @@ abstract class Activity : BaseActivity(),
                             navHeaderView.uxStationId.text = "-_-"
                         }
                         else -> {
-                            this.uxNavView.menu
-                                    .findItem(R.id.nav_logout).isVisible = false
+                            this.uxNavView.menu.also {
+                                it.findItem(R.id.nav_logout).isVisible = false
+                                it.findItem(R.id.nav_camera).isVisible = false
+                            }
 
                             // Hide navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.GONE
