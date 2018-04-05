@@ -607,7 +607,7 @@ class SmartlaneBridge {
     }
 
     /**
-     * Caluclate tour route quality based on etas
+     * Calculate tour route quality based on etas
      * @return quality in percentage
      */
     private fun Tour.calculateQuality(): Double {
