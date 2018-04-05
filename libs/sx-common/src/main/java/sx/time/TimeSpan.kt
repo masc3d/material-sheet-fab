@@ -24,7 +24,7 @@ class TimeSpan(
     val totalHours: Double by lazy { totalMillis.toDouble() / (1000 * 60 * 60) }
 
     companion object {
-        fun between(a: Date, b: Date): TimeSpan = TimeSpan(a.time - b.time)
+        fun between(a: Date, b: Date): TimeSpan = TimeSpan(b.time - a.time)
 
         val ZERO = TimeSpan(0)
     }
