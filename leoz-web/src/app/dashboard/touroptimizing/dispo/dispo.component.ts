@@ -185,9 +185,10 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     const listsToPrint = this.filteredTours.filter( tour => tour.selected );
 
     const filename = 'sl_' + listsToPrint.map( tour => tour.id ).join( '_' );
-    this.printingService.printReports( this.reportingService
-        .generateReports( listsToPrint ),
-      filename, saving );
+    this.reportingService.generateReports( listsToPrint )
+      .then(report => this.printingService.printReports( report, filename, saving ));
+    // this.printingService.printReports( this.reportingService.generateReports( listsToPrint ),
+    //   filename, saving );
   }
 
   optimizeDialog() {

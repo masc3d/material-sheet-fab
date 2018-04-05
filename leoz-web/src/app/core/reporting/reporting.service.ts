@@ -19,5 +19,5 @@ export abstract class ReportingService {
     this.dateFormatLong = this.translate.setDateformat( 'internalLong' );
   }
 
-  abstract generateReports(...any): jsPDF;
+  abstract generateReports(...any): jsPDF | Promise<jsPDF>;
 }
