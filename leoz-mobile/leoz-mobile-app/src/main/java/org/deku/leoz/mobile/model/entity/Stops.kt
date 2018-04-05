@@ -60,7 +60,7 @@ val Stop.appointmentTimeLeft: TimeSpan?
     get() {
         val end = this.appointmentEndDate
         return when {
-            end != null -> TimeSpan.between(end, Date())
+            end != null -> TimeSpan.between(Date(), end)
             else -> null
         }
     }
