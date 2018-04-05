@@ -461,7 +461,6 @@ class SmartlaneBridge {
 
         val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
 
-        val inPlaceUpdate = (options.vehicles?.count() ?: 0) == 0
         val vehicleCount = (options.vehicles?.count() ?: 0).let {
             if (it > 0) it else 1
         }
@@ -477,73 +476,11 @@ class SmartlaneBridge {
                         throw IllegalStateException("Amount of optimized routes [${routes.count()}] is not supposed " +
                                 "to exceed number of vehicles [${vehicleCount}]")
 
-                    val now = Date()
-
                     routes.map { route ->
-                        val stops = route.deliveries
-                                .sortedBy { it.orderindex }
-                                .map { delivery ->
-                                    val stops = tour.stops ?: listOf()
-                                    stops.first { it.uid == delivery.customId }
-                                            .also {
-                                                it.route = TourStopRouteMeta(
-                                                        eta = Interval(delivery.etaFrom, delivery.etaTo),
-                                                        driver = Interval(delivery.ddtFrom, delivery.ddtTo),
-                                                        delivery = Interval(delivery.deliveryFrom, delivery.deliveryTo),
-                                                        stayLengtH = delivery.als?.toInt(),
-                                                        target = Interval(delivery.tdtFrom, delivery.tdtTo)
-                                                )
-                                            }
-                                }
-
-                        val tourOrders = tour.orders ?: listOf()
-
-                        val orders = stops
-                                .flatMap { it.tasks }
-                                .map { it.orderId }.distinct()
-                                .map { orderId -> tourOrders.first { it.id == orderId } }
-
-                        // Determine optimized tour id / uid
-                        val id: Long?
-                        val uid: String
-                        val parentId: Long?
-                        val customId: String?
-                        when (inPlaceUpdate) {
-                            true -> {
-                                uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
-                                id = tour.id ?: throw IllegalArgumentException("Id required for in place update")
-                                parentId = tour.parentId
-                                customId = tour.customId
-                            }
-                            false -> {
-                                // Generate uid for new tour
-                                uid = UUID.randomUUID().toString()
-                                id = null
-                                parentId = tour.id
-                                customId = null
-                            }
-                        }
-
-                        Tour(
-                                id = id,
-                                uid = uid,
-                                nodeUid = tour.nodeUid,
-                                userId = tour.userId,
-                                stationNo = tour.stationNo,
-                                customId = customId,
-                                parentId = parentId,
-                                date = tour.date,
-                                optimized = now,
-                                stops = stops,
-                                orders = orders,
-
-                                route = TourRouteMeta(
-                                        start = route.ast,
-                                        target = Interval(route.tstFrom, route.tstTo),
-                                        distance = route.distance?.let { it.toDouble() / 1000 },
-                                        totalDuration = route.grossDuration,
-                                        drivingTime = route.netDuration
-                                )
+                        // Create optimized (partial) tour from original one and route information
+                        tour.toOptimizedTour(
+                                options = options,
+                                route = route
                         )
                     }
                             .also { optimizedTours ->
@@ -589,6 +526,85 @@ class SmartlaneBridge {
             it.isActive = this.active
             it.htmlcolor = this.email.hashCode().toHexString().take(6)
         }
+    }
+
+    /**
+     * Transform tour to optimized tour using routing information.
+     * @param options tour optimization options
+     * @param route smartlane routing result
+     */
+    private fun Tour.toOptimizedTour(
+            options: TourOptimizationOptions,
+            route: Route): Tour {
+        val tour = this
+
+        val inPlaceUpdate = (options.vehicles?.count() ?: 0) == 0
+
+        val stops = route.deliveries
+                .sortedBy { it.orderindex }
+                .map { delivery ->
+                    val stops = tour.stops ?: listOf()
+                    stops.first { it.uid == delivery.customId }
+                            .also {
+                                it.route = TourStopRouteMeta(
+                                        eta = Interval(delivery.etaFrom, delivery.etaTo),
+                                        driver = Interval(delivery.ddtFrom, delivery.ddtTo),
+                                        delivery = Interval(delivery.deliveryFrom, delivery.deliveryTo),
+                                        stayLengtH = delivery.als?.toInt(),
+                                        target = Interval(delivery.tdtFrom, delivery.tdtTo)
+                                )
+                            }
+                }
+
+        val tourOrders = tour.orders ?: listOf()
+
+        val orders = stops
+                .flatMap { it.tasks }
+                .map { it.orderId }.distinct()
+                .map { orderId -> tourOrders.first { it.id == orderId } }
+
+        // Determine optimized tour id / uid
+        val id: Long?
+        val uid: String
+        val parentId: Long?
+        val customId: String?
+        when (inPlaceUpdate) {
+            true -> {
+                uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
+                id = tour.id ?: throw IllegalArgumentException("Id required for in place update")
+                parentId = tour.parentId
+                customId = tour.customId
+            }
+            false -> {
+                // Generate uid for new tour
+                uid = UUID.randomUUID().toString()
+                id = null
+                parentId = tour.id
+                customId = null
+            }
+        }
+
+        return Tour(
+                id = id,
+                uid = uid,
+                nodeUid = tour.nodeUid,
+                userId = tour.userId,
+                stationNo = tour.stationNo,
+                customId = customId,
+                parentId = parentId,
+                date = tour.date,
+                optimized = Date(),
+                stops = stops,
+                orders = orders,
+
+                route = TourRouteMeta(
+                        start = route.ast,
+                        target = Interval(route.tstFrom, route.tstTo),
+                        distance = route.distance?.let { it.toDouble() / 1000 },
+                        totalDuration = route.grossDuration,
+                        drivingTime = route.netDuration
+                )
+        )
     }
 
     /**
