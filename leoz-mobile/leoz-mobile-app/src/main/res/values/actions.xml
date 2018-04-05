@@ -28,10 +28,10 @@
     <item name="action_edit" type="id"/>
     <item name="action_help" type="id"/>
     <item name="action_navigate" type="id"/>
-    <item name="action_report_delay" type="id"/>
     <item name="action_signature_submit" type="id"/>
     <item name="action_signature_clear" type="id"/>
     <item name="action_signature_paper" type="id"/>
+    <item name="action_stop_add_information" type="id"/>
     <item name="action_sort" type="id"/>
     <item name="action_vehicle_loading_load" type="id"/>
     <item name="action_vehicle_loading_dev_mark_all_loaded" type="id"/>

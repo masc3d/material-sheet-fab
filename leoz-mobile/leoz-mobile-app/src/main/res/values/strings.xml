@@ -347,4 +347,6 @@
     <string name="yes_start_tour">Yes, start tour</string>
     <string name="data_protection_policy">Data protection policy</string>
     <string name="data_protection">Data protecion</string>
+    <string name="report_delay">Report delay</string>
+    <string name="attach_note">Attach a note</string>
 </resources>

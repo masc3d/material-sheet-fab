@@ -100,7 +100,7 @@ class StopDetailsScreen
         super.onCreate(savedInstanceState)
 
         this.title = getString(R.string.title_stop_detailt)
-        this.aidcEnabled = true
+        this.aidcEnabled = false
         this.toolbarCollapsed = true
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
@@ -243,6 +243,12 @@ class StopDetailsScreen
                         colorRes = R.color.colorPrimary,
                         iconRes = R.drawable.ic_delivery,
                         iconTintRes = android.R.color.white
+                ),
+                ActionItem(
+                        id = R.id.action_stop_add_information,
+                        colorRes = R.color.colorGrey,
+                        iconRes = R.drawable.ic_phone,
+                        alignEnd = false
                 ),
                 ActionItem(
                         id = R.id.action_call,
