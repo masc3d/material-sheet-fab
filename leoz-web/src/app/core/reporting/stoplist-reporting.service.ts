@@ -7,8 +7,7 @@ import * as QRCode from 'qrcode';
 import { Report } from './report.model';
 import { ReportPart } from './report-part.model';
 import { ReportingService } from './reporting.service';
-import { DeliverylistItem } from '../models/deliverylist.item.model';
-import { Tour } from '../models/tour.model';
+import { Stop, Tour } from '../models/tour.model';
 
 @Injectable()
 export class StoplistReportingService extends ReportingService {
@@ -121,49 +120,35 @@ export class StoplistReportingService extends ReportingService {
   }
 
   private buildPageContent( tour: Tour ): ReportPart[] {
-    const pageContents: ReportPart[] = [];
-    // per page max orders 20
-    const clonedOrders = [ ...tour.orders ];
-    while (clonedOrders.length > 0) {
-      const orderPart = this.createOrderPart( tour, clonedOrders.splice( 0, 22 ) );
-      pageContents.push( orderPart );
-    }
-    return pageContents;
+    return tour.stops.map( stop => this.createStopPart( stop ) );
   }
 
-  private createOrderPart( tour: Tour, orders: DeliverylistItem[] ): ReportPart {
+  private createStopPart( stop: Stop ): ReportPart {
     const stopListRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
 
       doc.setFontSize( 8 );
       doc.setFontType( 'bold' );
-      // doc.text( `tour.id: ${tour.id}`, offsetX, offsetY );
       doc.setFontType( 'normal' );
 
-      orders.forEach( ( dli: DeliverylistItem ) => {
-        const orderId = dli.id;
-        const routes = tour.stops
-          .filter( stop => stop.tasks.filter( task => task.orderId === orderId ) )
-          .filter( stop => stop.route )
-          .map( stop => stop.route );
-        let etaFrom = '',
-          etaTo = '';
-        if (routes.length > 0) {
-          etaFrom = moment( routes[ 0 ].eta.from ).format( 'HH:mm' );
-          etaTo = moment( routes[ 0 ].eta.to ).format( 'HH:mm' );
-        }
-        offsetY += 10;
-        doc.text( `${dli.deliveryAddress.line1}`, offsetX, offsetY );
-        doc.text( `${dli.deliveryAddress.street} ${dli.deliveryAddress.streetNo}`, offsetX + 70, offsetY );
-        doc.text( `${dli.deliveryAddress.zipCode} ${dli.deliveryAddress.city}`, offsetX + 125, offsetY );
-        doc.text( `Pkst: ${dli.parcels.length}`, offsetX + 70, offsetY + 4 );
-        doc.text( `ETA: ${etaFrom}`, offsetX, offsetY + 4 );
-        doc.text( `bis ${etaTo}`, offsetX + 15, offsetY + 4 );
-        doc.text( `Termin: ${moment( dli.deliveryAppointment.dateStart ).format( 'HH:mm' )}`, offsetX + 125, offsetY + 4 );
-        doc.text( `bis ${moment( dli.deliveryAppointment.dateEnd ).format( 'HH:mm' )}`, offsetX + 145, offsetY + 4 );
-      } );
+      let etaFrom = '',
+        etaTo = '';
+      if (data.route) {
+        etaFrom = moment( data.route.eta.from ).format( 'HH:mm' );
+        etaTo = moment( data.route.eta.to ).format( 'HH:mm' );
+      }
+      offsetY += 9;
+      doc.text( `${data.address.line1}`, offsetX, offsetY );
+      doc.text( `${data.address.street} ${data.address.streetNo}`, offsetX + 70, offsetY );
+      doc.text( `${data.address.zipCode} ${data.address.city}`, offsetX + 125, offsetY );
+      doc.text( `Anzahl: ${data.parcelNumbers.length}`, offsetX + 70, offsetY + 4 );
+      doc.text( `Gewicht: ${data.weight} kg`, offsetX + 85, offsetY + 4 );
+      doc.text( `ETA: ${etaFrom}`, offsetX, offsetY + 4 );
+      doc.text( `bis ${etaTo}`, offsetX + 15, offsetY + 4 );
+      doc.text( `Termin: ${moment( data.appointmentStart ).format( 'HH:mm' )}`, offsetX + 125, offsetY + 4 );
+      doc.text( `bis ${moment( data.appointmentEnd ).format( 'HH:mm' )}`, offsetX + 145, offsetY + 4 );
       return doc;
     };
-    return new ReportPart( (10 + orders.length * 10), stopListRenderFunction, tour );
+    return new ReportPart( 12, stopListRenderFunction, stop );
   }
 
 }
