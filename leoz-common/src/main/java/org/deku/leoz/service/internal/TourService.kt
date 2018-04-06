@@ -338,8 +338,9 @@ interface TourServiceV1 {
                 @ApiModelProperty(position = 20,
                         required = false,
                         value = "Replaces date of all appointments with current day",
-                        example = "false")
-                var replaceDatesWithToday: Boolean = false,
+                        example = "true")
+                @DefaultValue("true")
+                var replaceDatesWithToday: Boolean = true,
 
                 @ApiModelProperty(position = 30,
                         required = false,

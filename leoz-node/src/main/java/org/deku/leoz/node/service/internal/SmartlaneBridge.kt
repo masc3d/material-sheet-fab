@@ -455,8 +455,10 @@ class SmartlaneBridge {
             tour: Tour,
             options: TourOptimizationOptions
     ): Single<List<Tour>> {
+        // The smartlane domain to interact with
         val domain = domain(customerId)
 
+        // Smartlane APIs
         val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
 
         val vehicleCount = (options.vehicles?.count() ?: 0).let {
@@ -510,6 +512,12 @@ class SmartlaneBridge {
     private fun formatEmail(email: String) = "${email} ${identity.shortUid}"
 
     /**
+     * Indicates if optimization options imply an in place update (tour is not split)
+     */
+    private val TourOptimizationOptions.isInPlaceOptimization: Boolean
+        get() = (this.vehicles?.count() ?: 0) == 0
+
+    /**
      * Transform domain user to smartlane driver
      */
     private fun UserService.User.toDriver(): Driver {
@@ -536,7 +544,7 @@ class SmartlaneBridge {
             route: Route): Tour {
         val tour = this
 
-        val inPlaceUpdate = (options.vehicles?.count() ?: 0) == 0
+        val inPlaceUpdate = options.isInPlaceOptimization
 
         val stops = route.deliveries
                 .sortedBy { it.orderindex }
@@ -564,12 +572,14 @@ class SmartlaneBridge {
         // Determine optimized tour id / uid
         val id: Long?
         val uid: String
+        val nodeUid: String?
         val parentId: Long?
         val customId: String?
         when (inPlaceUpdate) {
             true -> {
                 uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
                 id = tour.id ?: throw IllegalArgumentException("Id required for in place update")
+                nodeUid = tour.nodeUid
                 parentId = tour.parentId
                 customId = tour.customId
             }
@@ -577,6 +587,7 @@ class SmartlaneBridge {
                 // Generate uid for new tour
                 uid = UUID.randomUUID().toString()
                 id = null
+                nodeUid = null
                 parentId = tour.id
                 customId = null
             }
@@ -585,7 +596,7 @@ class SmartlaneBridge {
         return Tour(
                 id = id,
                 uid = uid,
-                nodeUid = tour.nodeUid,
+                nodeUid = nodeUid,
                 userId = tour.userId,
                 stationNo = tour.stationNo,
                 customId = customId,
