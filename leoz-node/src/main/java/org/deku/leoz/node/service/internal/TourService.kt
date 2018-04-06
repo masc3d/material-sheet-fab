@@ -999,6 +999,10 @@ class TourServiceV1
                         )
                     }
 
+                    val stopParcels = tasks
+                            .map { ordersById.getValue(it.orderId) }
+                            .flatMap { it.parcels }
+
                     Stop(
                             address = stop.value.first().let { task ->
                                 orders.first { it.id == task.orderId }.let {
@@ -1011,10 +1015,8 @@ class TourServiceV1
                             tasks = tasks,
                             appointmentStart = tasks.map { it.appointmentStart }.filterNotNull().max(),
                             appointmentEnd = tasks.map { it.appointmentEnd }.filterNotNull().min(),
-                            weight = tasks
-                                    .map { ordersById.getValue(it.orderId) }
-                                    .flatMap { it.parcels }
-                                    .sumByDouble { it.dimension.weight },
+                            weight = stopParcels.sumByDouble { it.dimension.weight },
+                            parcelNumbers = stopParcels.map { it.number },
                             route = stop.value.first().routeMeta?.let {
                                 this@TourServiceV1.objectMapper.readValue(it, TourStopRouteMeta::class.java)
                             }
