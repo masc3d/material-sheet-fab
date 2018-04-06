@@ -15,10 +15,14 @@ interface Task {
   orderId?: number;
 }
 
-interface Stop {
+export interface Stop {
   address?: Address;
   tasks?: Task[];
   route?: TourStopRouteMeta;
+  weight?: number;
+  appointmentStart?: string;
+  appointmentEnd?: string;
+  parcelNumbers?: string[];
 }
 
 export interface Tour extends TourListItem {
