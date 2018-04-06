@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.text.InputType
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
@@ -45,6 +46,7 @@ import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.Device
 import sx.android.aidc.*
+import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
@@ -237,6 +239,8 @@ class StopDetailsScreen
             adapter.expand(it)
         }
 
+        val stopNoteMenu = this.activity.inflateMenu(R.menu.menu_delivery_stop_add_information)
+
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_deliver_continue,
@@ -247,8 +251,9 @@ class StopDetailsScreen
                 ActionItem(
                         id = R.id.action_stop_add_information,
                         colorRes = R.color.colorGrey,
-                        iconRes = R.drawable.ic_phone,
-                        alignEnd = false
+                        iconRes = R.drawable.ic_comment_alert,
+                        alignEnd = false,
+                        menu = stopNoteMenu
                 ),
                 ActionItem(
                         id = R.id.action_call,

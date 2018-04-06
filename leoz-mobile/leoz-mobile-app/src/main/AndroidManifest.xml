@@ -52,7 +52,7 @@
 
         <!-- Services -->
         <service
-            android:name=".service.LocationService"
+            android:name=".service.LocationServiceAOSP"
             android:enabled="true"/>
         <service
             android:name=".service.LocationServiceGMS"
