@@ -14,7 +14,7 @@ import java.util.*
  * Time interval
  */
 @Serializable(0xeb180b0d9471bd)
-data class Interval(
+data class TimeRange(
         var from: Date? = null,
         var to: Date? = null
 )
@@ -27,7 +27,7 @@ data class TourRouteMeta(
         /** Route start time */
         var start: Date? = null,
         /** Route end time */
-        var target: Interval? = null,
+        var target: TimeRange? = null,
         /** Distance in kilometers */
         var distance: Double? = null,
         /** Route duration in minutes */
@@ -44,15 +44,15 @@ data class TourRouteMeta(
 @Serializable(0xb830a899e51513)
 data class TourStopRouteMeta(
         // TODO document what (delivery) time is compared to eta
-        var delivery: Interval? = null,
+        var delivery: TimeRange? = null,
         /** Estimated time of arrival */
-        var eta: Interval? = null,
+        var eta: TimeRange? = null,
         // TODO document how target differs from eta
         /** Target time */
-        var target: Interval? = null,
+        var target: TimeRange? = null,
         // TODO document what driver / delivery time is
         /** Driver time */
-        var driver: Interval? = null,
+        var driver: TimeRange? = null,
         /** Estimated length of stay in minutes */
         var estimatedStayLength: Int? = null,
         /** Actual stay length in minutes */
