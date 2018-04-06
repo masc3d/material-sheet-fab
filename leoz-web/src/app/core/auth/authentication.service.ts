@@ -21,10 +21,10 @@ export class AuthenticationService {
   allowedStations: number[];
 
   private debitorStationsSubject = new BehaviorSubject<Station[]>( null );
-  public debitorStations$ = this.debitorStationsSubject.asObservable().pipe(distinctUntilChanged());
+  public debitorStations$ = this.debitorStationsSubject.asObservable().pipe( distinctUntilChanged() );
 
   private activeStationSubject = new BehaviorSubject<Station>( null );
-  public activeStation$ = this.activeStationSubject.asObservable().pipe(distinctUntilChanged());
+  public activeStation$ = this.activeStationSubject.asObservable().pipe( distinctUntilChanged() );
 
   constructor( private router: Router,
                private http: HttpClient,
@@ -58,13 +58,17 @@ export class AuthenticationService {
           const userJson = response.body;
           const user: User = userJson[ 'user' ];
           this.roleGuard.userRole = user.role;
-          if (user.active) {
-            localStorage.setItem( 'currentUser', JSON.stringify( userJson ) );
-            localStorage.setItem( 'version', environment.version );
-            this.fetchStations( user.debitorId );
-          } else {
+          if (!user.active) {
             this.msgService.error( 'user account deactivated' );
+            return response;
           }
+          if (!user.allowedStations || user.allowedStations.length === 0) {
+            this.msgService.error( 'user has none allowed station' );
+            return response;
+          }
+          localStorage.setItem( 'currentUser', JSON.stringify( userJson ) );
+          localStorage.setItem( 'version', environment.version );
+          this.fetchStations( user.debitorId );
         }
         return response;
       } ) );

@@ -5,6 +5,7 @@ import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylis
 import org.deku.leoz.central.data.repository.JooqDeliveryListRepository
 import org.deku.leoz.central.data.repository.JooqStationRepository
 import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
+import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.TaskType
 import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.node.rest.restrictByDebitor
@@ -103,7 +104,7 @@ class DeliveryListService
 
                 TourServiceV1.Tour(
                         stationNo = dlRecord.deliveryStation.toLong(),
-                        customId = dlRecord.id.toLong().toString(),
+                        customId = DekuDeliveryListNumber.create(dlRecord.id.toLong()).value,
                         date = ShortDate(dlRecord.deliveryListDate),
                         stops = dlDetailRecords
                                 .sortedBy { it.orderPosition }

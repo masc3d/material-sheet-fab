@@ -259,7 +259,10 @@ interface TourServiceV1 {
             @ApiModelProperty(position = 50, required = false, value = "Stop weight")
             var weight: Double? = null,
 
-            @ApiModelProperty(position = 60, required = false,
+            @ApiModelProperty(position = 60, required = false, value = "Parcel numbers referring to this stop")
+            var parcelNumbers: List<String>? = null,
+
+            @ApiModelProperty(position = 70, required = false,
                     value = "Stop level route information. Available when the tour was optimized")
             var route: TourStopRouteMeta? = null
     )
@@ -338,8 +341,9 @@ interface TourServiceV1 {
                 @ApiModelProperty(position = 20,
                         required = false,
                         value = "Replaces date of all appointments with current day",
-                        example = "false")
-                var replaceDatesWithToday: Boolean = false,
+                        example = "true")
+                @DefaultValue("true")
+                var replaceDatesWithToday: Boolean = true,
 
                 @ApiModelProperty(position = 30,
                         required = false,

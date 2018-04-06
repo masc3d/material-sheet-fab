@@ -16,7 +16,7 @@
       <p-checkbox [(ngModel)]="optimizeExistingtours" binary="true"
                   label="{{'optimizeExistingtours' | translate}}"></p-checkbox>
     </div>
-    <div *ngIf="selectedTours.length === 1" class="ui-g-12">
+    <div *ngIf="selectedTours.length === 1 && selectedOptimizableTours  && selectedOptimizableTours.length === 1" class="ui-g-12">
       <p-checkbox [(ngModel)]="optimizeSplitTours" binary="true"
                   label="{{'optimizeSplitTours' | translate}}"></p-checkbox>
     </div>

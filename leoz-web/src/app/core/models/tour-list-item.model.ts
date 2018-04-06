@@ -6,6 +6,7 @@ interface TourRouteMeta {
 
 export interface TourListItem {
   id?: number;
+  uid?: string;
   parentId?: number;
   customId?: string;
   totalShipments?: number;

@@ -2,21 +2,9 @@ import java.lang.management.ManagementFactory
 
 // Common gradle tasks
 
-/**
- * Clean gradle cache
- */
-task cleanGradleCache {
-    group = 'build'
-
-    doLast {
-        new File(this.project.rootDir, '.gradle').deleteDir()
-    }
-}
-
 allprojects {
     task cleanAll {
         group = 'build'
-        dependsOn cleanGradleCache
     }
 
     project.plugins.whenPluginAdded { plugin ->

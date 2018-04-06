@@ -130,10 +130,10 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.selectedTours = this.filteredTours
       .filter( tour => tour.selected );
     this.selectedOptimizableTours = this.selectedTours
-      .filter( tour => tour.orders.length > 1 );
-    if (this.selectedOptimizableTours.length === 0) {
-      this.msgService.info( 'no_optimizable_tours_selected', false, false );
-    } else {
+      .filter( tour => tour.orders.length > 0 );
+    // if (this.selectedOptimizableTours.length === 0) {
+    //   this.msgService.info( 'no_optimizable_tours_selected', false, false );
+    // } else {
       const selectedTourIds = this.selectedOptimizableTours
         .map( tour => tour.id );
       let vehicles = [];
@@ -146,7 +146,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
       this.touroptimizingService.optimizeAndReinitTours( selectedTourIds,
         vehicles.length > 0 ? vehicles : [ Vehicle.SPRINTER ],
         this.optimizeTraffic, this.optimizeExistingtours, this.dontShiftOneDayFromNow );
-    }
+    // }
     this.checkAll = false;
   }
 
@@ -185,9 +185,10 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     const listsToPrint = this.filteredTours.filter( tour => tour.selected );
 
     const filename = 'sl_' + listsToPrint.map( tour => tour.id ).join( '_' );
-    this.printingService.printReports( this.reportingService
-        .generateReports( listsToPrint ),
-      filename, saving );
+    this.reportingService.generateReports( listsToPrint )
+      .then(report => this.printingService.printReports( report, filename, saving ));
+    // this.printingService.printReports( this.reportingService.generateReports( listsToPrint ),
+    //   filename, saving );
   }
 
   optimizeDialog() {
@@ -196,11 +197,11 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
       .filter( tour => tour.selected );
     this.selectedOptimizableTours = this.selectedTours
       .filter( tour => tour.orders && tour.orders.length > 1 );
-    if (this.selectedOptimizableTours.length === 0) {
-      this.msgService.info( 'no_optimizable_tours_selected', false, false );
-    } else {
+    // if (this.selectedOptimizableTours.length === 0) {
+    //   this.msgService.info( 'no_optimizable_tours_selected', false, false );
+    // } else {
       this.displayOptimizationOptions = true;
-    }
+    // }
     this.cd.markForCheck();
   }
 

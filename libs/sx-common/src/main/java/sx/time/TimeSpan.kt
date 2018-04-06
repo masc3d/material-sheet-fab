@@ -24,7 +24,13 @@ class TimeSpan(
     val totalHours: Double by lazy { totalMillis.toDouble() / (1000 * 60 * 60) }
 
     companion object {
-        fun between(a: Date, b: Date): TimeSpan = TimeSpan(a.time - b.time)
+        /**
+         * Calculates timespan between dates.
+         * When the first date is greater than the second one, the timespan will be negative.
+         * @param a first date
+         * @param b second date
+         */
+        fun between(a: Date, b: Date): TimeSpan = TimeSpan(b.time - a.time)
 
         val ZERO = TimeSpan(0)
     }

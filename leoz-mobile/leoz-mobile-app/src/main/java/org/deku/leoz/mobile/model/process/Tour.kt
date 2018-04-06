@@ -178,6 +178,10 @@ class Tour : CompositeDisposableSupplier {
                             ?.distinctOrders()
                             ?: listOf()
 
+                    // masc20180405. it has been seen that app deadlocks in release
+                    // builds when requery @Bindable is used on `Order` entity.
+                    // TODO: investigate
+
                     orderRepository
                             .merge(orders.map {
                                 it.toOrder(deliveryListId)

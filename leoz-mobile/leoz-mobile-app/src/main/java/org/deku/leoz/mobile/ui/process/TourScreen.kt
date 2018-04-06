@@ -611,7 +611,7 @@ class TourScreen
                             mobileOptions
                     )
                 }
-                .onPositive { dialog, which ->
+                .onPositive { _, _ ->
                     options.appointments.omit = mobileOptions.omitAppointments
                     options.appointments.shiftDaysFromNow = if (mobileOptions.shiftAppointments) 1 else null
                     options.traffic = mobileOptions.traffic

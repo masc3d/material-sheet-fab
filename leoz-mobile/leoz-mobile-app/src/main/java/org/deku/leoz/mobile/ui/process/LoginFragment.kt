@@ -260,10 +260,10 @@ class LoginFragment : Fragment<Any>() {
                 it.cancelable(false)
                 it.positiveText(R.string.proceed)
                 it.negativeText(R.string.cancel)
-                it.onNegative { dialog, which ->
+                it.onNegative { _, _ ->
                     completable.onError(IllegalStateException("Policy must be accepted to continue"))
                 }
-                it.onPositive { dialog, which ->
+                it.onPositive { _, _ ->
                     completable.onComplete()
                 }
             }.show()

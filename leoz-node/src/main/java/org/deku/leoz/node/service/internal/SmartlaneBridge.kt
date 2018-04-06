@@ -7,7 +7,7 @@ import io.reactivex.Single
 import io.reactivex.internal.schedulers.SchedulerWhen
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.model.Interval
+import org.deku.leoz.model.TimeRange
 import org.deku.leoz.model.TourRouteMeta
 import org.deku.leoz.model.TourStopRouteMeta
 import org.deku.leoz.service.internal.LocationServiceV2
@@ -29,9 +29,7 @@ import sx.log.slf4j.trace
 import sx.rs.client.RestEasyClient
 import sx.rx.toObservable
 import sx.text.toHexString
-import sx.time.replaceDate
-import sx.time.toDate
-import sx.time.toLocalDateTime
+import sx.time.*
 import java.net.URI
 import java.util.*
 import java.util.concurrent.Callable
@@ -457,11 +455,12 @@ class SmartlaneBridge {
             tour: Tour,
             options: TourOptimizationOptions
     ): Single<List<Tour>> {
+        // The smartlane domain to interact with
         val domain = domain(customerId)
 
+        // Smartlane APIs
         val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
 
-        val inPlaceUpdate = (options.vehicles?.count() ?: 0) == 0
         val vehicleCount = (options.vehicles?.count() ?: 0).let {
             if (it > 0) it else 1
         }
@@ -477,73 +476,11 @@ class SmartlaneBridge {
                         throw IllegalStateException("Amount of optimized routes [${routes.count()}] is not supposed " +
                                 "to exceed number of vehicles [${vehicleCount}]")
 
-                    val now = Date()
-
                     routes.map { route ->
-                        val stops = route.deliveries
-                                .sortedBy { it.orderindex }
-                                .map { delivery ->
-                                    val stops = tour.stops ?: listOf()
-                                    stops.first { it.uid == delivery.customId }
-                                            .also {
-                                                it.route = TourStopRouteMeta(
-                                                        eta = Interval(delivery.etaFrom, delivery.etaTo),
-                                                        driver = Interval(delivery.ddtFrom, delivery.ddtTo),
-                                                        delivery = Interval(delivery.deliveryFrom, delivery.deliveryTo),
-                                                        stayLengtH = delivery.als?.toInt(),
-                                                        target = Interval(delivery.tdtFrom, delivery.tdtTo)
-                                                )
-                                            }
-                                }
-
-                        val tourOrders = tour.orders ?: listOf()
-
-                        val orders = stops
-                                .flatMap { it.tasks }
-                                .map { it.orderId }.distinct()
-                                .map { orderId -> tourOrders.first { it.id == orderId } }
-
-                        // Determine optimized tour id / uid
-                        val id: Long?
-                        val uid: String
-                        val parentId: Long?
-                        val customId: String?
-                        when (inPlaceUpdate) {
-                            true -> {
-                                uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
-                                id = tour.id ?: throw IllegalArgumentException("Id required for in place update")
-                                parentId = tour.parentId
-                                customId = tour.customId
-                            }
-                            false -> {
-                                // Generate uid for new tour
-                                uid = UUID.randomUUID().toString()
-                                id = null
-                                parentId = tour.id
-                                customId = null
-                            }
-                        }
-
-                        Tour(
-                                id = id,
-                                uid = uid,
-                                nodeUid = tour.nodeUid,
-                                userId = tour.userId,
-                                stationNo = tour.stationNo,
-                                customId = customId,
-                                parentId = parentId,
-                                date = tour.date,
-                                optimized = now,
-                                stops = stops,
-                                orders = orders,
-
-                                route = TourRouteMeta(
-                                        start = route.ast,
-                                        target = Interval(route.tstFrom, route.tstTo),
-                                        distance = route.distance?.let { it.toDouble() / 1000 },
-                                        totalDuration = route.grossDuration,
-                                        drivingTime = route.netDuration
-                                )
+                        // Create optimized (partial) tour from original one and route information
+                        tour.toOptimizedTour(
+                                options = options,
+                                route = route
                         )
                     }
                             .also { optimizedTours ->
@@ -575,6 +512,12 @@ class SmartlaneBridge {
     private fun formatEmail(email: String) = "${email} ${identity.shortUid}"
 
     /**
+     * Indicates if optimization options imply an in place update (tour is not split)
+     */
+    private val TourOptimizationOptions.isInPlaceOptimization: Boolean
+        get() = (this.vehicles?.count() ?: 0) == 0
+
+    /**
      * Transform domain user to smartlane driver
      */
     private fun UserService.User.toDriver(): Driver {
@@ -589,6 +532,116 @@ class SmartlaneBridge {
             it.isActive = this.active
             it.htmlcolor = this.email.hashCode().toHexString().take(6)
         }
+    }
+
+    /**
+     * Transform tour to optimized tour using routing information.
+     * @param options tour optimization options
+     * @param route smartlane routing result
+     */
+    private fun Tour.toOptimizedTour(
+            options: TourOptimizationOptions,
+            route: Route): Tour {
+        val tour = this
+
+        val inPlaceUpdate = options.isInPlaceOptimization
+
+        val stops = route.deliveries
+                .sortedBy { it.orderindex }
+                .map { delivery ->
+                    val stops = tour.stops ?: listOf()
+                    stops.first { it.uid == delivery.customId }
+                            .also {
+                                it.route = TourStopRouteMeta(
+                                        eta = TimeRange(delivery.etaFrom, delivery.etaTo),
+                                        driver = TimeRange(delivery.ddtFrom, delivery.ddtTo),
+                                        delivery = TimeRange(delivery.deliveryFrom, delivery.deliveryTo),
+                                        stayLengtH = delivery.als?.toInt(),
+                                        target = TimeRange(delivery.tdtFrom, delivery.tdtTo)
+                                )
+                            }
+                }
+
+        val tourOrders = tour.orders ?: listOf()
+
+        val orders = stops
+                .flatMap { it.tasks }
+                .map { it.orderId }.distinct()
+                .map { orderId -> tourOrders.first { it.id == orderId } }
+
+        // Determine optimized tour id / uid
+        val id: Long?
+        val uid: String
+        val nodeUid: String?
+        val parentId: Long?
+        val customId: String?
+        when (inPlaceUpdate) {
+            true -> {
+                uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
+                id = tour.id ?: throw IllegalArgumentException("Id required for in place update")
+                nodeUid = tour.nodeUid
+                parentId = tour.parentId
+                customId = tour.customId
+            }
+            false -> {
+                // Generate uid for new tour
+                uid = UUID.randomUUID().toString()
+                id = null
+                nodeUid = null
+                parentId = tour.id
+                customId = null
+            }
+        }
+
+        return Tour(
+                id = id,
+                uid = uid,
+                nodeUid = nodeUid,
+                userId = tour.userId,
+                stationNo = tour.stationNo,
+                customId = customId,
+                parentId = parentId,
+                date = tour.date,
+                optimized = Date(),
+                stops = stops,
+                orders = orders,
+
+                route = TourRouteMeta(
+                        start = route.ast,
+                        target = TimeRange(route.tstFrom, route.tstTo),
+                        distance = route.distance?.let { it.toDouble() / 1000 },
+                        totalDuration = route.grossDuration,
+                        drivingTime = route.netDuration,
+                        quality = this.calculateQuality()
+                )
+        )
+    }
+
+    /**
+     * Calculate tour route quality based on etas
+     * @return quality in percentage
+     */
+    private fun Tour.calculateQuality(): Double {
+        val stops = this.stops ?: listOf()
+
+        val stopsWithAppointments = stops.filter { it.appointmentEnd != null }
+
+        if (stopsWithAppointments.count() == 0)
+            return 1.0
+
+        val stopsNotOverdue = stopsWithAppointments.filter {
+            val from = it.route?.eta?.from ?: return@filter true
+            val to = it.route?.eta?.to ?: return@filter true
+
+            // Determine median eta
+            val eta = from.plusMinutes(
+                    (TimeSpan.between(from, to).totalMinutes / 2).toInt()
+            )
+
+            eta <= it.appointmentEnd
+        }
+
+        return stopsNotOverdue.count().toDouble() / stopsWithAppointments.count()
     }
 
     /**

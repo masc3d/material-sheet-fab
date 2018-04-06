@@ -42,6 +42,16 @@ class DekuDeliveryListNumber private constructor(
 
             return Result(DekuDeliveryListNumber(value.padStart(9, '0')))
         }
+
+        /**
+         * Create delivery list number
+         * @param value Delivery list number
+         */
+        fun create(value: Long): DekuDeliveryListNumber {
+            return this.parse(
+                    value.toString().padStart(9, '0')
+            ).value
+        }
     }
 
     /**
