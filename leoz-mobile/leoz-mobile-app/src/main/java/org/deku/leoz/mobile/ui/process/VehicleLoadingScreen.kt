@@ -20,10 +20,10 @@ import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.process.Tour
@@ -33,9 +33,9 @@ import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.rx.composeAsRest
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.mobile.settings.DebugSettings
+import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
-import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.core.view.ActionItem
 import org.deku.leoz.mobile.ui.process.tour.stop.DamagedParcelCameraScreen
 import org.deku.leoz.mobile.ui.vm.CounterViewModel
@@ -55,6 +55,8 @@ import sx.android.rx.observeOnMainThreadWithLifecycle
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.format.format
+import sx.log.slf4j.trace
+import sx.log.slf4j.warn
 import sx.rx.ObservableRxProperty
 
 /**
@@ -80,26 +82,26 @@ class VehicleLoadingScreen :
 
         val stopCounter = CounterViewModel(
                 iconRes = R.drawable.ic_stop,
-                amount = this.vehicleLoading.stopAmount.map { it as Number},
-                totalAmount = this.vehicleLoading.stopTotalAmount.map { it as Number}
+                amount = this.vehicleLoading.stopAmount.map { it as Number },
+                totalAmount = this.vehicleLoading.stopTotalAmount.map { it as Number }
         )
 
         val orderCounter = CounterViewModel(
                 iconRes = R.drawable.ic_order,
-                amount = this.vehicleLoading.orderAmount.map { it as Number},
-                totalAmount = this.vehicleLoading.orderTotalAmount.map { it as Number}
+                amount = this.vehicleLoading.orderAmount.map { it as Number },
+                totalAmount = this.vehicleLoading.orderTotalAmount.map { it as Number }
         )
 
         val parcelCounter = CounterViewModel(
                 iconRes = R.drawable.ic_package_variant_closed,
-                amount = this.vehicleLoading.parcelAmount.map { it as Number},
-                totalAmount = this.vehicleLoading.parcelTotalAmount.map { it as Number}
+                amount = this.vehicleLoading.parcelAmount.map { it as Number },
+                totalAmount = this.vehicleLoading.parcelTotalAmount.map { it as Number }
         )
 
         val weightCounter = CounterViewModel(
                 iconRes = R.drawable.ic_weight_scale,
-                amount = this.vehicleLoading.weight.map { it as Number},
-                totalAmount = this.vehicleLoading.totalWeight.map { it as Number},
+                amount = this.vehicleLoading.weight.map { it as Number },
+                totalAmount = this.vehicleLoading.totalWeight.map { it as Number },
                 format = { "${(it as Double).format(2)}kg" }
         )
     }
@@ -352,7 +354,7 @@ class VehicleLoadingScreen :
                 .subscribe {
                     val section = it.value
 
-                    log.user { "Selects section [${section?.title}]"}
+                    log.user { "Selects section [${section?.title}]" }
 
                     this.accentColor = when (section) {
                         loadedSection -> R.color.colorGreen
@@ -458,9 +460,6 @@ class VehicleLoadingScreen :
             }
                     .toHotIoObservable()
                     .composeAsRest(this.activity)
-                    .doOnError {
-                        log.error(it.message, it)
-                    }
                     .map { dlInfos ->
                         SyntheticInput(
                                 name = "Delivery lists",
@@ -469,20 +468,33 @@ class VehicleLoadingScreen :
                                         .sortedWith(
                                                 compareByDescending({ it.date?.date })
                                         )
-                                        .mapNotNull {
-                                            val customId = it.customId
+                                        .mapNotNull { tour ->
+                                            val customId = tour.customId
 
                                             if (customId == null)
                                                 return@mapNotNull null
 
-                                            val data = DekuDeliveryListNumber.parse(customId).value.label
-                                            SyntheticInput.Entry(
-                                                    symbologyType = SymbologyType.Interleaved25,
-                                                    data = data,
-                                                    name = "${it.date}: ${data}"
-                                            )
+                                            DekuDeliveryListNumber.parse(customId).let {
+                                                when {
+                                                    it.hasError -> {
+                                                        log.warn { it.error }
+                                                        null
+                                                    }
+                                                    else -> SyntheticInput.Entry(
+                                                            symbologyType = SymbologyType.Interleaved25,
+                                                            data = it.value.label,
+                                                            name = "${tour.date}: ${it.value.label}"
+                                                    )
+                                                }
+                                            }
                                         }
                         )
+                    }
+                    .doOnError {
+                        log.error(it.message, it)
+                    }
+                    .doOnNext {
+                        log.trace { it }
                     }
                     .onErrorResumeNext(Observable.empty())
 
