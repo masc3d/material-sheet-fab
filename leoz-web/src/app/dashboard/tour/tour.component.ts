@@ -9,7 +9,9 @@ import { MsgService } from '../../shared/msg/msg.service';
 @Component( {
   selector: 'app-tour',
   template: `
-    <h2>{{'tour' | translate}}</h2>
+    <div class="text2button" style="margin-left: 9px;">
+      {{'tour' | translate}}
+    </div>
     <div class="mbDashboardContent">
       <app-msg-box [msgs]="msgs$ | async" [sticky]="false"></app-msg-box>
       <app-tour-driver-list></app-tour-driver-list>
