@@ -7,7 +7,7 @@ import io.reactivex.Single
 import io.reactivex.internal.schedulers.SchedulerWhen
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.model.Interval
+import org.deku.leoz.model.TimeRange
 import org.deku.leoz.model.TourRouteMeta
 import org.deku.leoz.model.TourStopRouteMeta
 import org.deku.leoz.service.internal.LocationServiceV2
@@ -553,11 +553,11 @@ class SmartlaneBridge {
                     stops.first { it.uid == delivery.customId }
                             .also {
                                 it.route = TourStopRouteMeta(
-                                        eta = Interval(delivery.etaFrom, delivery.etaTo),
-                                        driver = Interval(delivery.ddtFrom, delivery.ddtTo),
-                                        delivery = Interval(delivery.deliveryFrom, delivery.deliveryTo),
+                                        eta = TimeRange(delivery.etaFrom, delivery.etaTo),
+                                        driver = TimeRange(delivery.ddtFrom, delivery.ddtTo),
+                                        delivery = TimeRange(delivery.deliveryFrom, delivery.deliveryTo),
                                         stayLengtH = delivery.als?.toInt(),
-                                        target = Interval(delivery.tdtFrom, delivery.tdtTo)
+                                        target = TimeRange(delivery.tdtFrom, delivery.tdtTo)
                                 )
                             }
                 }
@@ -608,7 +608,7 @@ class SmartlaneBridge {
 
                 route = TourRouteMeta(
                         start = route.ast,
-                        target = Interval(route.tstFrom, route.tstTo),
+                        target = TimeRange(route.tstFrom, route.tstTo),
                         distance = route.distance?.let { it.toDouble() / 1000 },
                         totalDuration = route.grossDuration,
                         drivingTime = route.netDuration,
