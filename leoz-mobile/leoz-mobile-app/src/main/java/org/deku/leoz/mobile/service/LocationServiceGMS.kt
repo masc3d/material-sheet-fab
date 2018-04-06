@@ -64,7 +64,7 @@ class LocationServiceGMS:
 
     override fun onConnectionFailed(p0: ConnectionResult) {
         log.warn("Connection to Google API failed. Fallback to android location service.")
-        ContextCompat.startForegroundService(this.applicationContext, Intent(applicationContext, LocationService::class.java))
+        ContextCompat.startForegroundService(this.applicationContext, Intent(applicationContext, LocationServiceAOSP::class.java))
         this.stopSelf()
     }
 
