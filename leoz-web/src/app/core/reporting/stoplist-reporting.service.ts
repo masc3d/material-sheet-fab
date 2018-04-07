@@ -8,6 +8,7 @@ import { Report } from './report.model';
 import { ReportPart } from './report-part.model';
 import { ReportingService } from './reporting.service';
 import { Stop, Tour } from '../models/tour.model';
+import { roundDecimalsAsString } from '../math/roundDecimals';
 
 @Injectable()
 export class StoplistReportingService extends ReportingService {
@@ -137,11 +138,12 @@ export class StoplistReportingService extends ReportingService {
         etaTo = moment( data.route.eta.to ).format( 'HH:mm' );
       }
       offsetY += 9;
+      const weight = roundDecimalsAsString(  data.weight, 10, true );
       doc.text( `${data.address.line1}`, offsetX, offsetY );
       doc.text( `${data.address.street} ${data.address.streetNo}`, offsetX + 70, offsetY );
       doc.text( `${data.address.zipCode} ${data.address.city}`, offsetX + 125, offsetY );
       doc.text( `Anzahl: ${data.parcelNumbers.length}`, offsetX + 70, offsetY + 4 );
-      doc.text( `Gewicht: ${data.weight} kg`, offsetX + 85, offsetY + 4 );
+      doc.text( `Gewicht: ${weight} kg`, offsetX + 85, offsetY + 4 );
       doc.text( `ETA: ${etaFrom}`, offsetX, offsetY + 4 );
       doc.text( `bis ${etaTo}`, offsetX + 15, offsetY + 4 );
       doc.text( `Termin: ${moment( data.appointmentStart ).format( 'HH:mm' )}`, offsetX + 125, offsetY + 4 );
