@@ -36,7 +36,7 @@ export class TouroptimizingService {
 
   private optimizationInProgress: number[] = [];
 
-  private optimizationFailed: boolean = false;
+  private optimizationFailed = false;
 
   constructor( protected http: HttpClient,
                protected translate: TranslateService,
@@ -87,6 +87,7 @@ export class TouroptimizingService {
     } else {
       this.optimizationInProgress = this.optimizationInProgress.filter( el => el !== id );
     }
+    console.log('this.toursSubject.getValue()', this.toursSubject.getValue());
     const tmpTours = this.toursSubject
       .getValue()
       .map( tour => {
