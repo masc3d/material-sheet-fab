@@ -257,6 +257,8 @@ class TourServiceV1
                                         Task.Type.DELIVERY -> TaskType.DELIVERY.value
                                         Task.Type.PICKUP -> TaskType.DELIVERY.value
                                     }
+                                    r.appointmentFrom = task.appointmentStart?.toTimestamp()
+                                    r.appointmentTo = task.appointmentEnd?.toTimestamp()
                                     r.timestamp = now
 
                                     if (taskIndex == 0)
@@ -739,12 +741,8 @@ class TourServiceV1
         }
     }
 
-    override fun create(deliverylistIds: List<Long>): List<Tour> {
-        throw NotImplementedError()
-    }
-
     override fun subscribe(stationNo: Long, sink: SseEventSink, sse: Sse) {
-        this.emf.withEntityManager { em ->
+        this.emf.withEntityManager { _ ->
             sink.push(
                     sse = sse,
                     events = this.updated
@@ -978,20 +976,13 @@ class TourServiceV1
                 .map { stop ->
                     val tasks = stop.value.map { task ->
                         val taskType = TaskType.valueMap.getValue(task.orderTaskType)
-                        val order = ordersById.getValue(task.orderId)
 
                         Task(
                                 id = task.id,
                                 uid = task.uid.toString(),
                                 orderId = task.orderId,
-                                appointmentStart = when (taskType) {
-                                    TaskType.DELIVERY -> order.deliveryAppointment.dateStart
-                                    TaskType.PICKUP -> order.pickupAppointment.dateStart
-                                },
-                                appointmentEnd = when (taskType) {
-                                    TaskType.DELIVERY -> order.deliveryAppointment.dateEnd
-                                    TaskType.PICKUP -> order.pickupAppointment.dateEnd
-                                },
+                                appointmentStart = task.appointmentFrom,
+                                appointmentEnd = task.appointmentTo,
                                 taskType = when (taskType) {
                                     TaskType.DELIVERY -> Task.Type.DELIVERY
                                     TaskType.PICKUP -> Task.Type.PICKUP

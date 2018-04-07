@@ -69,6 +69,16 @@ interface DeliveryListService {
             deliveryDate: ShortDate?)
             : List<DeliveryListInfo>
 
+    @POST
+    @Path("/create/tours")
+    @ApiOperation(value = "Create new tour(s) from delivery list(s)",
+            notes = "The tours created will be owned by the same station",
+            authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun createTours(
+            @ApiParam(value = "Source delivery list id(s)")
+            deliverylistIds: List<Long>
+    ): List<TourServiceV1.Tour>
+
     @ApiModel(description = "Delivery list")
     data class DeliveryList(
             @ApiModelProperty(example = "89586115", position = 10, required = true, value = "Delivery list id")
