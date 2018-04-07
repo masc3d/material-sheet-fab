@@ -91,15 +91,11 @@ class DeliveryListService
                     .findDetailsByIds(deliverylistIds)
                     .groupBy { it.id }
 
+            log.info { "Converting delivery list(s) to tour(s) [${dlRecords.map { it.id.toLong() }.joinToString(", ")}]" }
+
             // Tour service has no notion of delivery lists, providing dl ids as custom ids
-            val customIds = dlRecords.map { it.id.toLong().toString() }
-            log.info { "Converting delivery list(s) to tour(s) [${customIds.joinToString(", ")}]" }
 
-            this.tourService.delete(
-                    customIds = customIds
-            )
-
-            this.tourService.put(tours = dlRecords.map { dlRecord ->
+            val tours = dlRecords.map { dlRecord ->
                 val dlDetailRecords = dlDetailRecordsByDlId.get(dlRecord.id) ?: listOf()
 
                 TourServiceV1.Tour(
@@ -127,7 +123,17 @@ class DeliveryListService
                                 }
                 )
 
-            })
+            }
+
+            this.tourService.delete(
+                    customIds = tours.mapNotNull { it.customId }
+                            // TODO: removal of tours with deprecated custom id. remove in next update.
+                            .plus(dlRecords.map { it.id.toLong().toString() })
+                            .distinct()
+            )
+
+            this.tourService.put(tours = tours)
+
             //endregion
         } catch (e: Throwable) {
             log.error(e.message, e)
