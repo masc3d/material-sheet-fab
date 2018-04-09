@@ -15,6 +15,7 @@ import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.zalando.problem.Status
+import sx.Stopwatch
 import sx.log.slf4j.info
 import sx.mq.MqChannel
 import sx.mq.MqHandler
@@ -37,8 +38,9 @@ import javax.ws.rs.core.Response
 @Path("internal/v1/deliverylist")
 class DeliveryListService
     :
-        DeliveryListService,
+        org.deku.leoz.service.internal.DeliveryListService,
         MqHandler<DeliveryListService.StopOrderUpdateMessage> {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Context
@@ -64,57 +66,78 @@ class DeliveryListService
         this.databaseSyncService.notifications
                 .filter { it.tableName == RKKOPF.name }
                 .subscribe {
-                    this.onUpdate(
-                            this.deliveryListRepository
-                                    .findNewerThan(
-                                            syncId = it.localSyncId,
-                                            // Only handle updates for recent delivery lists
-                                            date = Date().plusDays(-1).toTimestamp()
-                                    )
-                    )
+                    try {
+                        this.createTours(deliverylistIds = this.deliveryListRepository
+                                .findNewerThan(
+                                        syncId = it.localSyncId,
+                                        // Only handle updates for recent delivery lists
+                                        date = Date().plusDays(-1).toTimestamp()
+                                ))
+                    } catch (e: Throwable) {
+                        log.error(e.message, e)
+                    }
                 }
     }
 
-    /**
-     * Delivery list update handler
-     */
-    private fun onUpdate(deliverylistIds: List<Long>) {
-        try {
-            //region Convert delivery lists to tours
-            val dlRecords = deliveryListRepository
-                    .findByIds(deliverylistIds)
+    override fun createTours(deliverylistIds: List<Long>): List<TourServiceV1.Tour> {
+        val dlRecords = deliveryListRepository
+                .findByIds(deliverylistIds)
 
-            if (dlRecords.count() == 0)
-                return
+        if (dlRecords.count() == 0)
+            return listOf()
+
+        val tours = Stopwatch.createStarted(this,
+                "Converting delivery list(s) to tour(s) [${dlRecords.map { it.id.toLong() }.joinToString(", ")}]", {
 
             val dlDetailRecordsByDlId = deliveryListRepository
                     .findDetailsByIds(deliverylistIds)
                     .groupBy { it.id }
 
-            log.info { "Converting delivery list(s) to tour(s) [${dlRecords.map { it.id.toLong() }.joinToString(", ")}]" }
 
-            // Tour service has no notion of delivery lists, providing dl ids as custom ids
+            val ordersById = this.orderService.getByIds(
+                    dlDetailRecordsByDlId
+                            .flatMap { it.value }
+                            .map { it.orderId.toLong() }
+            )
+                    .associateBy { it.id }
 
             val tours = dlRecords.map { dlRecord ->
-                val dlDetailRecords = dlDetailRecordsByDlId.get(dlRecord.id) ?: listOf()
+                val dlDetailRecords = dlDetailRecordsByDlId.get(dlRecord.id)
+                        ?.sortedBy { it.orderPosition }
+                        ?: listOf()
+
+                val orderIds = dlDetailRecords
+                        .map { it.orderId.toLong() }
 
                 TourServiceV1.Tour(
                         stationNo = dlRecord.deliveryStation.toLong(),
+                        // Tour service has no notion of delivery lists, providing dl ids as custom ids
                         customId = DekuDeliveryListNumber.create(dlRecord.id.toLong()).value,
                         date = ShortDate(dlRecord.deliveryListDate),
+                        orders = orderIds.map { ordersById.getValue(it) },
                         stops = dlDetailRecords
-                                .sortedBy { it.orderPosition }
                                 .groupBy { it.orderPosition }
                                 .map { dlStop ->
                                     TourServiceV1.Stop(
                                             tasks = dlStop.value
                                                     .distinctBy { it.orderId.toString() + it.stoptype }
                                                     .map { dlDetailRecord ->
+                                                        val orderId = dlDetailRecord.orderId.toLong()
+                                                        val order = ordersById.getValue(orderId)
+
                                                         TourServiceV1.Task(
-                                                                orderId = dlDetailRecord.orderId.toLong(),
+                                                                orderId = orderId,
                                                                 taskType = when (TaskType.valueOf(dlDetailRecord.stoptype)) {
                                                                     TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
                                                                     TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
+                                                                },
+                                                                appointmentStart = when (TaskType.valueOf(dlDetailRecord.stoptype)) {
+                                                                    TaskType.PICKUP -> order.pickupAppointment.dateStart
+                                                                    TaskType.DELIVERY -> order.deliveryAppointment.dateStart
+                                                                },
+                                                                appointmentEnd = when (TaskType.valueOf(dlDetailRecord.stoptype)) {
+                                                                    TaskType.PICKUP -> order.pickupAppointment.dateEnd
+                                                                    TaskType.DELIVERY -> order.deliveryAppointment.dateEnd
                                                                 }
                                                         )
                                                     }
@@ -132,12 +155,12 @@ class DeliveryListService
                             .distinct()
             )
 
-            this.tourService.put(tours = tours)
+            this.tourService.put(tours)
 
-            //endregion
-        } catch (e: Throwable) {
-            log.error(e.message, e)
-        }
+            tours
+        })
+
+        return tours
     }
 
     override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {

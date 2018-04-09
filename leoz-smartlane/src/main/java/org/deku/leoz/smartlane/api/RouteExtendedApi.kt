@@ -153,17 +153,20 @@ fun RouteApi.getRouteByCustomId(vararg customId: String): Observable<Route> {
  * @param customId Custom id (substring)
  */
 fun RouteApi.getRouteByCustomIdSubstring(vararg customId: String): Observable<Route> {
-    return this.getRoute(
-            q = FlaskFilter(FlaskBooleanExpression(
-                    or = customId.map {
-                        FlaskPredicate(
-                                name = "custom_id",
-                                op = FlaskOperator.LIKE,
-                                value = "%${it}%"
-                        )
-                    }
-            )).toJson()
-    )
+    return Observable.fromIterable(customId.toList())
+            .buffer(10)
+            .concatMap { customIds ->
+                this.getRoute(
+                        q = FlaskFilter(FlaskBooleanExpression(
+                                or = customIds.map {
+                                    FlaskPredicate(
+                                            name = "custom_id",
+                                            op = FlaskOperator.LIKE,
+                                            value = "%${it}%"
+                                    )
+                                })).toJson()
+                )
+            }
 }
 
 /**
