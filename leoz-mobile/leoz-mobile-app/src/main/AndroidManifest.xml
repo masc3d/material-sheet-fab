@@ -52,10 +52,13 @@
 
         <!-- Services -->
         <service
-            android:name=".service.LocationService"
+            android:name=".service.LocationServiceAOSP"
             android:enabled="true"/>
         <service
             android:name=".service.LocationServiceGMS"
+            android:enabled="false"/>
+        <service
+            android:name=".service.LocationServiceRX"
             android:enabled="true"/>
 
         <!-- FileProvider, required on newer android versions for sharing files between processes
