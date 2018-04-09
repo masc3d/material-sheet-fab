@@ -11,6 +11,10 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.Spinner
+import android.widget.TextView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -98,6 +102,8 @@ class StopDetailsScreen
         )
     })
     private val adapter get() = flexibleAdapterInstance.get()
+
+    private var delayMinutes: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -354,10 +360,46 @@ class StopDetailsScreen
                                     .negativeText(android.R.string.cancel)
                                     .build()
 
-//                            val customView = dialog.customView!!
-//                            customView.findViewById<TimeDurationPicker>(R.id.uxTimeDurationInput).also {
-//                                it.setTimeUnits(1)
-//                            }
+                            dialog.customView!!.also {
+                                val textView = it.findViewById<TextView>(R.id.uxDelayDisplay)
+
+                                textView.text = "$delayMinutes Min."
+
+                                it.findViewById<Spinner>(R.id.uxDelayReasonList).also {
+                                    val reasons = DelayedAppointmentReason.values().map {
+                                        it.mobile
+                                    }
+                                    it.adapter = ArrayAdapter<String>(this.context, android.R.layout.simple_spinner_item, reasons.map { it.textOrName(this.context) }).also {
+                                        it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                                    }
+                                }
+
+                                it.findViewById<Button>(R.id.uxMinusFifteen).also {
+                                    it.setOnClickListener {
+                                        var delayMin = this.stop.delayInMinutes ?: 0
+
+                                        if (delayMin - 15 < 0) {
+                                            delayMin = 0
+                                        } else {
+                                            delayMin -= 15
+                                        }
+                                        textView.text = "$delayMin Min."
+
+                                        this.stop.delayInMinutes = delayMin
+                                    }
+                                }
+
+                                it.findViewById<Button>(R.id.uxPlusFifteen).also {
+                                    it.setOnClickListener {
+                                        var delayMin = this.stop.delayInMinutes ?: 0
+
+                                        delayMin += 15
+                                        textView.text = "$delayMin Min."
+
+                                        this.stop.delayInMinutes = delayMin
+                                    }
+                                }
+                            }
 
                             dialog.show()
 

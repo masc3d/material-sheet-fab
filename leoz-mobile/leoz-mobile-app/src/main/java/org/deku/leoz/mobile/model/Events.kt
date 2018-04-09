@@ -97,16 +97,6 @@ private val meta = listOf(
         )
 )
 
-data class DelayedAppointmentReasonMeta(
-        val value: DelayedAppointmentReason,
-        @StringRes val text: Int?
-) {
-        fun textOrName(context: Context): String =
-                if (this.text != null) context.getString(this.text) else this.value.name
-}
-
-
-
 /**
  * Event meta lookup by reason
  */

@@ -349,4 +349,9 @@
     <string name="data_protection">Data protecion</string>
     <string name="report_delay">Report delay</string>
     <string name="attach_note">Attach a note</string>
+    <string name="delay_reason_bad_weather">Bad Weather</string>
+    <string name="delay_reason_car_accident">Car Accident</string>
+    <string name="delay_reason_traffic_jam">Traffic Jam</string>
+    <string name="delay_reason_vehicle_breakdown">Vehicle Breakdown</string>
+    <string name="delay_reason_other">Other</string>
 </resources>
