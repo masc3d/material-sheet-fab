@@ -18,6 +18,7 @@ import org.deku.leoz.service.internal.uid
 import org.deku.leoz.smartlane.SmartlaneApi
 import org.deku.leoz.smartlane.api.*
 import org.deku.leoz.smartlane.model.*
+import org.deku.leoz.time.toShortDate
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.threeten.bp.Duration
@@ -542,7 +543,10 @@ class SmartlaneBridge {
     private fun Tour.toOptimizedTour(
             options: TourOptimizationOptions,
             route: Route): Tour {
+
         val tour = this
+
+        val tourDate = Date().plusDays(options.appointments.shiftDaysFromNow ?: 0)
 
         val inPlaceUpdate = options.isInPlaceOptimization
 
@@ -601,7 +605,7 @@ class SmartlaneBridge {
                 stationNo = tour.stationNo,
                 customId = customId,
                 parentId = parentId,
-                date = tour.date,
+                date = tourDate.toShortDate(),
                 optimized = Date(),
                 stops = stops,
                 orders = orders,
@@ -680,7 +684,6 @@ class SmartlaneBridge {
                                 if (!omitLoads)
                                     it.load = stop.weight?.let { Math.ceil(it).toInt() }
                             }
-
                             // Track stop via custom id
                             it.customId = stop.uid
 
