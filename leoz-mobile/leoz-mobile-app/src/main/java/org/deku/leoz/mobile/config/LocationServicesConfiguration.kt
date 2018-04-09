@@ -4,7 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
-import org.deku.leoz.mobile.service.LocationServices
+import org.deku.leoz.mobile.service.BaseLocationService.LocationServices
 
 /**
  * Created by 27694066 on 05.10.2017.

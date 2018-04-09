@@ -207,11 +207,11 @@ open class Application : MultiDexApplication() {
         try {
             when {
                 isServiceRunning(LocationServiceGMS::class.java) -> {
-                    //log.debug("LocationServiceGMS is running. Stopping now")
+                    log.debug("LocationServiceGMS is running. Stopping now...")
                     this.stopService(android.content.Intent(this, LocationServiceGMS::class.java))
                 }
                 isServiceRunning(LocationServiceAOSP::class.java) -> {
-                    //log.debug("LocationServiceAOSP is running. Stopping now")
+                    log.debug("LocationServiceAOSP is running. Stopping now...")
                     this.stopService(android.content.Intent(this, LocationServiceAOSP::class.java))
                 }
                 else -> log.warn("Seems that no LocationService is running")
