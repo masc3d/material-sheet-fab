@@ -4,6 +4,7 @@ import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
@@ -16,6 +17,8 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
@@ -50,6 +53,7 @@ import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.inflateMenu
+import sx.android.rx.observeOnMainThread
 import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.rx.observeOnMainThreadWithLifecycle
 import sx.android.ui.flexibleadapter.SimpleVmItem
@@ -58,6 +62,7 @@ import sx.format.format
 import sx.log.slf4j.trace
 import sx.log.slf4j.warn
 import sx.rx.ObservableRxProperty
+import java.util.concurrent.TimeUnit
 
 /**
  * Vehicle loading screen
@@ -383,6 +388,12 @@ class VehicleLoadingScreen :
                         }
                     }
                 }
+
+        this.parcelListAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) {
+                activity.expandToolbar(parcelListAdapter.expandedPositions.count() == 0)
+            }
+        })
 
         //region Finish button visibility
 

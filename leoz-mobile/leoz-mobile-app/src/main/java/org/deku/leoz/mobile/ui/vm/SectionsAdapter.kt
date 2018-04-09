@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
+import sx.log.slf4j.trace
 import sx.rx.CompositeDisposableSupplier
 import sx.rx.ObservableRxProperty
 import sx.rx.bind
@@ -65,11 +66,11 @@ class SectionsAdapter
                         } else {
                             if (adapter.isSelected(position) || !item.isSelectable) {
                                 if (adapter.isExpanded(position)) {
-                                    adapter.collapse(position)
+                                    adapter.collapse(position, true)
                                 } else {
                                     // TODO: after expanding and fast scrolling to bottom, item click event doesn't fire unless the list is nudged a second time. glitchy, needs investigation
                                     adapter.collapseAll()
-                                    adapter.expand(position)
+                                    adapter.expand(position, true)
                                     adapter.recyclerView.scrollToPosition(0)
                                 }
                             } else {
@@ -230,7 +231,6 @@ class SectionsAdapter
         }
 
         this.sections.remove(section)
-
     }
 
     /**
@@ -275,7 +275,7 @@ class SectionsAdapter
         }
 
         if (section.expandOnSelection) {
-            adapter.expand(0)
+            adapter.expand(0, true)
         }
 
         adapter.recyclerView.scrollToPosition(0)
