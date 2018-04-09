@@ -23,6 +23,7 @@ import eu.davidea.flexibleadapter.SelectableAdapter
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_tour_stop_detail.*
+import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
@@ -113,7 +114,7 @@ class StopDetailsScreen
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? =
-            // Inflate the layout for this fragment
+    // Inflate the layout for this fragment
             inflater.inflate(R.layout.screen_tour_stop_detail, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -249,13 +250,6 @@ class StopDetailsScreen
                         iconTintRes = android.R.color.white
                 ),
                 ActionItem(
-                        id = R.id.action_stop_add_information,
-                        colorRes = R.color.colorGrey,
-                        iconRes = R.drawable.ic_comment_alert,
-                        alignEnd = false,
-                        menu = stopNoteMenu
-                ),
-                ActionItem(
                         id = R.id.action_call,
                         colorRes = R.color.colorGreen,
                         iconRes = R.drawable.ic_phone,
@@ -268,6 +262,13 @@ class StopDetailsScreen
                         iconRes = android.R.drawable.ic_menu_mylocation,
                         iconTintRes = android.R.color.black,
                         alignEnd = false
+                ),
+                ActionItem(
+                        id = R.id.action_stop_add_information,
+                        colorRes = R.color.colorGrey,
+                        iconRes = R.drawable.ic_comment_alert,
+                        alignEnd = false,
+                        menu = stopNoteMenu
                 )
         )
     }
@@ -338,6 +339,52 @@ class StopDetailsScreen
                             dialogBuilder.cancelable(true)
                             dialogBuilder.content(stop.address.phone)
                             dialogBuilder.build().show()
+                        }
+
+                        R.id.action_report_delay -> {
+                            val dialog = MaterialDialog.Builder(context)
+                                    .title("Report delay")
+                                    .iconRes(R.drawable.ic_appointment_at_risk)
+                                    .cancelable(false)
+                                    .customView(R.layout.dialog_delay_picker, true)
+                                    .positiveText(R.string.proceed)
+                                    .onPositive { _, _ ->
+
+                                    }
+                                    .negativeText(android.R.string.cancel)
+                                    .build()
+
+                            val customView = dialog.customView!!
+                            customView.findViewById<TimeDurationPicker>(R.id.uxTimeDurationInput).also {
+                                it.setTimeUnits(1)
+                            }
+
+                            dialog.show()
+
+//                            val dialogBuilder = MaterialDialog.Builder(context).also {
+//                                it.title("Report delay")
+//                                it.positiveText("Continue")
+//                                it.negativeText("Abort")
+//                                it.content("Specify a reason for the delay")
+//                                it.input(
+//                                        "Reason",
+//                                        null,
+//                                        false,
+//                                        MaterialDialog.InputCallback { dialog, input ->
+//                                            log.debug("INPUT-CALLBACK [$input]}")
+//                                        }
+//                                )
+//                                it.inputType(InputType.TYPE_CLASS_TEXT)
+//                                it.onPositive { dialog, which ->
+//                                    val hmsPicker: HmsPickerBuilder = HmsPickerBuilder().also {
+//                                        it.setFragmentManager(this.fragmentManager)
+//                                        it.setStyleResId(R.style.BetterPickersDialogFragment)
+//                                        it.setPlusMinusVisibility(View.VISIBLE)
+//                                    }
+//
+//                                    hmsPicker.show()
+//                                }
+//                            }.show()
                         }
                     }
                 }
