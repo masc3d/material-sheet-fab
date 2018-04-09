@@ -61,33 +61,49 @@ data class TourStopRouteMeta(
 
 /**
  * Tour identification
+ *
+ * CSV encoded tour identification following the format
+ * DK;TR;<tour-id>;<tour-uid in upper case>
+ *
  * @param id tour ids
  * @param uid tour uid
  */
 @Serializable(0x987f80204941b9)
 data class TourIdentification(
-        var id: Int? = null,
-        var uid: UUID? = null
+        val id: Int? = null,
+        val uid: UUID? = null
 ) {
     companion object {
+        private val PREFIX = "DK;TR"
         /**
          * Parse tour identification from label.
          * The expected format is
          */
         fun parseLabel(label: String): Result<TourIdentification> {
             return try {
-                if (label.startsWith("<deku-tour")) {
+                if (label.startsWith(PREFIX)) {
+                    val parts = label.split(';')
                     Result(
-                            XmlMapper().readValue(label, TourIdentification::class.java)
+                            TourIdentification(
+                                    id = parts[2].toInt(),
+                                    uid = UUID.fromString(parts[3])
+                            )
                     )
                 } else {
                     Result(
-                            IllegalArgumentException()
+                            IllegalArgumentException("Invalid tour ident prefix [${label}]")
                     )
                 }
             } catch (t: Throwable) {
-                Result(t)
+                Result(
+                        IllegalArgumentException("Invalid tour ident [${label}]", t)
+                )
             }
         }
     }
+
+    val label by lazy {
+        "${PREFIX};${id};${uid.toString().toUpperCase()}"
+    }
+
 }
