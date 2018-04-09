@@ -20,8 +20,9 @@ import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.settings.DebugSettings
-import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.mobile.service.LocationServiceAOSP
 import org.deku.leoz.mobile.service.LocationServiceGMS
+import org.deku.leoz.mobile.service.LocationServiceRX
 import org.deku.leoz.mobile.settings.LocationSettings
 import org.deku.leoz.mobile.ui.core.BaseActivity
 import org.slf4j.LoggerFactory
@@ -187,12 +188,12 @@ open class Application : MultiDexApplication() {
 
     fun startLocationSerivces() {
         when {
-            (locationSettings.useGoogleLocationService && !this.isServiceRunning(LocationServiceGMS::class.java)) -> {
-                ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceGMS::class.java))
+            (locationSettings.useGoogleLocationService && !this.isServiceRunning(LocationServiceRX::class.java)) -> {
+                ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceRX::class.java))
             }
 
-            (!locationSettings.useGoogleLocationService && !this.isServiceRunning(LocationService::class.java)) -> {
-                ContextCompat.startForegroundService(this, Intent(applicationContext, LocationService::class.java))
+            (!locationSettings.useGoogleLocationService && !this.isServiceRunning(LocationServiceAOSP::class.java)) -> {
+                ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceAOSP::class.java))
             }
             else -> {
                 log.debug("LocationService already running.")
@@ -201,18 +202,22 @@ open class Application : MultiDexApplication() {
     }
 
     /**
-     *  This function will stop running location services (a.t.m. LocationService and LocationServiceGMS)
+     *  This function will stop running location services (a.t.m. LocationServiceAOSP and LocationServiceGMS)
      */
     fun stopLocationServices() {
         try {
             when {
+                isServiceRunning(LocationServiceRX::class.java) -> {
+                    //log.debug("LocationServiceRX is running. Stopping now...")
+                    this.stopService(android.content.Intent(this, LocationServiceRX::class.java))
+                }
                 isServiceRunning(LocationServiceGMS::class.java) -> {
-                    //log.debug("LocationServiceGMS is running. Stopping now")
+                    //log.debug("LocationServiceGMS is running. Stopping now...")
                     this.stopService(android.content.Intent(this, LocationServiceGMS::class.java))
                 }
-                isServiceRunning(LocationService::class.java) -> {
-                    //log.debug("LocationService is running. Stopping now")
-                    this.stopService(android.content.Intent(this, LocationService::class.java))
+                isServiceRunning(LocationServiceAOSP::class.java) -> {
+                    //log.debug("LocationServiceAOSP is running. Stopping now...")
+                    this.stopService(android.content.Intent(this, LocationServiceAOSP::class.java))
                 }
                 else -> log.warn("Seems that no LocationService is running")
             }

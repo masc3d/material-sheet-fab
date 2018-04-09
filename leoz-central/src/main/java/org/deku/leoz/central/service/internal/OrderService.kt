@@ -23,7 +23,10 @@ import javax.ws.rs.core.Response
  */
 @Component
 @Path("internal/v1/order")
-class OrderService : OrderService {
+class OrderService
+    :
+        org.deku.leoz.service.internal.OrderService {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -44,8 +47,8 @@ class OrderService : OrderService {
                 val order = this.orderRepository.findByScan(parcelScan)
                         ?.toOrder()
                         ?: throw RestProblem(
-                        title = "Order not found",
-                        status = Response.Status.NOT_FOUND)
+                                title = "Order not found",
+                                status = Response.Status.NOT_FOUND)
 
                 httpRequest.restrictByDebitor { order.findOrderDebitorId(Type.DELIVERY) }
 
@@ -68,8 +71,8 @@ class OrderService : OrderService {
         val order = this.orderRepository.findById(id)
                 ?.toOrder()
                 ?: throw RestProblem(
-                title = "Order not found",
-                status = Response.Status.NOT_FOUND)
+                        title = "Order not found",
+                        status = Response.Status.NOT_FOUND)
 
         httpRequest.restrictByDebitor { order.findOrderDebitorId(Type.DELIVERY) }
 
@@ -104,7 +107,7 @@ class OrderService : OrderService {
             Type.PICKUP -> stationNo = this.pickupStation
             Type.DELIVERY -> stationNo = this.deliveryStation
         }
-        return  stationRepository.findByStationNo(stationNo)?.debitorId
+        return stationRepository.findByStationNo(stationNo)?.debitorId
     }
 
     enum class Type {
@@ -210,7 +213,7 @@ class OrderService : OrderService {
         p.parcelType = ParcelType.valueMap.getValue(r.parcelType)
         p.lastDeliveryListId = r.lastDeliveryListId?.toInt()
         if (DekuUnitNumber.parse(
-                toUnitNo(r.scanId)).value.type == UnitNumber.Type.Bag
+                        toUnitNo(r.scanId)).value.type == UnitNumber.Type.Bag
                 //todo take list of alowed deliveryStations from sys_prperties
                 && r.deliveryStation == 956) {
             p.isDelivered = false

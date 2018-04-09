@@ -97,17 +97,6 @@ interface TourServiceV1 {
             customId: String
     ): Tour
 
-    @Deprecated("Superseded by automatic dl conversion in `DeliveryListService`, manual conversion method will be moved to (central only) delivery list service")
-    @POST
-    @Path("/deliverylist")
-    @ApiOperation(value = "Create new tour(s) from delivery list(s)",
-            notes = "The tours created will be owned by the same station",
-            authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun create(
-            @ApiParam(value = "Source delivery list id(s)")
-            deliverylistIds: List<Long>
-    ): List<Tour>
-
     @DELETE
     @Path("/")
     @ApiOperation(value = "Delete tour(s)",

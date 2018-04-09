@@ -9,7 +9,7 @@ import android.os.Bundle
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 
-class LocationService
+class LocationServiceAOSP
     : BaseLocationService() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)

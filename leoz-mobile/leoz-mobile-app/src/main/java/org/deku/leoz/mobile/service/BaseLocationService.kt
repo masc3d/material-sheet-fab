@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.service
 
 import android.Manifest
 import android.app.*
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
@@ -18,6 +19,9 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
+import com.google.android.gms.location.LocationRequest
+import com.patloew.rxlocation.RxLocation
+import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Login
@@ -27,6 +31,7 @@ import org.deku.leoz.mobile.settings.LocationSettings
 import org.deku.leoz.mobile.ui.StartupActivity
 import org.deku.leoz.service.internal.LocationServiceV2
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.android.getDrawableCompat
 import sx.android.toBitmap
 import sx.mq.mqtt.channel
@@ -159,11 +164,9 @@ abstract class BaseLocationService: Service() {
     fun reportLocation(location: Location) {
         log.trace("New location reported")
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if (location.isFromMockProvider && !locationSettings.allowMockLocation) {
-                log.warn("Mock location received!")
-                throw LocationService.MockLocationException("Received a mock location. Mock locations are not allowed.")
-            }
+        if (location.isFromMockProvider && !locationSettings.allowMockLocation) {
+            log.warn("Mock location received!")
+            throw LocationServiceAOSP.MockLocationException("Received a mock location. Mock locations are not allowed.")
         }
 
         if (!locationRequirementsCheck(locationNew = location, locationOld = this@BaseLocationService.locationCache.lastLocation)) {
@@ -234,5 +237,22 @@ abstract class BaseLocationService: Service() {
             return true
 
         return false
+    }
+
+    class LocationServices(val context: Context) {
+
+        val locationSettings: LocationSettings by Kodein.global.lazy.instance()
+        val locationManager: LocationManager by lazy {
+            (context.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
+        }
+
+        val locationSettingsChangedEventSubject = PublishSubject.create<Unit>()
+        val locationSettingsChangedEvent = locationSettingsChangedEventSubject.hide()
+
+        val locationRequest = LocationRequest().also {
+            it.interval = Duration.ofSeconds(this.locationSettings.period).toMillis()
+            it.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            it.smallestDisplacement = locationSettings.smallestDisplacement
+        }
     }
 }

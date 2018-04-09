@@ -90,16 +90,18 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
             return compareCustom( this.latestSortOrder, data1[ this.latestSortField ], data2[ this.latestSortField ] );
           } ) );
         } else {
-          const sortedAndGrouped = this.invertTreeAndFlatten( this.convert2Tree( tours ) );
+          const sortedAndGrouped = this.invertTreeAndFlatten( this.convert2Tree( [ ...tours ] ) );
           this.tours.push( ...sortedAndGrouped );
         }
         this.filterToursByDeliveryDate();
         this.cd.markForCheck();
       } );
-    this.touroptimizingService.getTours();
+    // this.touroptimizingService.getTours();
 
     this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe );
     this.touroptimizingService.initSSEtourChanges( this.ngUnsubscribe );
+
+    this.touroptimizingService.getTours();
   }
 
   private filterToursByDeliveryDate() {
@@ -118,11 +120,13 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   getTours() {
+    this.msgService.clear();
     this.touroptimizingService.showSpinner();
     this.touroptimizingService.getTours();
   }
 
   changeCheckAllTours( evt: { checked: boolean } ) {
+    this.msgService.clear();
     this.touroptimizingService.switchSelectionAllTours( evt.checked );
   }
 
@@ -131,9 +135,9 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
       .filter( tour => tour.selected );
     this.selectedOptimizableTours = this.selectedTours
       .filter( tour => tour.orders.length > 0 );
-    // if (this.selectedOptimizableTours.length === 0) {
-    //   this.msgService.info( 'no_optimizable_tours_selected', false, false );
-    // } else {
+    if (this.selectedOptimizableTours.length === 0) {
+      this.msgService.info( 'no_optimizable_tours_selected', false, false );
+    } else {
       const selectedTourIds = this.selectedOptimizableTours
         .map( tour => tour.id );
       let vehicles = [];
@@ -146,8 +150,14 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
       this.touroptimizingService.optimizeAndReinitTours( selectedTourIds,
         vehicles.length > 0 ? vehicles : [ Vehicle.SPRINTER ],
         this.optimizeTraffic, this.optimizeExistingtours, this.dontShiftOneDayFromNow );
-    // }
+    }
     this.checkAll = false;
+    this.touroptimizingService.switchSelectionAllTours( false );
+    this.displayOptimizationOptions = false;
+    this.dontShiftOneDayFromNow = true;
+    this.optimizeTraffic = true;
+    this.optimizeExistingtours = true;
+    this.optimizeSplitTours = false;
   }
 
   private addVehicles( amount: number, type: Vehicle, vehicles: Vehicle[] ): Vehicle[] {
@@ -160,14 +170,17 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   deleteTour( tourId ) {
+    this.msgService.clear();
     this.touroptimizingService.deleteTours( [ tourId ] );
   }
 
   preview() {
+    this.msgService.clear();
     this.createReport( false );
   }
 
   saving() {
+    this.msgService.clear();
     this.createReport( true );
   }
 
@@ -186,32 +199,35 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
     const filename = 'sl_' + listsToPrint.map( tour => tour.id ).join( '_' );
     this.reportingService.generateReports( listsToPrint )
-      .then(report => this.printingService.printReports( report, filename, saving ));
+      .then( report => this.printingService.printReports( report, filename, saving ) );
     // this.printingService.printReports( this.reportingService.generateReports( listsToPrint ),
     //   filename, saving );
   }
 
   optimizeDialog() {
+    this.msgService.clear();
     this.displayOptimizationOptions = false;
     this.selectedTours = this.filteredTours
       .filter( tour => tour.selected );
     this.selectedOptimizableTours = this.selectedTours
       .filter( tour => tour.orders && tour.orders.length > 1 );
-    // if (this.selectedOptimizableTours.length === 0) {
-    //   this.msgService.info( 'no_optimizable_tours_selected', false, false );
-    // } else {
+    if (this.selectedTours.length === 0) {
+      this.msgService.info( 'no_optimizable_tours_selected', false, false );
+    } else {
       this.displayOptimizationOptions = true;
-    // }
+    }
     this.cd.markForCheck();
   }
 
   acceptOptimizationOptions() {
+    this.msgService.clear();
     this.optimizeTours();
     this.displayOptimizationOptions = false;
     this.cd.markForCheck();
   }
 
   rejectOptimizationOptions() {
+    this.msgService.clear();
     this.displayOptimizationOptions = false;
     this.cd.markForCheck();
   }
@@ -252,7 +268,12 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
         this.flatten( tour.children, flattenedTours );
       }
     } );
-    return flattenedTours;
+    return flattenedTours.map( tour => {
+      if (tour.children) {
+        delete tour.children;
+      }
+      return tour;
+    } );
   }
 
   private invertTreeAndFlatten( toursTree: Map<number, Tour> ): Tour[] {
