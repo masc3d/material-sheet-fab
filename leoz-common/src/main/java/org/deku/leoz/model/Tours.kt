@@ -1,6 +1,5 @@
 package org.deku.leoz.model
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import sx.Result
 import sx.io.serialization.Serializable
 import java.util.*
@@ -74,7 +73,12 @@ data class TourIdentification(
         val uid: UUID? = null
 ) {
     companion object {
-        private val PREFIX = "DK;TR"
+        private val DELIMITER = ";"
+
+        private val OWNER = "DK"
+        private val TYPE = "TR"
+
+        private val PREFIX by lazy { listOf(OWNER, TYPE).joinToString(DELIMITER) }
         /**
          * Parse tour identification from label.
          * The expected format is
@@ -82,7 +86,7 @@ data class TourIdentification(
         fun parseLabel(label: String): Result<TourIdentification> {
             return try {
                 if (label.startsWith(PREFIX)) {
-                    val parts = label.split(';')
+                    val parts = label.split(DELIMITER)
                     Result(
                             TourIdentification(
                                     id = parts[2].toInt(),
@@ -103,7 +107,7 @@ data class TourIdentification(
     }
 
     val label by lazy {
-        "${PREFIX};${id};${uid.toString().toUpperCase()}"
+        listOf(OWNER, TYPE, id, uid.toString().toUpperCase())
+                .joinToString(DELIMITER)
     }
-
 }
