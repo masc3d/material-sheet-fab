@@ -354,10 +354,10 @@ class StopDetailsScreen
                                     .negativeText(android.R.string.cancel)
                                     .build()
 
-                            val customView = dialog.customView!!
-                            customView.findViewById<TimeDurationPicker>(R.id.uxTimeDurationInput).also {
-                                it.setTimeUnits(1)
-                            }
+//                            val customView = dialog.customView!!
+//                            customView.findViewById<TimeDurationPicker>(R.id.uxTimeDurationInput).also {
+//                                it.setTimeUnits(1)
+//                            }
 
                             dialog.show()
 

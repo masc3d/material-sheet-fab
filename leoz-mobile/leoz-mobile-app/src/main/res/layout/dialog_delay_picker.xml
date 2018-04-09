@@ -1,58 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/dialog_whatsnew"
+    style="@style/AppTheme.Layout.Screen"
+    android:id="@+id/dialog_delay_picker"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/deku_background_selector"
     android:orientation="vertical">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/uxReasonTextLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Reason"
+                    android:maxLines="1" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/uxReasonTextLayout"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="@dimen/medium_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:text="Vorlage" />
+
+        </RelativeLayout>
+
     <LinearLayout
-        style="@style/AppTheme.Layout.Screen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
-        android:gravity="bottom"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="vertical"
-        >
-
-        <Spinner
-            android:id="@+id/uxDelayReasons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="10" />
+        android:textAlignment="center">
 
         <TextView
-            style="@style/TextAppearance.AppCompat.Large"
-            android:layout_marginBottom="@dimen/medium_margin"
+            android:textAlignment="center"
+            style="@style/medium_bold"
             android:layout_width="match_parent"
-            android:visibility="gone"
-            android:layout_height="wrap_content"
-            android:text="Approximate delay:"/>
+            android:layout_height="match_parent"
+            android:text="+ 30 Min." />
 
-        <android.support.design.widget.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginBottom="@dimen/medium_margin"
-            >
+            android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/uxApproximateDelay"
+            <Button
+                android:layout_weight="1"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="- 15m" />
+
+            <Button
                 android:layout_weight="1"
-                android:ems="10"
-                android:hint="Delay (in hours, eg. 1:30)"
-                android:inputType="time" />
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="+ 15m" />
 
-        </android.support.design.widget.TextInputLayout>
-
-        <mobi.upod.timedurationpicker.TimeDurationPicker
-            android:id="@+id/uxTimeDurationInput"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_gravity="center_horizontal" />
+        </LinearLayout>
 
     </LinearLayout>
 
