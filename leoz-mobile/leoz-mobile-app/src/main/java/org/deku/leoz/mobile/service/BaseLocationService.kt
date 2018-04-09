@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.google.android.gms.location.LocationRequest
+import com.patloew.rxlocation.RxLocation
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.R
@@ -163,11 +164,9 @@ abstract class BaseLocationService: Service() {
     fun reportLocation(location: Location) {
         log.trace("New location reported")
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if (location.isFromMockProvider && !locationSettings.allowMockLocation) {
-                log.warn("Mock location received!")
-                throw LocationServiceAOSP.MockLocationException("Received a mock location. Mock locations are not allowed.")
-            }
+        if (location.isFromMockProvider && !locationSettings.allowMockLocation) {
+            log.warn("Mock location received!")
+            throw LocationServiceAOSP.MockLocationException("Received a mock location. Mock locations are not allowed.")
         }
 
         if (!locationRequirementsCheck(locationNew = location, locationOld = this@BaseLocationService.locationCache.lastLocation)) {

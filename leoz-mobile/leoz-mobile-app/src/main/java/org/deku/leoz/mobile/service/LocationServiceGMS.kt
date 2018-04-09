@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.service
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -8,12 +9,12 @@ import android.support.v4.app.ActivityCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationListener
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import android.support.v4.content.ContextCompat
 import org.slf4j.LoggerFactory
 
 
+@SuppressLint("MissingPermission")
 /**
  * Created by 27694066 on 22.09.2017.
  */
