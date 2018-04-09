@@ -28,23 +28,17 @@ enum class CipherType(val value: String) {
 /**
  * Get instance of digest
  */
-fun DigestType.getInstance(): MessageDigest {
-    return MessageDigest.getInstance(this.value)
-}
+fun DigestType.getInstance(): MessageDigest = MessageDigest.getInstance(this.value)
 
 /**
  * Get instance of cipher type
  */
-fun CipherType.getInstance(): Cipher {
-    return Cipher.getInstance(this.value)
-}
+fun CipherType.getInstance(): Cipher = Cipher.getInstance(this.value)
 
 /**
  * Create cipher-specific secret key
  */
-fun CipherType.createKey(key: ByteArray): SecretKey {
-    return SecretKeySpec(key, this.value)
-}
+fun CipherType.createKey(key: ByteArray): SecretKey = SecretKeySpec(key, this.value)
 
 /**
  * Simple one-shot encryption
@@ -58,7 +52,6 @@ fun ByteArray.encrypt(cipherType: CipherType, key: ByteArray): ByteArray {
     c.init(Cipher.ENCRYPT_MODE, secretKey)
 
     return c.doFinal(this)
-
 }
 
 /**
