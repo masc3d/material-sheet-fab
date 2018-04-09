@@ -112,8 +112,13 @@ dependencies {
             "org.apache.commons:commons-dbcp2:2.2.0",
 
             // For SVG image conversions
-            "org.apache.xmlgraphics:batik-transcoder:$v_batik",
-            "org.apache.xmlgraphics:batik-codec:$v_batik"
+            dependencies.create("org.apache.xmlgraphics:batik-transcoder:$v_batik") {
+                exclude module: 'jython'
+            },
+
+            dependencies.create("org.apache.xmlgraphics:batik-codec:$v_batik") {
+                exclude module: 'jython'
+            }
     )
 
     testCompile(
