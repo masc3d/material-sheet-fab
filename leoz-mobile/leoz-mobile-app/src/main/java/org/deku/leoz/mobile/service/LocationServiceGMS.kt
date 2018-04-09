@@ -31,7 +31,7 @@ class LocationServiceGMS:
 
     val googleApiClientBuilder: GoogleApiClient.Builder by lazy {
         GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
+                .addApi(com.google.android.gms.location.LocationServices.API)
     }
 
     val googleApiClient: GoogleApiClient by lazy {
@@ -55,7 +55,7 @@ class LocationServiceGMS:
 
     override fun onConnected(p0: Bundle?) {
         if(ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, locationListener)
+            com.google.android.gms.location.LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, locationListener)
     }
 
     override fun onConnectionSuspended(p0: Int) {
