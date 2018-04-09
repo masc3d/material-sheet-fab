@@ -698,12 +698,11 @@ class SmartlaneBridge {
                         val now = Date()
 
                         if (!options.appointments.omit) {
-
-                            if (options.appointments.replaceDatesWithToday) {
-                                it.forEach {
-                                    it.pdtFrom = it.pdtFrom?.replaceDate(now)
-                                    it.pdtTo = it.pdtTo?.replaceDate(now)
-                                }
+                            //region Appointment transformations
+                            // Replace appointment dates with today for optimization
+                            it.forEach {
+                                it.pdtFrom = it.pdtFrom?.replaceDate(now)
+                                it.pdtTo = it.pdtTo?.replaceDate(now)
                             }
 
                             val earliestAppointmentTime by lazy {
@@ -759,6 +758,7 @@ class SmartlaneBridge {
 
                                 log.trace { "PDT ${it.pdtFrom} -> ${it.pdtTo}" }
                             }
+                            //endregion
                         }
                     }
 
