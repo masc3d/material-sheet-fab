@@ -3,8 +3,8 @@ package org.deku.leoz.service.pub
 import io.swagger.annotations.*
 import org.deku.leoz.service.entity.DayType
 import org.deku.leoz.service.entity.ServiceError
-import org.deku.leoz.service.entity.ShortDate
-import org.deku.leoz.service.entity.ShortTime
+import org.deku.leoz.time.ShortDate
+import org.deku.leoz.time.ShortTime
 import sx.rs.auth.ApiKey
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST

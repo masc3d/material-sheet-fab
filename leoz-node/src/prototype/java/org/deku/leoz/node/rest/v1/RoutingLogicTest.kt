@@ -2,7 +2,7 @@ package org.deku.leoz.node.rest.v1
 
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.node.config.DataTestConfiguration
-import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.time.ShortDate
 import org.deku.leoz.service.pub.RoutingService.Request
 import org.deku.leoz.node.service.pub.RoutingService
 import org.deku.leoz.service.entity.ServiceErrorCode
@@ -13,7 +13,6 @@ import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import sx.junit.PrototypeTest
-import sx.junit.StandardTest
 import javax.inject.Inject
 
 /**

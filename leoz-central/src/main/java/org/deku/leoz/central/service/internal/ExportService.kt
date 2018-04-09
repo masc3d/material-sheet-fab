@@ -12,7 +12,7 @@ import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
 import org.deku.leoz.service.entity.DayTypeKey
-import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.time.ShortDate
 import org.deku.leoz.service.internal.BagService
 import org.deku.leoz.service.internal.ExportService
 import org.deku.leoz.service.internal.StationService

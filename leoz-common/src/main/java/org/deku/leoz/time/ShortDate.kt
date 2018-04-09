@@ -1,4 +1,4 @@
-package org.deku.leoz.service.entity
+package org.deku.leoz.time
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
@@ -29,3 +29,8 @@ class ShortDate {
 
     override fun toString(): String = format.format(this.date)
 }
+
+fun Date.toShortDate(): ShortDate {
+    return ShortDate(this)
+}
+

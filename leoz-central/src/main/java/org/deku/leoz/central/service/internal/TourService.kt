@@ -2,15 +2,10 @@ package org.deku.leoz.central.service.internal
 
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.central.data.repository.*
-import org.deku.leoz.model.TaskType
 import org.deku.leoz.node.service.internal.SmartlaneBridge
-import org.deku.leoz.service.entity.ShortDate
-import org.deku.leoz.service.internal.TourServiceV1.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import org.zalando.problem.Status
 import sx.mq.MqHandler
-import sx.rs.RestProblem
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 import javax.ws.rs.Path

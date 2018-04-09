@@ -7,12 +7,11 @@ import io.swagger.annotations.Authorization
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.rest.RestrictRoles
-import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.time.ShortDate
 import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
-import javax.ws.rs.core.StreamingOutput
 
 /**
  * Dump service

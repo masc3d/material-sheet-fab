@@ -9,14 +9,13 @@ import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.TaskType
 import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.node.rest.restrictByDebitor
-import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.time.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.zalando.problem.Status
 import sx.Stopwatch
-import sx.log.slf4j.info
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.rs.RestProblem

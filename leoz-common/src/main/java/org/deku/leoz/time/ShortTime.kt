@@ -1,4 +1,4 @@
-package org.deku.leoz.service.entity
+package org.deku.leoz.time
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
@@ -30,4 +30,8 @@ class ShortTime {
     override fun toString(): String {
         return format.format(this.localTime)
     }
+}
+
+fun Date.toShortTime(): ShortTime {
+    return ShortTime(this)
 }

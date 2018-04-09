@@ -1,18 +1,12 @@
 package org.deku.leoz.time
 
-import org.deku.leoz.service.entity.ShortTime
 import sx.time.toCalendar
-import sx.time.toLocalDate
 import java.text.SimpleDateFormat
 import java.util.*
 
 object DateFormats {
     val gregorianLongDate by lazy { SimpleDateFormat("dd.MM.yyyy") }
     val gregorianLongDateTime by lazy { SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSS") }
-}
-
-fun Date.toShortTime(): ShortTime {
-    return ShortTime(this)
 }
 
 fun Date.toGregorianLongDateString(): String {
