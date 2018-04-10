@@ -92,6 +92,24 @@ fun DeliveryExtendedApi.delete(ids: List<Int>) {
     }
 }
 
+fun DeliveryExtendedApi.deleteUnreferenced() {
+    try {
+        this.deleteDelivery(q = FlaskFilter(
+                expression = FlaskPredicate(
+                        name = "route_id",
+                        op = FlaskOperator.IS_NULL,
+                        field = "route_id"
+                )).toJson()
+        )
+    } catch (e: WebApplicationException) {
+        when (e.response.status) {
+        // Expected response when query doesn't match anything to delete
+            Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
+            else -> throw e
+        }
+    }
+}
+
 val Delivery.etaFrom: Date?
     get() = this.etaInterval.getOrNull(0)
 

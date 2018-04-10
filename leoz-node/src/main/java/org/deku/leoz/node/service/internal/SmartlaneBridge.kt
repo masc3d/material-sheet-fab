@@ -27,6 +27,7 @@ import sx.LazyInstance
 import sx.io.serialization.Serializable
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
+import sx.log.slf4j.warn
 import sx.rs.client.RestEasyClient
 import sx.rx.toObservable
 import sx.text.toHexString
@@ -504,6 +505,15 @@ class SmartlaneBridge {
                             }
                 }
                 .composeRest(domain)
+                .doOnError {
+                    val deliveryApi = this.proxy(DeliveryExtendedApi::class.java, customerId = customerId)
+
+                    try {
+                        deliveryApi.deleteUnreferenced()
+                    } catch(t: Throwable) {
+                        log.warn { "Could not remove unreferenced deliveries [${t.message}]" }
+                    }
+                }
                 .firstOrError()
     }
 
