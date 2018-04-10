@@ -233,7 +233,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   formatTourDurationTime( duration: number ): string {
     if (duration > 0) {
-      return moment.utc( duration * 1000 ).format( 'HH:mm:ss' )
+      return moment.utc( duration * 1000 ).format( 'HH:mm:ss' );
     }
     return '';
   }
