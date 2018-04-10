@@ -44,13 +44,30 @@ class LocationServiceGMS:
 
     override fun onBind(intent: Intent?) = null
 
-    override fun onCreate() {
-        super.onCreate()
-        googleApiClient.connect()
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
+        if (!googleApiClient.isConnected && !googleApiClient.isConnecting) {
+            googleApiClient.connect()
+        }
+
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    override fun stopService(name: Intent?): Boolean {
+
+        if (googleApiClient.isConnected || googleApiClient.isConnecting) {
+            googleApiClient.disconnect()
+        }
+
+        return super.stopService(name)
     }
 
     override fun onDestroy() {
-        googleApiClient.disconnect()
+
+        if (googleApiClient.isConnected || googleApiClient.isConnecting) {
+            googleApiClient.disconnect()
+        }
+
         super.onDestroy()
     }
 
