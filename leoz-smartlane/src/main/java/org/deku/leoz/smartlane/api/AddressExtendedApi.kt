@@ -43,13 +43,7 @@ fun AddressExtendedApi.deleteAddressesNotIn(ids: Iterable<Long>) {
             )
     )
 
-    try {
+    amendDeleteErrorResponse{
         this.delete(q = filter.toJson())
-    } catch(e: WebApplicationException) {
-        when (e.response.status) {
-        // Expected response when query doesn't match anything to delete
-            Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
-            else -> throw e
-        }
     }
 }

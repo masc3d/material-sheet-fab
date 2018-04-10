@@ -173,7 +173,7 @@ fun RouteApi.getRouteByCustomIdSubstring(vararg customId: String): Observable<Ro
  * Delete routes by id
  */
 fun RouteExtendedApi.delete(ids: List<Int>) {
-    try {
+    amendDeleteErrorResponse {
         this.deleteRoute(q = FlaskFilter(
                 expression = FlaskPredicate(
                         name = "id",
@@ -181,12 +181,6 @@ fun RouteExtendedApi.delete(ids: List<Int>) {
                         value = ids
                 )).toJson()
         )
-    } catch (e: WebApplicationException) {
-        when (e.response.status) {
-        // Expected response when query doesn't match anything to delete
-            Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
-            else -> throw e
-        }
     }
 }
 
@@ -194,14 +188,8 @@ fun RouteExtendedApi.delete(ids: List<Int>) {
  * Delete all routes
  */
 fun RouteExtendedApi.deleteAll() {
-    try {
+    amendDeleteErrorResponse {
         this.deleteRoute(q = "{}")
-    } catch (e: WebApplicationException) {
-        when (e.response.status) {
-        // Expected response when query doesn't match anything to delete
-            Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
-            else -> throw e
-        }
     }
 }
 
