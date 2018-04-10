@@ -31,9 +31,9 @@ class LocationServiceRX:
 
     override fun onBind(intent: Intent?) = null
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
+        disposable.clear()
         disposable.add(
                 rxLocationUpdates
                         .subscribe {
@@ -41,6 +41,8 @@ class LocationServiceRX:
                             this.reportLocation(it)
                         }
         )
+
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
