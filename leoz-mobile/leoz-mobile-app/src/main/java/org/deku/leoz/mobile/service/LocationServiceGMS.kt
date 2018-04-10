@@ -46,11 +46,13 @@ class LocationServiceGMS:
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
+        val ret = super.onStartCommand(intent, flags, startId)
+
         if (!googleApiClient.isConnected && !googleApiClient.isConnecting) {
             googleApiClient.connect()
         }
 
-        return super.onStartCommand(intent, flags, startId)
+        return ret
     }
 
     override fun stopService(name: Intent?): Boolean {
