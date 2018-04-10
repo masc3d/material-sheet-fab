@@ -33,6 +33,8 @@ class LocationServiceRX:
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
+        val ret = super.onStartCommand(intent, flags, startId)
+
         disposable.clear()
         disposable.add(
                 rxLocationUpdates
@@ -42,7 +44,7 @@ class LocationServiceRX:
                         }
         )
 
-        return super.onStartCommand(intent, flags, startId)
+        return ret
     }
 
     override fun onDestroy() {
