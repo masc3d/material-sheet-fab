@@ -52,11 +52,11 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
 
   loadlists: SelectItem[];
   private actionMsgListSubject = new BehaviorSubject<string[]>( [] );
-  public actionMsgList$ = this.actionMsgListSubject.asObservable().pipe(distinctUntilChanged());
+  public actionMsgList$ = this.actionMsgListSubject.asObservable().pipe( distinctUntilChanged() );
   private actionMsgListTmp: string[];
 
   public scanMsgsSubject = new BehaviorSubject<ScanMsg[]>( [] );
-  public scanMsgs$ = this.scanMsgsSubject.asObservable().pipe(distinctUntilChanged());
+  public scanMsgs$ = this.scanMsgsSubject.asObservable().pipe( distinctUntilChanged() );
   public shortScanMsg = '';
 
   activeLoadinglist: Exportlist;
@@ -373,7 +373,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
 
   private addCheckdigit( someNo: number ): string {
     const checkdigit = checkdigitInt25( `${someNo}` );
-    return this.padStart(`${someNo}${checkdigit}`, 12, '0');
+    return this.padStart( `${someNo}${checkdigit}`, 12, '0' );
   }
 
   public scanPackNos() {
@@ -464,7 +464,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
     this.loadedPackcount = this.activeLoadinglist.packages.length;
     this.totalWeight = this.loadinglistService.sumWeights( this.activeLoadinglist.packages );
     this.freeWeight = this.loadinglistscanForm.get( 'payload' ).value
-      ? roundDecimals(this.loadinglistscanForm.get( 'payload' ).value - this.totalWeight)
+      ? roundDecimals( this.loadinglistscanForm.get( 'payload' ).value - this.totalWeight )
       : null;
     this.styleWeightExceeded = (this.freeWeight && this.freeWeight < 0) ? { 'color': 'red' } : {};
   }
@@ -514,26 +514,11 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   reporting( saving: boolean ) {
     const listsToPrint = this.loadinglistscanForm.get( 'basedon' ).value === 'alllists'
       ? this.allLoadlists : [ this.activeLoadinglist ];
-    this.loadinglistService.reportHeaderData( String( this.activeLoadinglist.loadlistNo ) )
-      .subscribe( ( response: HttpResponse<any> ) => {
-          switch (response.status) {
-            case 200:
-              const filename = 'll_' + listsToPrint.map( ( loadlist: Exportlist ) => loadlist.loadlistNo ).join( '_' );
-              this.printingService.printReports( this.reportingService
-                  .generateReports( listsToPrint, <LoadinglistReportHeader> response.body ),
-                filename, saving );
-              break;
-            default:
-              // unknown reponse status from REST
-              console.log( response );
-              break;
-          }
-          this.receivedResponse();
-        },
-        ( error: HttpErrorResponse ) => {
-          console.log( error );
-          this.receivedResponse();
-        } );
+    const llReportHeader = this.loadinglistService.reportHeaderData( this.activeLoadinglist );
+    const filename = 'll_' + listsToPrint.map( ( loadlist: Exportlist ) => loadlist.loadlistNo ).join( '_' );
+    this.printingService.printReports( this.reportingService
+        .generateReports( listsToPrint, llReportHeader ),
+      filename, saving );
   }
 
 }

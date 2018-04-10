@@ -16,6 +16,8 @@ import { Shipment } from '../../core/models/shipment.model';
 import { sumAndRound } from '../../core/math/sumAndRound';
 import { WorkingdateService } from '../../core/workingdate.service';
 import { InetConnectionService } from '../../core/inet-connection.service';
+import { LoadinglistReportHeader } from './loadinglistscan/loadinglist-report-header.model';
+import { HUB_ADDRESS } from '../../core/constants';
 
 @Injectable()
 export abstract class AbstractExportService {
@@ -43,10 +45,10 @@ export abstract class AbstractExportService {
     loadlistNo: null,
     packages: []
   } );
-  public activeLoadinglist$ = this.activeLoadinglistSubject.asObservable().pipe(distinctUntilChanged());
+  public activeLoadinglist$ = this.activeLoadinglistSubject.asObservable().pipe( distinctUntilChanged() );
 
   public allLoadlistsSubject = new BehaviorSubject<Exportlist[]>( [] );
-  public allLoadlists$ = this.allLoadlistsSubject.asObservable().pipe(distinctUntilChanged());
+  public allLoadlists$ = this.allLoadlistsSubject.asObservable().pipe( distinctUntilChanged() );
 
   public activeLoadinglistTmp: Exportlist;
 
@@ -135,11 +137,25 @@ export abstract class AbstractExportService {
       );
   }
 
-  reportHeaderData( loadlistNo: string ): Observable<HttpResponse<any>> {
-    return this.http.get( this.reportHeaderUrl, {
-      params: new HttpParams().set( 'loadlistNo', loadlistNo ),
-      observe: 'response'
-    } );
+  reportHeaderData( loadingList: Exportlist ): LoadinglistReportHeader {
+    const dateFrom = this.wds.workingDate(),
+      dateTo = this.wds.hubDeliveryDate(),
+      loadingAddress = this.activeStation.address
+        ? `${this.activeStation.address.line1}, ${this.activeStation.address.street} ${this.activeStation.address.streetNo}, ${this.activeStation.address.countryCode}-${this.activeStation.address.zipCode} ${this.activeStation.address.city}`
+        : '',
+      shipmentCount = loadingList.packages && loadingList.packages.length > 0 ? this.shipmentCount( loadingList.packages ) : 0,
+      packageCount = loadingList.packages ? loadingList.packages.length : 0,
+      totalWeight = loadingList.packages && loadingList.packages.length > 0 ? this.sumWeights( loadingList.packages ) : 0;
+    return <LoadinglistReportHeader> {
+      loadlistNo: loadingList.loadlistNo,
+      dateFrom: dateFrom,
+      dateTo: dateTo,
+      loadingAddress: loadingAddress,
+      hubAddress: HUB_ADDRESS,
+      shipmentCount: shipmentCount,
+      packageCount: packageCount,
+      totalWeight: totalWeight
+    };
   }
 
   scanPack( packageId: string, loadlistLabel: string ): Observable<HttpResponse<any>> {
@@ -167,6 +183,11 @@ export abstract class AbstractExportService {
   sumWeights( packages: Package[] ) {
     return sumAndRound( packages
       .map( ( parcel: Package ) => parcel.realWeight ) );
+  }
+
+  shipmentCount( packages: Package[] ) {
+    const uniqueOrderIds = this.unique(packages.map(pack => pack.orderId));
+    return uniqueOrderIds.length;
   }
 
   private createLoadinglist( loadlistNo: number, label: string, allPackages: Package[] ) {
