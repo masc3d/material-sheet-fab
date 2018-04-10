@@ -4,6 +4,8 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subject } from 'rxjs/Subject';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
+import * as moment from 'moment';
+
 import { environment } from '../../../environments/environment';
 import { Deliverylist } from '../../core/models/deliverylist.model';
 import { InetConnectionService } from '../../core/inet-connection.service';
@@ -37,6 +39,7 @@ export class TouroptimizingService {
   private optimizationInProgress: number[] = [];
 
   private optimizationFailed = false;
+  private todayMinus4Days: string;
 
   constructor( protected http: HttpClient,
                protected translate: TranslateService,
@@ -45,6 +48,9 @@ export class TouroptimizingService {
                protected ics: InetConnectionService,
                private sse: SseService ) {
     this.latestDeliverylists = [];
+    this.todayMinus4Days = moment()
+      .subtract(4, 'days')
+      .format( 'YYYY-MM-DD' );
   }
 
   initSSEtouroptimization( ngUnsubscribe: Subject<void> ) {
@@ -120,6 +126,7 @@ export class TouroptimizingService {
     this.http.get<Tour[]>( this.allToursUrl, {
       params: new HttpParams()
         .set( 'station-no', activeStation.stationNo.toString() )
+        .set( 'from', this.todayMinus4Days )
     } )
       .subscribe( ( tours ) => {
           this.toursSubject.next( this.processTourData( tours ) );
