@@ -195,6 +195,14 @@ interface TourServiceV1 {
             @Context sse: Sse
     )
 
+    @GET
+    @Path("/smartlane/clean")
+    @ApiOperation(
+            value = "Clean smartlane container",
+            notes = "Removes all routes, deliveries and driver tracking information from smartlane container",
+            authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun smartlaneClean()
+
     @ApiModel(description = "Tour")
     data class Tour(
             @ApiModelProperty(position = 10, required = false, value = "Tour id")

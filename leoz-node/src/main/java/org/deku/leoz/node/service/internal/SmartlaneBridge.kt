@@ -518,6 +518,29 @@ class SmartlaneBridge {
     }
 
     /**
+     * Clean routes, deliveries and drivertracking info from smartlane container
+     */
+    fun clean() {
+        log.info { "Cleaning smartlane container [${customerId}]"}
+        val deliveryApi = this.proxy(DeliveryExtendedApi::class.java, customerId)
+        val routeApi = this.proxy(RouteExtendedApi::class.java, customerId)
+        val addressApi = this.proxy(AddressExtendedApi::class.java, customerId)
+        val driverApi = this.proxy(DriverExtendedApi::class.java, customerId)
+        val drivertrackingApi = this.proxy(DrivertrackingExtendedApi::class.java, customerId)
+
+        deliveryApi.deleteAll()
+        routeApi.deleteAll()
+        drivertrackingApi.deleteAll()
+        // TODO: drivers must not be deleted until it's thoroughly implmented @smartlane, otherwise causing conflicts
+//        driverApi.deleteAll()
+        // TODO. routes are still archived @smartlane, which will prevent removal of addresses
+//        addressApi.deleteAddressesNotIn(
+//                // Exclude the company/owner address id
+//                listOf(1)
+//        )
+    }
+
+    /**
      * Formats an email to include identity
      */
     private fun formatEmail(email: String) = "${email} ${identity.shortUid}"
