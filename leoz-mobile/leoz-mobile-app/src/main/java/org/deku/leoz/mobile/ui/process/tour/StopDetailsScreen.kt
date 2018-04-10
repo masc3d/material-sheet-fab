@@ -347,7 +347,7 @@ class StopDetailsScreen
 
                         R.id.action_report_delay -> {
                             val dialog = MaterialDialog.Builder(context)
-                                    .title("Report delay")
+                                    .title(R.string.report_delay)
                                     .iconRes(R.drawable.ic_appointment_at_risk)
                                     .cancelable(false)
                                     .customView(R.layout.dialog_delay_picker, false)
@@ -370,7 +370,7 @@ class StopDetailsScreen
                                     val reasons = DelayedAppointmentReason.values().map {
                                         it.mobile
                                     }
-                                    val adapter = object : ArrayAdapter<String>(this.context, android.R.layout.simple_spinner_item, reasons.map { it.textOrName(this.context) }.toMutableList().also { it.add(0, "Choose Item") }) {
+                                    val adapter = object : ArrayAdapter<String>(this.context, android.R.layout.simple_spinner_item, reasons.map { it.textOrName(this.context) }.toMutableList().also { it.add(0, getString(R.string.choose_item)) }) {
                                         override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View? {
 
                                             var v: View? = null
@@ -438,6 +438,14 @@ class StopDetailsScreen
                             dialog.show()
 
                             //dialog.getActionButton(DialogAction.POSITIVE).isEnabled = false
+                        }
+
+                        R.id.action_add_stop_note -> {
+                            MaterialDialog.Builder(this.context)
+                                    .title("Upps...")
+                                    .content("Hier entsteht eine neue Funktion für Sie. Noch müssen Sie sich allerdings ein wenig gedulden.")
+                                    .neutralText(R.string.dismiss)
+                                    .show()
                         }
                     }
                 }

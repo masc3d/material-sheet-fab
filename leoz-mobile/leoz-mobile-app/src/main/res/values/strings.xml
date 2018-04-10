@@ -354,4 +354,6 @@
     <string name="delay_reason_traffic_jam">Traffic Jam</string>
     <string name="delay_reason_vehicle_breakdown">Vehicle Breakdown</string>
     <string name="delay_reason_other">Other</string>
+    <string name="reason">Reason</string>
+    <string name="choose_item">Choose Item</string>
 </resources>

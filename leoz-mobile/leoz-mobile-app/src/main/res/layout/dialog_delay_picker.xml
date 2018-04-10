@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             style="@style/TextAppearance.AppCompat.Headline"
             android:visibility="visible"
-            android:text="Choose a reason"/>
+            android:text="@string/reason"/>
 
         <Spinner
             android:id="@+id/uxDelayReasonList"
