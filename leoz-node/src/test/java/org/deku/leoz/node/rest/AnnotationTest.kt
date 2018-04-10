@@ -2,7 +2,7 @@ package org.deku.leoz.node.rest
 
 import org.deku.leoz.rest.RestrictRoles
 import org.deku.leoz.rest.RestrictStation
-import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.time.ShortDate
 import org.deku.leoz.service.internal.DumpService
 import org.deku.leoz.service.internal.StationService
 import org.deku.leoz.service.internal.entity.Station

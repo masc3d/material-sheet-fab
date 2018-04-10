@@ -118,6 +118,8 @@ abstract class BaseLocationService: Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         log.trace("ONSTARTCOMMAND")
 
+        startForeground(NOTIFICATION_ID, notification)
+
         if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 this.locationServices.locationManager.registerGnssStatusCallback(gnssStatusCallback)
@@ -128,7 +130,6 @@ abstract class BaseLocationService: Service() {
         }
 
         this.registerBroadcastReceiver()
-        startForeground(NOTIFICATION_ID, notification)
         return START_STICKY
     }
 

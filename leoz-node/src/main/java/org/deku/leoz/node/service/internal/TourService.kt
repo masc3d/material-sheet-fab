@@ -22,7 +22,7 @@ import org.deku.leoz.node.data.repository.StationRepository
 import org.deku.leoz.node.data.repository.TadTourEntryRepository
 import org.deku.leoz.node.data.repository.TadTourRepository
 import org.deku.leoz.node.data.repository.toAddress
-import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.time.ShortDate
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.zalando.problem.Status
+import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
@@ -41,6 +42,7 @@ import sx.persistence.withEntityManager
 import sx.rs.RestProblem
 import sx.rs.push
 import sx.time.plusDays
+import sx.time.replaceDate
 import sx.time.toTimestamp
 import sx.util.letWithItems
 import sx.util.letWithNotNull
@@ -150,6 +152,8 @@ class TourServiceV1
             tours
                     .map { tour ->
                         //region Update tour record
+                        val date = tour.date?.date ?: throw IllegalArgumentException("Tour is missing date")
+
                         val nodeUid = tour.nodeUid
                         val nodeId = nodeUid?.let {
                             this.nodeService.getByUid(nodeUid).id
@@ -184,7 +188,7 @@ class TourServiceV1
                             r.parentId = tour.parentId
                             r.customId = tour.customId
                             r.optimized = tour.optimized?.toTimestamp()
-                            r.date = tour.date?.toString()
+                            r.date = ShortDate(date).toString()
 
                             r.modified = now
 
@@ -257,8 +261,11 @@ class TourServiceV1
                                         Task.Type.DELIVERY -> TaskType.DELIVERY.value
                                         Task.Type.PICKUP -> TaskType.DELIVERY.value
                                     }
-                                    r.appointmentFrom = task.appointmentStart?.toTimestamp()
-                                    r.appointmentTo = task.appointmentEnd?.toTimestamp()
+
+                                    // Set appointments with replaced tour date
+                                    r.appointmentFrom = task.appointmentStart?.replaceDate(date)?.toTimestamp()
+                                    r.appointmentTo = task.appointmentEnd?.replaceDate(date)?.toTimestamp()
+
                                     r.timestamp = now
 
                                     if (taskIndex == 0)
@@ -293,6 +300,10 @@ class TourServiceV1
                                 }
                     }
                 }
+    }
+
+    fun put(tour: Tour): Tour {
+        return this.put(listOf(tour)).first()
     }
 
     //region REST
@@ -523,11 +534,11 @@ class TourServiceV1
 
         data class Optimization(val tourId: Long, val result: List<Tour>)
 
-        log.info("Starting ruote optimization for tour(s) [${ids.joinToString(", ")}] ")
+        log.info { "Starting ruote optimization for tour(s) [${ids.joinToString(", ")}] " }
 
         // Schedule multiple optimizations
         Observable.mergeDelayError(ids.map { id ->
-            val tour = this.getById(id)
+            var tour = this.getById(id)
 
             if (tour.nodeUid != null) {
                 // Node restrictions
@@ -823,7 +834,7 @@ class TourServiceV1
      * @param options Optimization options
      * @return Single observable of optimized tours
      */
-    fun optimize(
+    private fun optimize(
             tour: Tour,
             options: TourOptimizationOptions
     ): Single<List<Tour>> {

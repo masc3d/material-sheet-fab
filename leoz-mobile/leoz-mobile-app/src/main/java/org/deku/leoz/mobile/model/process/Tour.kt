@@ -167,8 +167,8 @@ class Tour : CompositeDisposableSupplier {
             val tourService = Kodein.global.instance<TourServiceV1>()
 
             // Retrieve delivery list
-            val deliveryListId = deliveryListNumber.value.toLong()
-            val tour = tourService.getByCustomId(customId = deliveryListId.toString())
+            val deliveryListId = deliveryListNumber.value
+            val tour = tourService.getByCustomId(customId = deliveryListId)
             log.trace("Delivery list loaded in $sw orders [${tour.orders?.count()}] parcels [${tour.orders?.flatMap { it.parcels }?.count()}]")
 
             // Process orders
@@ -184,7 +184,7 @@ class Tour : CompositeDisposableSupplier {
 
                     orderRepository
                             .merge(orders.map {
-                                it.toOrder(deliveryListId)
+                                it.toOrder(deliveryListId.toLong())
                             })
                             .blockingGet()
                 }

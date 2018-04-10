@@ -132,8 +132,6 @@ dependencies {
             project(':leoz-node-data'),
             project(':leoz-smartlane'),
 
-            "net.sf.barcode4j:barcode4j:2.1",
-
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
@@ -245,10 +243,6 @@ dependencies {
             // Tika, content analysis framework
             "org.apache.tika:tika-core:$v_apache_tika",
 
-            // hawt.io
-            "io.hawt:hawtio-springboot:2.0.0",
-            "org.jolokia:jolokia-spring:1.5.0",
-
             // serialization
             "com.esotericsoftware:kryo:$v_kryo",
             "de.javakaffee:kryo-serializers:$v_kryo_serializers",
@@ -259,14 +253,20 @@ dependencies {
             // Socket.IO
             "io.socket:socket.io-client:$v_socketio",
 
+            // Barcode generation
+            "net.sf.barcode4j:barcode4j:2.1",
+
             //region EVALUATION
-            "com.jcraft:jsch:+",
-
-            "org.aspectj:aspectjrt:$v_aspectj",
-            "org.aspectj:aspectjweaver:$v_aspectj",
-
+            // hawt.io
+//            "io.hawt:hawtio-springboot:2.0.0",
+//            "org.jolokia:jolokia-spring:1.5.0",
+//
+//            "com.jcraft:jsch:+",
+//
+//            "org.aspectj:aspectjrt:$v_aspectj",
+//            "org.aspectj:aspectjweaver:$v_aspectj",
+//
             "com.vaadin:vaadin-spring-boot:3.0.0",
-            "com.vaadin:vaadin-client:$v_vaadin",
             "com.vaadin:vaadin-client-compiled:$v_vaadin",
             "com.vaadin:vaadin-themes:$v_vaadin",
             //endregion

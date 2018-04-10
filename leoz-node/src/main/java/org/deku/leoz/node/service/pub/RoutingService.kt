@@ -11,8 +11,8 @@ import org.deku.leoz.node.data.repository.*
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.service.entity.DayType
 import org.deku.leoz.service.entity.ServiceErrorCode
-import org.deku.leoz.service.entity.ShortDate
-import org.deku.leoz.service.entity.ShortTime
+import org.deku.leoz.time.ShortDate
+import org.deku.leoz.time.ShortTime
 import org.deku.leoz.service.pub.RoutingService.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component

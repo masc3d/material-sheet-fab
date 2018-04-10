@@ -60,7 +60,6 @@ class TourService : MqHandler<Any> {
 
         // Enforce some options
         options.omitLoads = true
-        options.appointments.replaceDatesWithToday = false
 
         locationCache.lastLocation?.also { lastLocation ->
             options.start = Address().also {

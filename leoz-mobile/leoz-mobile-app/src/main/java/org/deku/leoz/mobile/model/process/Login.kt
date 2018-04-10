@@ -7,8 +7,6 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import org.deku.leoz.rest.RestClientFactory
 import org.deku.leoz.hashUserPassword
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.SharedPreference
@@ -18,14 +16,17 @@ import org.deku.leoz.mobile.model.entity.create
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
+import org.deku.leoz.rest.RestClientFactory
 import org.deku.leoz.service.internal.AuthorizationService
-import org.deku.leoz.service.internal.UserService
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
 import sx.android.rx.observeOnMainThread
-import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
+import sx.security.CipherType
+import sx.security.decrypt
+import sx.security.encrypt
 import sx.text.parseHex
+import sx.text.toHexString
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.util.*
@@ -62,14 +63,13 @@ class Login {
     // Delegated property for convenient access
     var authenticatedUser: User? by authenticatedUserProperty
 
-
     /** c'tor */
     init {
         this.authenticatedUserProperty
                 .observeOnMainThread()
                 .subscribe { user ->
                     // Update rest configuration / API key
-                    restConfiguration.apiKey = user.value?.apiKey
+                    restConfiguration.apiKey = user.value?.apiKeyDecrypted
 
                     // Persistently store authenticated user id
                     sharedPrefs.edit().also {
@@ -90,6 +90,22 @@ class Login {
                     .firstOrNull()
         }
     }
+
+    /** Helper to encrypt api key */
+    private fun encryptApiKey(apiKey: String): String =
+            apiKey.toByteArray().encrypt(CipherType.AES, key = SALT).toHexString()
+
+    /**
+     * Helper to decrypt api key
+     * @return decrypted api key or null if value could not be retrieved
+     * */
+    private val User.apiKeyDecrypted: String?
+        get() = try {
+            this.apiKey.parseHex().decrypt(CipherType.AES, key = SALT).toString(Charsets.UTF_8)
+        } catch(t: Throwable) {
+            log.warn(t.message)
+            null
+        }
 
     /**
      * Authenticate user (asnychronously)
@@ -126,7 +142,7 @@ class Login {
                                 salt = SALT,
                                 email = email,
                                 password = password),
-                        apiKey = authResponse.key,
+                        apiKey = encryptApiKey(authResponse.key),
                         host = restConfiguration.host
                 )
 

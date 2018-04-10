@@ -2,7 +2,6 @@ package org.deku.leoz.mobile.ui.core
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.res.Resources
 import android.databinding.DataBindingUtil
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
@@ -203,6 +202,7 @@ abstract class Activity : BaseActivity(),
         mqttEndpoints.central.main.channel().sendFile(jpeg, MimeType.JPEG.value)
     }
 
+    //region Progress indicator
     /**
      * Ref counting progress indicator, wrapping a progress bar
      */
@@ -233,6 +233,7 @@ abstract class Activity : BaseActivity(),
     }
 
     val progressIndicator by lazy { ProgressIndicator(this.uxProgressBar) }
+    //endregion
 
     /**
      * Responsible for controlling header
@@ -643,98 +644,6 @@ abstract class Activity : BaseActivity(),
         return false
     }
 
-    private val cameraAidcFragment: AidcCameraFragment?
-        get() = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName) as? AidcCameraFragment
-
-    /**
-     * Aidc fragment control
-     */
-    private var cameraAidcFragmentVisible: Boolean
-        get() = this.cameraAidcFragment != null
-        set(value) {
-            if (value == this.cameraAidcFragmentVisible)
-                return
-
-            when (value) {
-                true -> {
-                    // Show camera fragment
-                    this.supportFragmentManager.withTransaction {
-                        it.setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
-                        it.replace(R.id.uxScannerContainer, AidcCameraFragment(), AidcCameraFragment::class.java.canonicalName)
-                    }
-
-                    // Remove action items,add aidc keyboard button whie camera fragment is visilble
-                    this.actionItems = listOf(
-                            ActionItem(
-                                    id = R.id.action_aidc_keyboard,
-                                    colorRes = AIDC_ACTION_ITEM_COLOR,
-                                    iconRes = R.drawable.ic_keyboard,
-                                    iconTintRes = AIDC_ACTION_ITEM_TINT
-                            )
-                    )
-                }
-
-                false -> {
-                    val fragment = this.cameraAidcFragment
-
-                    if (fragment != null) {
-                        if (isPaused) {
-                            // If activitiy is about to pause, avoid animation as they will fail/throw in case activity is detroyed afterwards
-                            this@Activity.supportFragmentManager.withTransaction {
-                                it.remove(fragment)
-                            }
-                        } else {
-                            val view = fragment.view
-                            if (view != null) {
-                                // Fragment removal cannot be animated with custom animation, thus doing it manually
-                                ViewCompat.animate(view)
-                                        .translationY(view.height.toFloat())
-                                        .setDuration(resources.getInteger(android.R.integer.config_mediumAnimTime).toLong())
-                                        .withEndAction {
-                                            this@Activity.supportFragmentManager.withTransaction {
-                                                it.remove(fragment)
-                                            }
-                                        }
-                                        .start()
-                            }
-                        }
-
-                        // Find top-most screen fragment and restore action items
-                        val screenFragment = this.supportFragmentManager.fragments
-                                .firstOrNull {
-                                    it is ScreenFragment<*>
-                                } as? ScreenFragment<*>
-
-                        if (screenFragment != null)
-                            this.actionItems = screenFragment.actionItems
-                    }
-                }
-            }
-
-            // Lookup dynamically created fab with action overlay for applying translucency effect
-            listOf(
-                    this.uxActionOverlay.findViewById<FloatingActionButton>(R.id.action_aidc_camera),
-                    this.uxActionOverlay.findViewById<FloatingActionButton>(R.id.action_aidc_keyboard)
-            )
-                    .filterNotNull()
-                    .forEach {
-
-                        when (value) {
-                            true -> {
-                                if (it.id == R.id.action_aidc_camera)
-                                    it.setIconTintRes(R.color.colorAccent)
-
-                                it.alpha = 0.6F
-                            }
-                            false -> {
-                                it.setIconTintRes(AIDC_ACTION_ITEM_TINT)
-                                it.alpha = this.uxActionOverlay.buttonAlpha
-                            }
-                        }
-
-                    }
-        }
-
     override fun onResume() {
         super.onResume()
 
@@ -950,6 +859,98 @@ abstract class Activity : BaseActivity(),
 
         checkLocationSettings()
     }
+
+    private val cameraAidcFragment: AidcCameraFragment?
+        get() = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName) as? AidcCameraFragment
+
+    /**
+     * Aidc fragment control
+     */
+    private var cameraAidcFragmentVisible: Boolean
+        get() = this.cameraAidcFragment != null
+        set(value) {
+            if (value == this.cameraAidcFragmentVisible)
+                return
+
+            when (value) {
+                true -> {
+                    // Show camera fragment
+                    this.supportFragmentManager.withTransaction {
+                        it.setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
+                        it.replace(R.id.uxScannerContainer, AidcCameraFragment(), AidcCameraFragment::class.java.canonicalName)
+                    }
+
+                    // Remove action items,add aidc keyboard button whie camera fragment is visilble
+                    this.actionItems = listOf(
+                            ActionItem(
+                                    id = R.id.action_aidc_keyboard,
+                                    colorRes = AIDC_ACTION_ITEM_COLOR,
+                                    iconRes = R.drawable.ic_keyboard,
+                                    iconTintRes = AIDC_ACTION_ITEM_TINT
+                            )
+                    )
+                }
+
+                false -> {
+                    val fragment = this.cameraAidcFragment
+
+                    if (fragment != null) {
+                        if (isPaused) {
+                            // If activitiy is about to pause, avoid animation as they will fail/throw in case activity is detroyed afterwards
+                            this@Activity.supportFragmentManager.withTransaction {
+                                it.remove(fragment)
+                            }
+                        } else {
+                            val view = fragment.view
+                            if (view != null) {
+                                // Fragment removal cannot be animated with custom animation, thus doing it manually
+                                ViewCompat.animate(view)
+                                        .translationY(view.height.toFloat())
+                                        .setDuration(resources.getInteger(android.R.integer.config_mediumAnimTime).toLong())
+                                        .withEndAction {
+                                            this@Activity.supportFragmentManager.withTransaction {
+                                                it.remove(fragment)
+                                            }
+                                        }
+                                        .start()
+                            }
+                        }
+
+                        // Find top-most screen fragment and restore action items
+                        val screenFragment = this.supportFragmentManager.fragments
+                                .firstOrNull {
+                                    it is ScreenFragment<*>
+                                } as? ScreenFragment<*>
+
+                        if (screenFragment != null)
+                            this.actionItems = screenFragment.actionItems
+                    }
+                }
+            }
+
+            // Lookup dynamically created fab with action overlay for applying translucency effect
+            listOf(
+                    this.uxActionOverlay.findViewById<FloatingActionButton>(R.id.action_aidc_camera),
+                    this.uxActionOverlay.findViewById<FloatingActionButton>(R.id.action_aidc_keyboard)
+            )
+                    .filterNotNull()
+                    .forEach {
+
+                        when (value) {
+                            true -> {
+                                if (it.id == R.id.action_aidc_camera)
+                                    it.setIconTintRes(R.color.colorAccent)
+
+                                it.alpha = 0.6F
+                            }
+                            false -> {
+                                it.setIconTintRes(AIDC_ACTION_ITEM_TINT)
+                                it.alpha = this.uxActionOverlay.buttonAlpha
+                            }
+                        }
+
+                    }
+        }
 
     /**
      * Shows a screen fragment
@@ -1215,4 +1216,22 @@ abstract class Activity : BaseActivity(),
             }
         }
     }
+
+    //region Application toolbar expand/collapse support
+    private val expandSubject = PublishSubject.create<Boolean>()
+
+    init {
+        this.expandSubject
+                // Throttle expansion events
+                .throttleLast(250, TimeUnit.MILLISECONDS)
+                .observeOnMainThread()
+                .subscribe {
+                    this.uxAppBarLayout.setExpanded(it, true)
+                }
+    }
+
+    fun expandToolbar(expand: Boolean) {
+        this.expandSubject.onNext(expand)
+    }
+    //endregion
 }

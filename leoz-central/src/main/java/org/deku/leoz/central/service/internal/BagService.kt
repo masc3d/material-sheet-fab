@@ -9,7 +9,7 @@ import org.deku.leoz.model.BagStatus
 import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.node.rest.ServiceException
-import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.time.ShortDate
 import org.deku.leoz.service.internal.BagService
 import org.deku.leoz.service.internal.BagService.ErrorCode
 import org.deku.leoz.service.internal.entity.BagDiff

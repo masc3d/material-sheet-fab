@@ -2,7 +2,7 @@ package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
-import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.time.ShortDate
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
 import java.util.*

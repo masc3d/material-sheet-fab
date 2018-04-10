@@ -46,7 +46,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     }
 }
 
-version = '0.197-SNAPSHOT'
+version = '0.198-SNAPSHOT'
 mainClassName = "org.deku.leoz.central.Main"
 
 // Database constants
@@ -112,8 +112,13 @@ dependencies {
             "org.apache.commons:commons-dbcp2:2.2.0",
 
             // For SVG image conversions
-            "org.apache.xmlgraphics:batik-transcoder:$v_batik",
-            "org.apache.xmlgraphics:batik-codec:$v_batik"
+            dependencies.create("org.apache.xmlgraphics:batik-transcoder:$v_batik") {
+                exclude module: 'jython'
+            },
+
+            dependencies.create("org.apache.xmlgraphics:batik-codec:$v_batik") {
+                exclude module: 'jython'
+            }
     )
 
     testCompile(

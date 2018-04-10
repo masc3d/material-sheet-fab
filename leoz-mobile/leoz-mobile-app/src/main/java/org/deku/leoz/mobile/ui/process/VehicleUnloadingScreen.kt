@@ -4,6 +4,7 @@ import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
@@ -28,16 +29,17 @@ import org.deku.leoz.mobile.model.process.VehicleUnloading
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.settings.DebugSettings
+import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
-import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.core.view.ActionItem
 import org.deku.leoz.mobile.ui.process.tour.stop.DamagedParcelCameraScreen
 import org.deku.leoz.mobile.ui.vm.CounterViewModel
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
 import org.deku.leoz.mobile.ui.vm.SectionViewModel
 import org.deku.leoz.mobile.ui.vm.SectionsAdapter
-import org.deku.leoz.model.*
+import org.deku.leoz.model.DekuUnitNumber
+import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
@@ -356,6 +358,12 @@ class VehicleUnloadingScreen :
                         }
                     }
                 }
+
+        this.parcelListAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) {
+                activity.expandToolbar(parcelListAdapter.expandedPositions.count() == 0)
+            }
+        })
 
         // Damaged parcels
         Observable.combineLatest(

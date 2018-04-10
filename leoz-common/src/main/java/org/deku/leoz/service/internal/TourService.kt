@@ -5,7 +5,7 @@ import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.TourRouteMeta
 import org.deku.leoz.model.TourStopRouteMeta
-import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.time.ShortDate
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
@@ -329,20 +329,13 @@ interface TourServiceV1 {
 
                 @ApiModelProperty(position = 20,
                         required = false,
-                        value = "Replaces date of all appointments with current day",
-                        example = "true")
-                @DefaultValue("true")
-                var replaceDatesWithToday: Boolean = true,
-
-                @ApiModelProperty(position = 30,
-                        required = false,
                         value = "Shift appointment times in hours",
                         notes = "When this parameter is provided, appointments times are shifted " +
                                 "relative to the current time (rounded to next full hour)",
                         example = "4")
                 var shiftHoursFromNow: Int? = null,
 
-                @ApiModelProperty(position = 40,
+                @ApiModelProperty(position = 30,
                         required = false,
                         value = "Shift appointment times in days",
                         notes = "When this parameter is provided, appointments times are shifted " +
