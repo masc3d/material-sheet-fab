@@ -440,7 +440,7 @@ export const LANG_EN_TRANS = {
   'start': 'Start',
   'no_optimizable_tours_selected': 'No optimizable tours selected',
   'no_tours_selected': 'No tours selected',
-  'optimizeTodayAndFuture': 'Tourstart today',
+  'optimizeTodayAndFuture': 'Tourstart now',
   'optimizeTraffic': 'Consider traffic',
   'optimizeExistingtours': 'Optimize existing tours',
   'optimizeSplitTours': 'Split tours',
