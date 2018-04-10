@@ -7,12 +7,19 @@ import { NOW_MINUS_X_HOURS } from './constants';
 @Injectable()
 export class WorkingdateService {
 
-  public workingDate() {
-    const nowMinusXHours = moment().subtract( NOW_MINUS_X_HOURS, 'hours' );
-    return nowMinusXHours.format( 'YYYY/MM/DD' );
+  private nowMinusXHours: moment.Moment;
+
+  private determineWorkingDate() {
+    this.nowMinusXHours = moment().subtract( NOW_MINUS_X_HOURS, 'hours' );
   }
 
-  public deliveryDateForWS() {
-    return moment().format( 'YYYY-MM-DD' );
+  public workingDate(): moment.Moment {
+    this.determineWorkingDate();
+    return this.nowMinusXHours;
+  }
+
+  public hubDeliveryDate(): moment.Moment {
+    this.determineWorkingDate();
+    return moment( this.nowMinusXHours ).add( 1, 'days' );
   }
 }

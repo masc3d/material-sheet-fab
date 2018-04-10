@@ -437,8 +437,11 @@ constructor(
         //endregion
 
         //region Update
-        if (srcSyncIdRange != null && dstSyncIdRange != null &&
-                srcSyncIdRange.endInclusive != dstSyncIdRange.endInclusive) {
+        if (srcSyncIdRange != null &&
+                // Destination is outdated
+                (dstSyncIdRange != null && srcSyncIdRange.endInclusive != dstSyncIdRange.endInclusive)
+                // Or has no data
+                || dstSyncIdRange == null) {
 
             // Get newer records from central
             // masc20150530. JOOQ cursor requires an explicit transaction

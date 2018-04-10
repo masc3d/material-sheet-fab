@@ -23,7 +23,6 @@ import sx.rx.retryWithExponentialBackoff
 import sx.rx.toHotCache
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.properties.Delegates
@@ -270,6 +269,8 @@ class MqttDispatcher(
                     topicName = topicName,
                     messageAmountAdded = 1)
 
+            log.debug { "Stored message for [${topicName}] trigger [${this.isConnected}]" }
+
             if (this.isConnected) {
                 // Trigger dequeue flow
                 this.trigger(topicName)
@@ -301,7 +302,6 @@ class MqttDispatcher(
         )
     }
 
-
     /**
      * Disconnect from remote broker and discontinue connection retries.
      * The returned {@link Completable} will always be completed without error.
@@ -313,7 +313,7 @@ class MqttDispatcher(
      */
     override fun disconnect(forcibly: Boolean): Completable {
         this.lock.withLock {
-            log.info("Disconnecting")
+            log.info("Disconnecting ${if (forcibly) "forcibly" else "gracefully"}")
             this.connectionSubscription = null
             return this.client.disconnect(forcibly)
         }
@@ -328,25 +328,35 @@ class MqttDispatcher(
         this.lock.withLock {
             // Don't start another connection subscription if one is already active
             if (this.connectionSubscription == null) {
-                log.info("Starting connection cycle")
+                log.info("Connection cycle initiating")
                 // RxClient observables are hot, thus need to defer in order to re-subscribe properly on retry
                 this.connectionSubscription = Completable
                         .defer {
-                            log.info { "Attempting connection to ${this.client.uri}" }
+                            log.info { "Establishing connection to ${this.client.uri}" }
                             this.client.connect()
                         }
                         .onErrorComplete {
                             when (it) {
                             // Avoid retries when already connected
-                                is MqttException -> it.reasonCode == REASON_CODE_CLIENT_CONNECTED.toInt()
+                                is MqttException -> {
+                                    val alreadyConnected = it.reasonCode == REASON_CODE_CLIENT_CONNECTED.toInt()
+
+                                    if (alreadyConnected)
+                                        log.info { "Client is already connected to ${this.client.uri}" }
+
+                                    alreadyConnected
+                                }
                                 else -> false
                             }
+                        }
+                        .doOnComplete {
+                            log.info("Connection cycle completed")
                         }
                         .retryWithExponentialBackoff(
                                 initialDelay = Duration.ofSeconds(2),
                                 maximumDelay = Duration.ofMinutes(2),
                                 action = { retry, delay, error ->
-                                    log.error("Connection failed. [${error.message}] Retry [${retry}] in ${delay}")
+                                    log.error("Connection failed [${error.message}] retry [${retry}] in ${delay}")
                                 })
                         .subscribe()
             }
@@ -359,9 +369,12 @@ class MqttDispatcher(
      */
     private fun reconnect() {
         this.lock.withLock {
+            log.debug{ "Reconnecting to ${this.client.uri}" }
             val hasConnectionSubscription = this.connectionSubscription != null
 
-            this.disconnect(forcibly = true)
+            if (this.connectionSubscription?.isDisposed ?: true)
+                this.disconnect(forcibly = true)
+
             if (hasConnectionSubscription)
                 this.connect()
         }
