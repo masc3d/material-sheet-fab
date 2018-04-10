@@ -11,10 +11,8 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.Spinner
-import android.widget.TextView
+import android.widget.*
+import com.afollestad.materialdialogs.DialogAction
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -352,8 +350,11 @@ class StopDetailsScreen
                                     .title("Report delay")
                                     .iconRes(R.drawable.ic_appointment_at_risk)
                                     .cancelable(false)
-                                    .customView(R.layout.dialog_delay_picker, true)
+                                    .customView(R.layout.dialog_delay_picker, false)
                                     .positiveText(R.string.proceed)
+                                    .onNeutral { dialog, which ->
+
+                                    }
                                     .onPositive { _, _ ->
 
                                     }
@@ -369,7 +370,27 @@ class StopDetailsScreen
                                     val reasons = DelayedAppointmentReason.values().map {
                                         it.mobile
                                     }
-                                    it.adapter = ArrayAdapter<String>(this.context, android.R.layout.simple_spinner_item, reasons.map { it.textOrName(this.context) }).also {
+                                    val adapter = object : ArrayAdapter<String>(this.context, android.R.layout.simple_spinner_item, reasons.map { it.textOrName(this.context) }.toMutableList().also { it.add(0, "Choose Item") }) {
+                                        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View? {
+
+                                            var v: View? = null
+
+                                            if (position == 0) {
+                                                val tv = TextView(context)
+                                                tv.height = 0
+                                                tv.visibility = View.GONE
+                                                v = tv
+                                            } else {
+
+                                                v = super.getDropDownView(position, null, parent)
+                                            }
+
+                                            parent.isVerticalScrollBarEnabled = false
+                                            return v
+                                        }
+                                    }
+
+                                    it.adapter = adapter.also {
                                         it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                                     }
                                 }
@@ -399,34 +420,24 @@ class StopDetailsScreen
                                         this.stop.delayInMinutes = delayMin
                                     }
                                 }
+
+                                it.findViewById<Spinner>(R.id.uxDelayReasonList).also {
+                                    it.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                                        override fun onNothingSelected(p0: AdapterView<*>?) {
+                                            dialog.getActionButton(DialogAction.POSITIVE).isEnabled = false
+                                        }
+
+                                        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                                            dialog.getActionButton(DialogAction.POSITIVE).isEnabled = p2 != 0
+                                        }
+
+                                    }
+                                }
                             }
 
                             dialog.show()
 
-//                            val dialogBuilder = MaterialDialog.Builder(context).also {
-//                                it.title("Report delay")
-//                                it.positiveText("Continue")
-//                                it.negativeText("Abort")
-//                                it.content("Specify a reason for the delay")
-//                                it.input(
-//                                        "Reason",
-//                                        null,
-//                                        false,
-//                                        MaterialDialog.InputCallback { dialog, input ->
-//                                            log.debug("INPUT-CALLBACK [$input]}")
-//                                        }
-//                                )
-//                                it.inputType(InputType.TYPE_CLASS_TEXT)
-//                                it.onPositive { dialog, which ->
-//                                    val hmsPicker: HmsPickerBuilder = HmsPickerBuilder().also {
-//                                        it.setFragmentManager(this.fragmentManager)
-//                                        it.setStyleResId(R.style.BetterPickersDialogFragment)
-//                                        it.setPlusMinusVisibility(View.VISIBLE)
-//                                    }
-//
-//                                    hmsPicker.show()
-//                                }
-//                            }.show()
+                            //dialog.getActionButton(DialogAction.POSITIVE).isEnabled = false
                         }
                     }
                 }
