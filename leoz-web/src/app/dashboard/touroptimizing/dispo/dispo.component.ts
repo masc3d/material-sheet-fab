@@ -194,10 +194,10 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   protected reporting( saving: boolean ) {
-    const listsToPrint = this.filteredTours.filter( tour => tour.selected );
+    const tours = this.filteredTours.filter( tour => tour.selected );
 
-    const filename = 'sl_' + listsToPrint.map( tour => tour.id ).join( '_' );
-    this.reportingService.generateReports( listsToPrint )
+    const filename = 'sl_' + tours.map( tour => tour.id ).join( '_' );
+    this.reportingService.generateReports( tours )
       .then( report => this.printingService.printReports( report, filename, saving ) );
     // this.printingService.printReports( this.reportingService.generateReports( listsToPrint ),
     //   filename, saving );
