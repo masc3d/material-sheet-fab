@@ -219,6 +219,8 @@ class MqttRxClient(
                 if (!emitter.isDisposed) emitter.onError(e)
             }
         }
+                // TODO: temporary outer timeout for detecting deadlock
+                .timeout(20, TimeUnit.SECONDS)
                 .toHotCache()
     }
 

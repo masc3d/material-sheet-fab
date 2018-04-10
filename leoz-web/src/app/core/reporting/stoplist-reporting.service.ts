@@ -16,7 +16,7 @@ export class StoplistReportingService extends ReportingService {
   startPageNo: number;
   doc: jsPDF;
 
-  async generateReports( listsToPrint: Tour[] ): Promise<jsPDF> {
+  async generateReports( tours: Tour[] ): Promise<jsPDF> {
 
     const reportHeaderRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
         doc.addImage( Report.logoImgData, Report.logoImgType, offsetX + 140, offsetY, 53, 19 );
@@ -50,9 +50,6 @@ export class StoplistReportingService extends ReportingService {
 
         return doc;
       },
-      reportFooterRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
-        return doc;
-      },
       pageFooterRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
         doc.setFontSize( 10 );
         doc.setFontType( 'bold' );
@@ -64,8 +61,8 @@ export class StoplistReportingService extends ReportingService {
     const reports: Report[] = [];
     this.doc = new jsPDF();
     this.startPageNo = 1;
-    await listsToPrint.forEach( async ( listToPrint: Tour ) => {
-      const barcodeImgData = await QRCode.toDataURL( `<deku-tour id="${listToPrint.id}" uid="${listToPrint.uid}"/>`, { width: 90 } );
+    await tours.forEach( async ( tour: Tour ) => {
+      const barcodeImgData = await QRCode.toDataURL( `<deku-tour id="${tour.id}" uid="${tour.uid}"/>`, { width: 90 } );
 
       const report = new Report( 'stoplist-report', 10, 10,
         new ReportPart( 35, reportHeaderRenderFunction,
@@ -75,38 +72,30 @@ export class StoplistReportingService extends ReportingService {
             report_tourplan: this.translate.instant( 'report_tourplan' ),
             tourlist_Date_Short: moment().format( this.dateFormatShort ),
             tourID: this.translate.instant( 'tourID' ),
-            deliverylistID: listToPrint.customId,
-            tourIDValue: listToPrint.id,
+            deliverylistID: tour.customId,
+            tourIDValue: tour.id,
 
             curentUserMail: JSON.parse( localStorage.getItem( 'currentUser' ) ).user.email,
             status: this.translate.instant( 'status' ),
-            optimization: listToPrint.optimized != null
+            optimization: tour.optimized != null
               ? this.translate.instant( 'optimized' )
               : this.translate.instant( 'not_optimized' ),
 
             total_CountShipments: this.translate.instant( 'total_CountShipments' ),
-            shipmentCount: listToPrint.totalShipments,
+            shipmentCount: tour.totalShipments,
             total_CountPackages: this.translate.instant( 'total_CountPackages' ),
-            packageCount: listToPrint.totalPackages,
+            packageCount: tour.totalPackages,
             total_Weight: this.translate.instant( 'total_Weight' ),
-            totalWeight: listToPrint.totalWeight,
+            totalWeight: tour.totalWeight,
           } ),
         null,
-        this.buildPageContent( listToPrint ),
+        this.buildPageContent( tour ),
         new ReportPart( 23, pageFooterRenderFunction, {
           printingDate: this.translate.instant( 'printingDate' ),
           printing_Date_Long: moment().format( this.dateFormatLong ),
           page: this.translate.instant( 'page' ),
         } ),
-        new ReportPart( 28, reportFooterRenderFunction, {
-          nameOfDriver: this.translate.instant( 'nameOfDriver' ),
-          licensePlate: this.translate.instant( 'licensePlate' ),
-          loadingDate: this.translate.instant( 'loadingDate' ),
-          printing_Date_Short: moment().format( this.dateFormatShort ),
-          loadingTime: this.translate.instant( 'loadingTime' ),
-          signature: this.translate.instant( 'signature' ),
-          llDriver: this.translate.instant( 'llDriver' ),
-        } ) );
+        null );
       reports.push( report );
     } );
 
@@ -139,10 +128,11 @@ export class StoplistReportingService extends ReportingService {
       }
       offsetY += 9;
       const weight = roundDecimalsAsString(  data.weight, 10, true );
+      const amount = data.parcelNumbers ? data.parcelNumbers.length : '';
       doc.text( `${data.address.line1}`, offsetX, offsetY );
       doc.text( `${data.address.street} ${data.address.streetNo}`, offsetX + 70, offsetY );
       doc.text( `${data.address.zipCode} ${data.address.city}`, offsetX + 125, offsetY );
-      doc.text( `Anzahl: ${data.parcelNumbers.length}`, offsetX + 70, offsetY + 4 );
+      doc.text( `Anzahl: ${amount}`, offsetX + 70, offsetY + 4 );
       doc.text( `Gewicht: ${weight} kg`, offsetX + 85, offsetY + 4 );
       doc.text( `ETA: ${etaFrom}`, offsetX, offsetY + 4 );
       doc.text( `bis ${etaTo}`, offsetX + 15, offsetY + 4 );
@@ -150,7 +140,7 @@ export class StoplistReportingService extends ReportingService {
       doc.text( `bis ${moment( data.appointmentEnd ).format( 'HH:mm' )}`, offsetX + 145, offsetY + 4 );
       return doc;
     };
-    return new ReportPart( 12, stopListRenderFunction, stop );
+    return new ReportPart( 11.5, stopListRenderFunction, stop );
   }
 
 }

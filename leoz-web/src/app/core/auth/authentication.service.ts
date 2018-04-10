@@ -83,6 +83,7 @@ export class AuthenticationService {
             .filter(( station: Station ) => this.allowedStations.indexOf(station.stationNo) >= 0)
             .map( ( station: Station ) => <Station> {
             stationNo: station.stationNo,
+            address: station.address,
             exportValuablesAllowed: station.exportValuablesAllowed,
             exportValuablesWithoutBagAllowed: station.exportValuablesWithoutBagAllowed
           } );
@@ -92,6 +93,7 @@ export class AuthenticationService {
             const firstStation = debitorStations[ 0 ];
             this.changeActiveStation( <Station>{
               stationNo: firstStation.stationNo,
+              address: firstStation.address,
               exportValuablesAllowed: firstStation.exportValuablesAllowed,
               exportValuablesWithoutBagAllowed: firstStation.exportValuablesWithoutBagAllowed
             } );

@@ -88,9 +88,9 @@ export class LoadinglistReportingService extends ReportingService {
             {
               report_loadinglist: this.translate.instant( 'report_loadinglist' ),
               date: this.translate.instant( 'date' ),
-              dateFrom: moment( llReportHeader.dateFrom ).format( this.dateFormatShort ),
+              dateFrom: llReportHeader.dateFrom.format( this.dateFormatShort ),
               to_auf: this.translate.instant( 'to_auf' ),
-              dateTo: moment( llReportHeader.dateTo ).format( this.dateFormatShort ),
+              dateTo: llReportHeader.dateTo.format( this.dateFormatShort ),
               loadlistNo: llReportHeader.loadlistNo,
               from: this.translate.instant( 'from' ),
               loadingAddress: llReportHeader.loadingAddress,
