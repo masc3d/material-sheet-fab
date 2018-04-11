@@ -24,6 +24,7 @@ interface ImportService {
         const val SCANCODE = "scancode"
     }
 
+    @ApiModel(value = "Importorder", description = "Importorder Model")
     @Serializable(0x3472fac6b461d8)
     data class Order(
             var orderId: Long = 0,
@@ -37,7 +38,7 @@ interface ImportService {
 
     )
 
-    @ApiModel(description = "Parcel Model", value = "Import Parcel")
+    @ApiModel(description = "Parcel Model", value = "Importparcel")
     @Serializable(0xc70cdcb9c5731f)
     data class Parcel(
             @get:ApiModelProperty(example = "1234567898", required = true, value = "Order id")

@@ -35,25 +35,40 @@ interface ExportService {
         const val ID = "loading-list"
     }
 
+    @ApiModel(value = "Exportorder", description = "Exportorder Model")
     @Serializable(0x5abfa519181a30)
     data class Order(
+            @get:ApiModelProperty(value = "OrderId")
             var orderId: Long = 0,
+            @ApiModelProperty(value = "Delivery address")
             var deliveryAddress: Address = Address(),
+            @get:ApiModelProperty(value = "Delivery Station")
             var deliveryStation: Int = 0,
+            @get:ApiModelProperty(value = "Shipment date")
             var shipmentDate: java.sql.Date? = null,
+            @get:ApiModelProperty(value = "Parcels")
             var parcels: List<Parcel> = listOf()
 
     )
 
+    @ApiModel(value = "Exportparcel", description = "Parcel within Order")
     @Serializable(0xbb30fca9069776)
     data class Parcel(
+            @get:ApiModelProperty(value = "OrderId")
             var orderId: Long = 0,
+            @get:ApiModelProperty(value = "Parcel no")
             var parcelNo: Long = 0,
+            @get:ApiModelProperty(value = "Parcel position")
             var parcelPosition: Int = 0,
+            @get:ApiModelProperty(value = "Loadinglist no")
             var loadinglistNo: Long? = null,
+            @get:ApiModelProperty(value = "Type of packaging")
             var typeOfPackaging: Int = 0,
+            @get:ApiModelProperty(value = "Real weight")
             var realWeight: Double = 0.0,
+            @get:ApiModelProperty(value = "Date of station out")
             var dateOfStationOut: java.sql.Date? = null,
+            @get:ApiModelProperty(value = "Creferenz")
             var cReference: String? = null
     )
 
@@ -85,6 +100,7 @@ interface ExportService {
         var sealYellowLabel: String? = null
         var sealRedLabel: String? = null
         var sealGreenLabel: String? = null
+        var loadinglistNo: Long? = null
     }
 
     @Serializable(0x2e5b98b7a7694f)
@@ -187,6 +203,30 @@ interface ExportService {
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @QueryParam(SEND_DATE) @ApiParam(value = "Send date", example = "08/09/2017", required = false) sendDate: Date? = null
     ): List<Order>
+
+    @GET
+    @Path("/station/{$STATION_NO}/loaded/bag/order")
+    @ApiOperation(value = "Get loaded parcels to export in bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getLoadedParcelsToExportInBagByStationNo(
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @QueryParam(SEND_DATE) @ApiParam(value = "Send date", example = "08/09/2017", required = false) sendDate: Date? = null
+    ): List<Order>
+
+    @GET
+    @Path("/loadinglist")
+    @ApiOperation(value = "Get list of all loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getAllLoadingList(
+            @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @QueryParam(SEND_DATE) @ApiParam(value = "Send date", example = "08/09/2017", required = false) sendDate: Date? = null,
+            @QueryParam("includeParcels") @ApiParam(defaultValue = "false", value = "Include parcels") includeParcels: Boolean
+    ): List<Loadinglist>
+
+    @GET
+    @Path("/loadinglist/{$LOADINGLIST_NO}")
+    @ApiOperation(value = "Get loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getLoadingList(
+            @PathParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: String
+    ): Loadinglist
 
     @GET
     @Path("/loadinglist/{$LOADINGLIST_NO}/order")
