@@ -161,10 +161,29 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.optimizeTraffic = true;
     this.optimizeExistingtours = true;
     this.optimizeSplitTours = false;
+    this.clearDialogInputFields();
+  }
+
+  private clearDialogInputFields() {
     this.sprinterMaxKg = null;
     this.caddyMaxKg = null;
     this.kombiMaxKg = null;
     this.bikeMaxKg = null;
+  }
+
+  changeOptimizeExistingtours(){
+    if(this.optimizeExistingtours){
+      this.optimizeSplitTours = false;
+      this.clearDialogInputFields();
+    }
+  }
+
+  changeOptimizeSplitTours(){
+    if(this.optimizeSplitTours){
+      this.optimizeExistingtours = false;
+    } else {
+      this.clearDialogInputFields();
+    }
   }
 
   private addVehicles( amount: number, type: Vehicle, vehicles: Vehicle[] ): Vehicle[] {
