@@ -11,6 +11,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { TableModule } from 'primeng/table';
 import { ToggleButtonModule } from 'primeng/primeng';
 import { DialogModule } from 'primeng/dialog';
+import { KeyFilterModule } from 'primeng/keyfilter';
 
 import { SharedModule } from '../../../shared/shared.module';
 import { TouroptimizingService } from '../touroptimizing.service';
@@ -29,7 +30,8 @@ import { DispoComponent } from './dispo.component';
     TabViewModule,
     TabMenuModule,
     TableModule,
-    DialogModule
+    DialogModule,
+    KeyFilterModule
   ],
   declarations: [
     DispoComponent,

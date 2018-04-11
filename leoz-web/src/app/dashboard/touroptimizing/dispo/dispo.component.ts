@@ -27,6 +27,8 @@ import { roundDecimalsAsString } from '../../../core/math/roundDecimals';
 
 export class DispoComponent extends AbstractTranslateComponent implements OnInit {
 
+  emptyOrPInt: RegExp = /^[0-9]*$/;
+
   checkAll: boolean;
   tours: Tour[];
   filteredTours: Tour[];

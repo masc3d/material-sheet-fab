@@ -25,25 +25,25 @@
         {{'sprinter_max_kg' | translate}}:
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-        <input pInputText [(ngModel)]="sprinterMaxKg">
+        <input pInputText [(ngModel)]="sprinterMaxKg" [pKeyFilter]="emptyOrPInt">
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
         {{'caddy_max_kg' | translate}}:
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-        <input pInputText [(ngModel)]="caddyMaxKg">
+        <input pInputText [(ngModel)]="caddyMaxKg" [pKeyFilter]="emptyOrPInt">
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
         {{'kombi_max_kg' | translate}}:
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-        <input pInputText [(ngModel)]="kombiMaxKg">
+        <input pInputText [(ngModel)]="kombiMaxKg" [pKeyFilter]="emptyOrPInt">
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
         {{'bike_max_kg' | translate}}:
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-        <input pInputText [(ngModel)]="bikeMaxKg">
+        <input pInputText [(ngModel)]="bikeMaxKg" [pKeyFilter]="emptyOrPInt">
       </div>
     </div>
   </div>
