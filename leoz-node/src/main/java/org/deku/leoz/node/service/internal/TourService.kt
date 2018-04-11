@@ -764,6 +764,10 @@ class TourServiceV1
             )
         }
     }
+
+    override fun smartlaneClean() {
+        this.smartlane.clean()
+    }
     //endregion
 
     //region Optimization

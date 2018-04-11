@@ -63,19 +63,13 @@ fun DeliveryApi.getDelivery(q: String): Observable<Delivery> {
 }
 
 fun DeliveryExtendedApi.deleteAll() {
-    try {
+    amendDeleteErrorResponse{
         this.deleteDelivery(q = "{}")
-    } catch (e: WebApplicationException) {
-        when (e.response.status) {
-        // Expected response when query doesn't match anything to delete
-            Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
-            else -> throw e
-        }
     }
 }
 
 fun DeliveryExtendedApi.delete(ids: List<Int>) {
-    try {
+    amendDeleteErrorResponse{
         this.deleteDelivery(q = FlaskFilter(
                 expression = FlaskPredicate(
                         name = "id",
@@ -83,12 +77,18 @@ fun DeliveryExtendedApi.delete(ids: List<Int>) {
                         value = ids
                 )).toJson()
         )
-    } catch (e: WebApplicationException) {
-        when (e.response.status) {
-        // Expected response when query doesn't match anything to delete
-            Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
-            else -> throw e
-        }
+    }
+}
+
+fun DeliveryExtendedApi.deleteUnreferenced() {
+    amendDeleteErrorResponse {
+        this.deleteDelivery(q = FlaskFilter(
+                expression = FlaskPredicate(
+                        name = "route_id",
+                        op = FlaskOperator.IS_NULL,
+                        field = "route_id"
+                )).toJson()
+        )
     }
 }
 

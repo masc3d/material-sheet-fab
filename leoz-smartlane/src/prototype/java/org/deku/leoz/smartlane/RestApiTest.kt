@@ -164,6 +164,15 @@ class RestApiTest {
     }
 
     @Test
+    fun testDeliveryDeleteUnreferenced() {
+        this.authorize()
+
+        val internalApi = restClient.proxy(DeliveryExtendedApi::class.java)
+
+        internalApi.deleteUnreferenced()
+    }
+
+    @Test
     fun testRouteStatus() {
         this.authorize()
 
