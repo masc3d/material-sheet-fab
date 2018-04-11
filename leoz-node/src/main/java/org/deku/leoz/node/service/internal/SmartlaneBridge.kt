@@ -589,6 +589,8 @@ class SmartlaneBridge {
                     val stops = tour.stops ?: listOf()
                     stops.first { it.uid == delivery.customId }
                             .also {
+                                it.appointmentStart = it.appointmentStart?.replaceDate(tourDate)
+                                it.appointmentEnd = it.appointmentEnd?.replaceDate(tourDate)
                                 it.route = TourStopRouteMeta(
                                         eta = TimeRange(delivery.etaFrom, delivery.etaTo),
                                         driver = TimeRange(delivery.ddtFrom, delivery.ddtTo),
