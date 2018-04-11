@@ -270,7 +270,7 @@ interface ExportService {
     ): Int
 
     @PATCH
-    @Path("/bag/{$BAG_ID}/setRedSeal")
+    @Path("/bag/{$BAG_ID}/set-red-seal")
     @ApiOperation(value = "Set red seal", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
