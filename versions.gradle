@@ -29,7 +29,7 @@ buildscript {
         v_javax_servlet = '3.1.0'
         v_javax_persistence = '2.2'
         v_javax_ws_rs = '2.1'
-        v_jersey = '2.26'
+        v_jersey = '2.27'
         v_jna = '4.5.1'
         v_jooq = '3.10.6'
         v_junit = '4.12'
