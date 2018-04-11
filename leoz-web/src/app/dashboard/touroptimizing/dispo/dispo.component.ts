@@ -171,15 +171,15 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.bikeMaxKg = null;
   }
 
-  changeOptimizeExistingtours(){
-    if(this.optimizeExistingtours){
+  changeOptimizeExistingtours() {
+    if (this.optimizeExistingtours) {
       this.optimizeSplitTours = false;
       this.clearDialogInputFields();
     }
   }
 
-  changeOptimizeSplitTours(){
-    if(this.optimizeSplitTours){
+  changeOptimizeSplitTours() {
+    if (this.optimizeSplitTours) {
       this.optimizeExistingtours = false;
     } else {
       this.clearDialogInputFields();
@@ -268,6 +268,18 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   roundDecimalsAsStringWrapper( input: number ): string {
     return roundDecimalsAsString( input, 10, true );
+  }
+
+  getQualityColorClass( tour: Tour ): string {
+    let colorClass = '';
+    if (tour.route && tour.route.quality) {
+      if (tour.route.quality < 0.8) {
+        colorClass = 'colorRed';
+      } else if (tour.route.quality < 0.95) {
+        colorClass = 'colorYellow';
+      }
+    }
+    return colorClass;
   }
 
   tourDateFilterPrevDay() {
