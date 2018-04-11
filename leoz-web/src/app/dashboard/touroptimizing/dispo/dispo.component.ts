@@ -27,6 +27,8 @@ import { roundDecimalsAsString } from '../../../core/math/roundDecimals';
 
 export class DispoComponent extends AbstractTranslateComponent implements OnInit {
 
+  emptyOrPInt: RegExp = /^[0-9]*$/;
+
   checkAll: boolean;
   tours: Tour[];
   filteredTours: Tour[];
@@ -152,11 +154,38 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     }
     this.checkAll = false;
     this.touroptimizingService.switchSelectionAllTours( false );
+    this.resetDialogParams();
+  }
+
+  private resetDialogParams() {
     this.displayOptimizationOptions = false;
     this.dontShiftOneDayFromNow = true;
     this.optimizeTraffic = true;
     this.optimizeExistingtours = true;
     this.optimizeSplitTours = false;
+    this.clearDialogInputFields();
+  }
+
+  private clearDialogInputFields() {
+    this.sprinterMaxKg = null;
+    this.caddyMaxKg = null;
+    this.kombiMaxKg = null;
+    this.bikeMaxKg = null;
+  }
+
+  changeOptimizeExistingtours() {
+    if (this.optimizeExistingtours) {
+      this.optimizeSplitTours = false;
+      this.clearDialogInputFields();
+    }
+  }
+
+  changeOptimizeSplitTours() {
+    if (this.optimizeSplitTours) {
+      this.optimizeExistingtours = false;
+    } else {
+      this.clearDialogInputFields();
+    }
   }
 
   private addVehicles( amount: number, type: Vehicle, vehicles: Vehicle[] ): Vehicle[] {
@@ -227,6 +256,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   rejectOptimizationOptions() {
     this.msgService.clear();
+    this.resetDialogParams();
     this.displayOptimizationOptions = false;
     this.cd.markForCheck();
   }
@@ -240,6 +270,18 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   roundDecimalsAsStringWrapper( input: number ): string {
     return roundDecimalsAsString( input, 10, true );
+  }
+
+  getQualityColorClass( tour: Tour ): string {
+    let colorClass = '';
+    if (tour.route && tour.route.quality) {
+      if (tour.route.quality < 0.8) {
+        colorClass = 'colorRed';
+      } else if (tour.route.quality < 0.95) {
+        colorClass = 'colorYellow';
+      }
+    }
+    return colorClass;
   }
 
   tourDateFilterPrevDay() {

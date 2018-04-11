@@ -2,6 +2,7 @@
 interface TourRouteMeta {
   distance?: number;
   drivingTime?: number;
+  quality?: number;
 }
 
 export interface TourListItem {

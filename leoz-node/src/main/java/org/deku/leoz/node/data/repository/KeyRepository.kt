@@ -6,6 +6,7 @@ import org.deku.leoz.node.data.jpa.QMstNode.mstNode
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import sx.util.toNullable
+import java.util.*
 import javax.inject.Inject
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
@@ -20,21 +21,8 @@ interface KeyRepository :
 interface KeyRepositoryExtension {
 }
 
-class KeyRepositoryImpl : NodeRepositoryExtension {
-    @PersistenceContext
-    private lateinit var em: EntityManager
+class KeyRepositoryImpl : KeyRepositoryExtension {
 
-    @Inject
-    private lateinit var nodeRepo: NodeRepository
-
-    override fun findByUid(nodeUid: String): MstNode? {
-        return nodeRepo.findOne(
-                mstNode.key.startsWith(nodeUid)
-        ).toNullable()
-    }
-    override fun findByKey(key: String): MstNode? {
-        return nodeRepo.findOne(mstNode.key.eq(key)).toNullable()
-    }
 }
 
 

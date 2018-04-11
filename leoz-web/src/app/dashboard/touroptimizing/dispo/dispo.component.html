@@ -14,36 +14,36 @@
     </div>
     <div class="ui-g-12">
       <p-checkbox [(ngModel)]="optimizeExistingtours" binary="true"
-                  label="{{'optimizeExistingtours' | translate}}"></p-checkbox>
+                  label="{{'optimizeExistingtours' | translate}}" (onChange)="changeOptimizeExistingtours()"></p-checkbox>
     </div>
     <div *ngIf="selectedTours.length === 1 && selectedOptimizableTours  && selectedOptimizableTours.length === 1" class="ui-g-12">
       <p-checkbox [(ngModel)]="optimizeSplitTours" binary="true"
-                  label="{{'optimizeSplitTours' | translate}}"></p-checkbox>
+                  label="{{'optimizeSplitTours' | translate}}" (onChange)="changeOptimizeSplitTours()"></p-checkbox>
     </div>
     <div *ngIf="selectedTours.length === 1 && optimizeSplitTours" class="ui-g-12">
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
         {{'sprinter_max_kg' | translate}}:
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-        <input pInputText [(ngModel)]="sprinterMaxKg">
+        <input pInputText [(ngModel)]="sprinterMaxKg" [pKeyFilter]="emptyOrPInt">
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
         {{'caddy_max_kg' | translate}}:
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-        <input pInputText [(ngModel)]="caddyMaxKg">
+        <input pInputText [(ngModel)]="caddyMaxKg" [pKeyFilter]="emptyOrPInt">
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
         {{'kombi_max_kg' | translate}}:
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-        <input pInputText [(ngModel)]="kombiMaxKg">
+        <input pInputText [(ngModel)]="kombiMaxKg" [pKeyFilter]="emptyOrPInt">
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
         {{'bike_max_kg' | translate}}:
       </div>
       <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-        <input pInputText [(ngModel)]="bikeMaxKg">
+        <input pInputText [(ngModel)]="bikeMaxKg" [pKeyFilter]="emptyOrPInt">
       </div>
     </div>
   </div>
@@ -110,8 +110,7 @@
 
         <ng-template pTemplate="body" let-tour>
           <tr class="{{tour.optimizationFailed ? 'bgOptimizationFailed' : ''}}" >
-            <td></td>
-
+            <td class="{{getQualityColorClass(tour)}}">{{tour.route && tour.route.quality ? roundDecimalsAsStringWrapper(tour.route.quality * 100) + ' %' : ''}}</td>
             <td>{{tour.id}}</td>
             <td>
               <span *ngIf="tour.customId; else parentID">{{tour.customId}}</span>

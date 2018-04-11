@@ -62,13 +62,13 @@ class NodeServiceV1
 
             val identityUid = Identity.Uid(nodeInfo.uid)
             var rNode = nodeRepository.findOne(
-                    mstNode.key.eq(identityUid.value)
+                    mstNode.uid.eq(identityUid.uuid)
             ).toNullable()
 
             if (rNode == null) {
                 // Store new node record
                 rNode = MstNode().also {
-                    it.key = identityUid.value
+                    it.uid = identityUid.uuid
                 }
             }
 
@@ -95,16 +95,16 @@ class NodeServiceV1
     }
 
     override fun getByUid(uid: String): NodeServiceV1.Node {
-        return nodeRepository.findByUid(uid)
+        return nodeRepository.findByUid(UUID.fromString(uid))
                 ?.toNode()
                 ?: throw NoSuchElementException("Unknown node uid [${uid}]")
     }
 
     override fun requestDiagnosticData(nodeUid: String) {
-        val rNode = this.nodeRepository.findByUid(nodeUid)
+        val rNode = this.nodeRepository.findByPartUid(nodeUid)
                 ?: throw NoSuchElementException("Unknown node uid [${nodeUid}]")
 
-        JmsEndpoints.node.topic(Identity.Uid(rNode.key)).channel().use {
+        JmsEndpoints.node.topic(Identity.Uid(rNode.uid.toString())).channel().use {
             it.send(NodeServiceV1.DiagnosticDataRequest())
         }
     }
@@ -116,7 +116,7 @@ class NodeServiceV1
     fun MstNode.toNode(): NodeServiceV1.Node {
         return NodeServiceV1.Node(
                 id = this.id,
-                uid = this.key
+                uid = this.uid.toString()
         )
     }
 }

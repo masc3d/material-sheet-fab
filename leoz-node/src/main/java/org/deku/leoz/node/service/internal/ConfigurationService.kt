@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import sx.rs.RestProblem
 import sx.util.toNullable
+import java.util.*
 import javax.inject.Inject
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
@@ -25,7 +26,7 @@ import javax.ws.rs.core.Response
  */
 @Component
 @Path("internal/v1/configuration")
-class ConfigurationService: ConfigurationService {
+class ConfigurationService : ConfigurationService {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -47,12 +48,10 @@ class ConfigurationService: ConfigurationService {
 
     override fun getUserConfiguration(userId: Int): String {
         val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
-        apiKey ?:
-        throw RestProblem(status = Response.Status.UNAUTHORIZED)
+        apiKey ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
 
         val authorizedUserRecord = userRepository.findByKey(apiKey)
-        authorizedUserRecord ?:
-        throw RestProblem(status = Response.Status.UNAUTHORIZED)
+        authorizedUserRecord ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
 
         val targetUserRecord = userRepository.findById(userId.toLong())
                 .toNullable()
@@ -78,7 +77,13 @@ class ConfigurationService: ConfigurationService {
     }
 
     override fun getNodeConfiguration(nodeUid: String): String {
-        val node = nodeRepository.findByUid(nodeUid)
+        val uid: UUID
+        try {
+            uid = UUID.fromString(nodeUid)
+        } catch (e: Exception) {
+            throw RestProblem(title = "Invalid Node UID", detail = "Node UID could not be found", status = Response.Status.NOT_FOUND)
+        }
+        val node = nodeRepository.findByUid(uid)
                 ?: throw RestProblem(title = "Invalid Node UID", detail = "Node UID could not be found", status = Response.Status.NOT_FOUND)
 
         return node.config?.toString() ?: "{}"

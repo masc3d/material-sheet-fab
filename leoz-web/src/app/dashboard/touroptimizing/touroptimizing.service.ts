@@ -93,7 +93,6 @@ export class TouroptimizingService {
     } else {
       this.optimizationInProgress = this.optimizationInProgress.filter( el => el !== id );
     }
-    console.log('this.toursSubject.getValue()', this.toursSubject.getValue());
     const tmpTours = this.toursSubject
       .getValue()
       .map( tour => {

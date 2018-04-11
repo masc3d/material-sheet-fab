@@ -174,7 +174,7 @@ class JooqParcelRepository {
                         .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
                         .and(Tables.TBLAUFTRAGCOLLIES.VERPACKUNGSART.eq(91)//Valore
                                 .or(Tables.TBLAUFTRAGCOLLIES.GEWICHTEFFEKTIV.lessOrEqual(maxWeightForParcelBag)))
-                        .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.isNull)
+                      //  .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.isNull)//alle auch die schon beladen sind-konsistent zu "normalen"
                         .and(Tables.TBLAUFTRAG.VERLADEDATUM.eq(sendDate.toTimestamp()))
                         .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
                         .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0)))//fehlende anfahrt raus
@@ -275,6 +275,31 @@ class JooqParcelRepository {
                         .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
                         .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
+
+    }
+
+    fun getLoadedParcelsToExportInBagByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
+        return dsl.fetch(
+                Tables.TBLAUFTRAGCOLLIES,
+                Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
+                        .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.between(10000.0, 100000.0))
+                        .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                        .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+        )
+
+    }
+
+    fun getLoadinglistNoByOrderids(orderIds: List<Long>): List<Long> {
+        return dsl.select(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD)
+                .from(Tables.TBLAUFTRAGCOLLIES)
+                .where(
+                        Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
+                                .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.greaterThan(10000.0))
+                                .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                                .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+                ).fetch(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD, Long::class.java)
 
     }
 

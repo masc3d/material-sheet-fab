@@ -62,8 +62,7 @@ export class StoplistReportingService extends ReportingService {
     this.doc = new jsPDF();
     this.startPageNo = 1;
     await tours.forEach( async ( tour: Tour ) => {
-      const barcodeImgData = await QRCode.toDataURL( `<deku-tour id="${tour.id}" uid="${tour.uid}"/>`, { width: 90 } );
-
+      const barcodeImgData = await QRCode.toDataURL( `DK;TR;${tour.id};${tour.uid.toUpperCase()}`, { width: 90 } );
       const report = new Report( 'stoplist-report', 10, 10,
         new ReportPart( 35, reportHeaderRenderFunction,
           {

@@ -6,7 +6,7 @@ buildscript {
         v_feign = '9.6.0'
         v_jackson = '2.9.5'
         v_javax_persistence = '2.2'
-        v_jersey = '2.26'
+        v_jersey = '2.27'
         v_jgit = '4.11.0.201803080745-r'
         v_jna = '4.5.1'
         v_jooq = '3.10.6'

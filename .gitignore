@@ -16,7 +16,6 @@
 build
 buildSrc/build
 buildSrc/src/import
-dataSources.local.xml
 hibernate.cfg.xml
 leoz-boot/bin
 leoz-boot/build
