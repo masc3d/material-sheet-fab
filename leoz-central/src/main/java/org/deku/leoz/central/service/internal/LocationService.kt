@@ -441,6 +441,9 @@ class LocationServiceV2 :
                     r.vehicleType = it.vehicleType?.value?.toUpperCase()
 //r.debitorId=
 //todo
+//V81migration
+                    //if (message.nodeKey!=null)
+                    //    r.node_uid=message.nodeKey
                     posRepository.save(r)
                 }
             }

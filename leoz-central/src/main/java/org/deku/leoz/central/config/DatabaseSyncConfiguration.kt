@@ -259,7 +259,7 @@ class DatabaseSyncConfiguration {
                     QTadNodeGeoposition.tadNodeGeoposition.syncId,
                     { s ->
                         TadNodeGeoposition().also { d ->
-                            d.positionId = s.positionId
+                            d.id = s.positionId.toLong()
                             d.userId = s.userId
                             d.nodeId = s.nodeId
                             d.tsCreated = s.tsCreated
@@ -274,6 +274,8 @@ class DatabaseSyncConfiguration {
                             d.vehicleType = s.vehicleType
                             d.debitorId = s.debitorId
                             d.syncId = s.syncId
+                            //TODO
+                            //d.node_uid
                         }
                     }
             ),
