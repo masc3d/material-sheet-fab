@@ -152,11 +152,19 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     }
     this.checkAll = false;
     this.touroptimizingService.switchSelectionAllTours( false );
+    this.resetDialogParams();
+  }
+
+  private resetDialogParams() {
     this.displayOptimizationOptions = false;
     this.dontShiftOneDayFromNow = true;
     this.optimizeTraffic = true;
     this.optimizeExistingtours = true;
     this.optimizeSplitTours = false;
+    this.sprinterMaxKg = null;
+    this.caddyMaxKg = null;
+    this.kombiMaxKg = null;
+    this.bikeMaxKg = null;
   }
 
   private addVehicles( amount: number, type: Vehicle, vehicles: Vehicle[] ): Vehicle[] {
@@ -227,6 +235,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   rejectOptimizationOptions() {
     this.msgService.clear();
+    this.resetDialogParams();
     this.displayOptimizationOptions = false;
     this.cd.markForCheck();
   }

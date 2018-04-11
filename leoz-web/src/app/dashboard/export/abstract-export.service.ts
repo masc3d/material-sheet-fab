@@ -141,7 +141,8 @@ export abstract class AbstractExportService {
     const dateFrom = this.wds.workingDate(),
       dateTo = this.wds.hubDeliveryDate(),
       loadingAddress = this.activeStation.address
-        ? `${this.activeStation.address.line1}, ${this.activeStation.address.street} ${this.activeStation.address.streetNo}, ${this.activeStation.address.countryCode}-${this.activeStation.address.zipCode} ${this.activeStation.address.city}`
+        ? `${this.activeStation.address.line1}, ${this.activeStation.address.street} ${this.activeStation.address.streetNo}, `
+        + `${this.activeStation.address.countryCode}-${this.activeStation.address.zipCode} ${this.activeStation.address.city}`
         : '',
       shipmentCount = loadingList.packages && loadingList.packages.length > 0 ? this.shipmentCount( loadingList.packages ) : 0,
       packageCount = loadingList.packages ? loadingList.packages.length : 0,
@@ -186,7 +187,7 @@ export abstract class AbstractExportService {
   }
 
   shipmentCount( packages: Package[] ) {
-    const uniqueOrderIds = this.unique(packages.map(pack => pack.orderId));
+    const uniqueOrderIds = this.unique( packages.map( pack => pack.orderId ) );
     return uniqueOrderIds.length;
   }
 
