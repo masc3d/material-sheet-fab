@@ -152,6 +152,10 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     }
     this.checkAll = false;
     this.touroptimizingService.switchSelectionAllTours( false );
+    this.resetDialogParams();
+  }
+
+  private resetDialogParams() {
     this.displayOptimizationOptions = false;
     this.dontShiftOneDayFromNow = true;
     this.optimizeTraffic = true;
@@ -227,6 +231,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   rejectOptimizationOptions() {
     this.msgService.clear();
+    this.resetDialogParams();
     this.displayOptimizationOptions = false;
     this.cd.markForCheck();
   }
