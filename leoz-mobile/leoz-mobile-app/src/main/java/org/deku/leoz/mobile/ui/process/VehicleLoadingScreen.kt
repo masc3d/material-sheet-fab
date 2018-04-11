@@ -17,8 +17,6 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
@@ -53,7 +51,6 @@ import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.inflateMenu
-import sx.android.rx.observeOnMainThread
 import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.rx.observeOnMainThreadWithLifecycle
 import sx.android.ui.flexibleadapter.SimpleVmItem
@@ -61,8 +58,8 @@ import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.format.format
 import sx.log.slf4j.trace
 import sx.log.slf4j.warn
+import sx.log.slf4j.info
 import sx.rx.ObservableRxProperty
-import java.util.concurrent.TimeUnit
 
 /**
  * Vehicle loading screen
@@ -293,7 +290,8 @@ class VehicleLoadingScreen :
                 DatamatrixDecoder(true),
                 Ean8Decoder(true),
                 Ean13Decoder(true),
-                Code128Decoder(true)
+                Code128Decoder(true),
+                QrCodeDecoder(true)
         )
 
         aidcReader.readEvent
@@ -542,10 +540,13 @@ class VehicleLoadingScreen :
                 },
                 Observable.fromCallable {
                     DekuDeliveryListNumber.parseLabel(event.data)
+                },
+                Observable.fromCallable {
+                    TourIdentification.parseLabel(event.data)
                 }
         )
                 .takeUntil { !it.hasError }
-                .last(Result(error = IllegalArgumentException("Invalid barcode")))
+                .last(Result(IllegalArgumentException("Invalid barcode")))
                 .blockingGet()
 
         when {
@@ -565,7 +566,10 @@ class VehicleLoadingScreen :
                         this.onInput(resultValue.toUnitNumber())
                     }
                     is DekuDeliveryListNumber -> {
-                        this.onInput(resultValue)
+                        this.onInput(deliveryListNumber = resultValue)
+                    }
+                    is TourIdentification -> {
+                        this.onInput(tourIdent = resultValue)
                     }
                 }
             }
@@ -575,18 +579,25 @@ class VehicleLoadingScreen :
     /**
      * On delivery list input
      */
-    fun onInput(deliveryListNumber: DekuDeliveryListNumber) {
+    fun onInput(
+            deliveryListNumber: DekuDeliveryListNumber? = null,
+            tourIdent: TourIdentification? = null) {
         var loaded = false
-
         this.isBusy = true
 
-        tour.load(deliveryListNumber)
+        val loadTour = if (deliveryListNumber != null) {
+            tour.load(deliveryListNumber)
+        } else if (tourIdent != null) {
+            tour.load(tourIdent)
+        } else
+            throw IllegalArgumentException()
+
+        loadTour
                 .bindToLifecycle(this)
-                .composeAsRest(this.activity, R.string.error_invalid_delivery_list)
+                .composeAsRest(this.activity, R.string.error_invalid_tour)
                 .subscribeBy(
                         onNext = {
                             loaded = true
-                            log.info("Current delivery lists [${this.tour.ids.get().joinToString(", ")}")
                         },
                         onComplete = {
                             this.isBusy = false
@@ -651,7 +662,7 @@ class VehicleLoadingScreen :
                                                 )
                                     }
 
-                                    if (this.tour.ids.get().isEmpty() || acceptDetachedOrdersWithoutConfirmation) {
+                                    if (this.tour.deliveryListIds.get().isEmpty() || acceptDetachedOrdersWithoutConfirmation) {
                                         mergeOrder()
                                     } else {
                                         val dialog = MaterialDialog.Builder(this.activity)

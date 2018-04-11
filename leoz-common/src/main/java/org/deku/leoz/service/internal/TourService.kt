@@ -29,6 +29,7 @@ import javax.ws.rs.sse.SseEventSink
 interface TourServiceV1 {
     companion object {
         const val ID = "id"
+        const val UID = "uid"
         const val CUSTOM_ID = "custom-id"
         const val FROM = "from"
         const val INCLUDE_RELATED = "include-related"
@@ -71,6 +72,14 @@ interface TourServiceV1 {
     fun getById(
             @PathParam(ID) @ApiParam(value = "Tour id", required = true)
             id: Long
+    ): Tour
+
+    @GET
+    @Path("/uid/{${UID}}")
+    @ApiOperation(value = "Get tour by uid", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getByUid(
+            @PathParam(UID) @ApiParam(value = "Tour uid", required = true)
+            uid: String
     ): Tour
 
     @GET

@@ -101,7 +101,7 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_invalid_barcode">Invalid barcode</string>
     <string name="error_invalid_credentials">Email/Password combination could not be found.</string>
-    <string name="error_invalid_delivery_list">Invalid delivery list</string>
+    <string name="error_invalid_tour">Invalid tour</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_parcel">Invalid parcel</string>
     <string name="error_invalid_password">This password is too short</string>
