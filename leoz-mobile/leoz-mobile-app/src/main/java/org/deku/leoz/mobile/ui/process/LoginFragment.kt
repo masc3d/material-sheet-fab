@@ -6,6 +6,7 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.afollestad.materialdialogs.DialogAction
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -48,6 +49,8 @@ class LoginFragment : Fragment<Any>() {
     private val login: Login by Kodein.global.lazy.instance()
 
     private var privacyDisclaimerAccepted = false
+
+    private lateinit var disclaimerDialog: MaterialDialog
 
     private val privacyResultSubject: PublishSubject<Date> = PublishSubject.create()
 
@@ -250,11 +253,12 @@ class LoginFragment : Fragment<Any>() {
 
             privacyDisclaimerAccepted = false
 
-            MaterialDialog.Builder(this.context).also {
+            disclaimerDialog = MaterialDialog.Builder(this.context).also {
                 it.title(R.string.data_protection)
                 it.icon(ContextCompat.getDrawable(this.context, R.drawable.ic_search_data)!!)
                 it.checkBoxPrompt("Ich akzeptiere die Erklärung", false, { _, checked ->
                     privacyDisclaimerAccepted = checked
+                    disclaimerDialog.getActionButton(DialogAction.POSITIVE).isEnabled = checked
                 })
                 it.content(R.string.privacy_disclaimer_text)
                 it.cancelable(false)
@@ -266,7 +270,11 @@ class LoginFragment : Fragment<Any>() {
                 it.onPositive { _, _ ->
                     completable.onComplete()
                 }
-            }.show()
+            }.build().also {
+                it.getActionButton(DialogAction.POSITIVE).isEnabled = false
+            }
+
+            disclaimerDialog.show()
         }
     }
 }
