@@ -24,7 +24,7 @@ interface NodeGeopositionRepositoryExtension {
 }
 
 interface NodeGeopositionRepositoryExtensionGeneral{
-    fun findTopByOrderByPositionIdDesc():TadNodeGeoposition?
+    fun findTopByOrderByIdDesc():TadNodeGeoposition?
     fun findTopByUserIdOrderByPositionDatetimeDesc(id: Int):TadNodeGeoposition?
     fun findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(id: Int, from: Date, to: Date): List<TadNodeGeoposition>
 }

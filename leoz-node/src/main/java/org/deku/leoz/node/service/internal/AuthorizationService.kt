@@ -122,12 +122,12 @@ class AuthorizationService
 
             val identityKey = Identity.Uid(message.key)
 
-            var nodeRecord = nodeRepo.findByUid(message.key)
+            var nodeRecord = nodeRepo.findByUid(UUID.fromString(message.key))
 
             if (nodeRecord == null) {
                 // Store new node record
                 nodeRecord = MstNode().also {
-                    it.key = message.key
+                    it.uid = UUID.fromString(message.key)
                     it.bundle = message.name
                     it.versionAlias = "release"
                     it.tsModified = Date().toTimestamp()

@@ -3,6 +3,7 @@ package org.deku.leoz.identity
 import org.deku.leoz.YamlPersistence
 import sx.io.serialization.Serializable
 import java.io.File
+import java.util.*
 
 /**
  * Holds all identity information for a leoz node including system information
@@ -36,6 +37,8 @@ class Identity constructor(
             else
                 return super.equals(other)
         }
+
+        val uuid: UUID by lazy { UUID.fromString(this.value) }
     }
 
     /**
@@ -81,6 +84,9 @@ class Identity constructor(
         if (uid.length < SHORT_UID_LENGTH)
             throw IllegalArgumentException("Identity uid must have at least length > 8 for short uid representation")
     }
+
+    val uuid: UUID
+        get() = this.uid.uuid
 
     /**
      * Store identity to file

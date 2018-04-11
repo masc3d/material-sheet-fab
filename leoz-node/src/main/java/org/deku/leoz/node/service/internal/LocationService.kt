@@ -99,16 +99,9 @@ class LocationService :
                         || ((authorizedUser.debitorId == userRecord.debitorId.toInt())
                                 && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value))) {
 
-                    val posList=posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(userRecord.id.toInt(),pos_from,pos_to)
-                    if (posList != null) {
-                        gpsList = filter(posList)
-                        /*
-                        posList.forEach {
-                            gpsList.add(it.toGpsData())
-                        }
-                        */
+                    val posList = posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(userRecord.id.toInt(), pos_from, pos_to)
+                    gpsList = filter(posList)
 
-                    }
                     gpsdataList.add(LocationServiceV2.GpsData(
                             userId = userRecord.id.toInt(),
                             gpsDataPoints = gpsList))
@@ -134,16 +127,11 @@ class LocationService :
                             || ((authorizedUser.debitorId == it.debitorId.toInt())
                                     && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value))) {
 
-                        val posList=posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(it.id.toInt(),pos_from,pos_to)
+                        val posList = posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(it.id.toInt(), pos_from, pos_to)
                         var gpsListTmp = mutableListOf<LocationServiceV2.GpsDataPoint>()
-                        if (posList != null) {
-                            /*
-                            posList.forEach {
-                                gpsListTmp.add(it.toGpsData())
-                            }*/
-                            gpsListTmp = filter(posList)
+                        gpsListTmp = filter(posList)
 
-                        }
+
                         gpsdataList.add(LocationServiceV2.GpsData(
                                 userId = it.id.toInt(),
                                 gpsDataPoints = gpsListTmp))
@@ -201,10 +189,10 @@ class LocationService :
                     if (duration != null) {
                         val pos_to = Date()
                         val pos_from = Date().plusMinutes(duration * -1)
-                        posList=posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(userRecord.id.toInt(),pos_from,pos_to)
+                        posList = posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(userRecord.id.toInt(), pos_from, pos_to)
                     } else {
-                        val recentRecord =posRepository.findTopByUserIdOrderByPositionDatetimeDesc(userRecord.id.toInt()) //posRepository.findRecentByUserId(userRecord.id.toInt())
-                        posList=if(recentRecord!=null)listOf(recentRecord) else null
+                        val recentRecord = posRepository.findTopByUserIdOrderByPositionDatetimeDesc(userRecord.id.toInt()) //posRepository.findRecentByUserId(userRecord.id.toInt())
+                        posList = if (recentRecord != null) listOf(recentRecord) else null
                     }
 
                     if (posList != null) {
@@ -230,13 +218,11 @@ class LocationService :
             }
             debitor_id != null -> {
                 val userRecList = userRepository.findByDebitorId(debitor_id.toLong())
-                        ?: throw RestProblem(
-                                status = Response.Status.NOT_FOUND,
-                                title = "no user found by debitor-id")
+
                 if (userRecList.isEmpty())
                     throw RestProblem(
                             status = Response.Status.NOT_FOUND,
-                            title = "no user found by debitor-id")
+                            title = "No user found by debitor-id")
                 userRecList.forEach {
 
                     if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
@@ -247,10 +233,10 @@ class LocationService :
                         if (duration != null) {
                             val pos_to = Date()
                             val pos_from = Date().plusMinutes(duration * -1)
-                            posList=posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(it.id.toInt(),pos_from,pos_to)
+                            posList = posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(it.id.toInt(), pos_from, pos_to)
                         } else {
-                            val recentRecord =posRepository.findTopByUserIdOrderByPositionDatetimeDesc(it.id.toInt())
-                            posList=if(recentRecord!=null)listOf(recentRecord) else null
+                            val recentRecord = posRepository.findTopByUserIdOrderByPositionDatetimeDesc(it.id.toInt())
+                            posList = if (recentRecord != null) listOf(recentRecord) else null
                         }
                         var gpsListTmp = mutableListOf<LocationServiceV2.GpsDataPoint>()
                         if (posList != null) {
@@ -398,14 +384,24 @@ class LocationService :
 
                 this.locationReceivedSubject.onNext(message)
 
+                var node_uid: UUID? = null
+                var node_id: Int? = null
+                if (message.nodeKey != null) {
+                    try {
+                        node_uid = UUID.fromString(message.nodeKey)
+                        node_id = nodeRepository.findByUid(node_uid)?.id?.toInt()
+                    } catch (e: Exception) {
+
+                    }
+                }
+
+
                 dataPoints.forEach {
 
                     emf.transaction { em ->
-                        val pid = posRepository.findTopByOrderByPositionIdDesc()?.positionId
-                                ?: 0 //(QTadNodeGeoposition.tadNodeGeoposition.positionId.max() ?: 0)
                         val rec = TadNodeGeoposition()
                         rec.userId = message.userId
-                        rec.nodeId = nodeRepository.findByKey(message.nodeKey ?: "")?.id?.toInt()
+                        rec.nodeId = node_id
                         rec.latitude = it.latitude
                         rec.longitude = it.longitude
                         rec.positionDatetime = it.time?.toTimestamp()
@@ -419,7 +415,8 @@ class LocationService :
                         //sync_id??
                         rec.syncId = 0
 
-                        rec.positionId = pid + 1
+
+                        //rec.node_uid=node_uid
 
                         em.persist(rec)
                         em.flush()
