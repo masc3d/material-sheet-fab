@@ -161,6 +161,10 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.optimizeTraffic = true;
     this.optimizeExistingtours = true;
     this.optimizeSplitTours = false;
+    this.sprinterMaxKg = null;
+    this.caddyMaxKg = null;
+    this.kombiMaxKg = null;
+    this.bikeMaxKg = null;
   }
 
   private addVehicles( amount: number, type: Vehicle, vehicles: Vehicle[] ): Vehicle[] {
