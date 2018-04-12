@@ -1,7 +1,8 @@
 package org.deku.leoz.mobile.model.entity
 
 /**
- * Specific comparison method, only taking stop relevant fields into account
+ * Indicates if address is a compatible stop address for another by
+ * only taking stop relevant fields into account
  * Created by masc on 03.08.17.
  */
 fun Address.isCompatibleStopAddressFor(other: Address): Boolean {
@@ -18,6 +19,15 @@ fun Address.isCompatibleStopAddressFor(other: Address): Boolean {
     ).all { it.invoke() }
 }
 
+/**
+ * Indicates if address is compatible for merging stops
+ */
+fun Address.isCompatibleStopAddressForMergeWith(other: Address): Boolean =
+        this.zipCode.take(3) == other.zipCode.take(3)
+
+/**
+ * Indicates if address has valid phone number
+ */
 val Address.hasValidPhoneNumber: Boolean
     get() = when {
         this.phone.filter { it.isDigit() }.length > 4 -> true
