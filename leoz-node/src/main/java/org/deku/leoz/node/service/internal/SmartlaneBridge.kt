@@ -474,10 +474,26 @@ class SmartlaneBridge {
                 numvehicles = vehicleCount
         )
                 .map { routes ->
+                    // Sanity checks
                     if (routes.count() > vehicleCount)
                         throw IllegalStateException("Amount of optimized routes [${routes.count()}] is not supposed " +
                                 "to exceed number of vehicles [${vehicleCount}]")
 
+
+                    val missingStopUids = (tour.stops?.map { it.uid } ?: listOf())
+                            .subtract(
+                                    routes.flatMap { it.deliveries.map { it.customId } }
+                            )
+
+                    if (missingStopUids.count() > 0) {
+                        val missingStops = missingStopUids.map { uid -> tour.stops?.first { it.uid == uid } }
+
+                        throw IllegalStateException(
+                                "(${routes.count()}] optimized route(s) are missing ${missingStops.count()} stops"
+                        )
+                    }
+
+                    // Transform route to tour
                     routes.map { route ->
                         // Create optimized (partial) tour from original one and route information
                         tour.toOptimizedTour(
