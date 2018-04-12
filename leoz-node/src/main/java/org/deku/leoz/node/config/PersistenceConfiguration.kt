@@ -16,6 +16,7 @@ import org.jooq.conf.StatementType
 import org.jooq.impl.DataSourceConnectionProvider
 import org.jooq.impl.DefaultDSLContext
 import org.slf4j.LoggerFactory
+import org.slf4j.event.Level
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.*
@@ -29,6 +30,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter
 import org.springframework.transaction.annotation.EnableTransactionManagement
+import sx.Stopwatch
 import java.io.File
 import java.util.*
 import javax.annotation.PostConstruct
@@ -277,6 +279,14 @@ class PersistenceConfiguration {
     fun onInitialize() {
         // Migrate schema
         log.info("Migrating embedded data source schema")
+
+        // TODO. workaround for h2 migration V19 taking a long time.
+        Stopwatch.createStarted(this, "Removing all node geoposition records", Level.WARN, {
+            this.dataSource.connection
+                    .createStatement()
+                    .executeUpdate("DELETE FROM tad_node_geoposition;")
+        })
+
         val flyway = Flyway()
         flyway.dataSource = this.dataSource
         flyway.setLocations("classpath:/db/node/migration")
