@@ -284,7 +284,7 @@ class PersistenceConfiguration {
         Stopwatch.createStarted(this, "Removing all node geoposition records", Level.WARN, {
             this.dataSource.connection
                     .createStatement()
-                    .executeUpdate("DELETE FROM tad_node_geoposition;")
+                    .executeUpdate("TRUNCATE TABLE tad_node_geoposition;")
         })
 
         val flyway = Flyway()
