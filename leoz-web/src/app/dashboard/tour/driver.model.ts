@@ -7,6 +7,7 @@ export interface Driver {
   phoneMobile: string;
   email: string;
   active: boolean;
+  allowedStations?: number[];
 }
 
 export namespace Driver {
