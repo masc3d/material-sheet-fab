@@ -181,15 +181,16 @@ class MqttDispatcher(
      * @param topicName Topic to trigger dequeue for. Omitting this parameter triggers all topics
      */
     private fun trigger(topicName: String? = null) {
-        when {
+        val topics = if (topicName != null)
         // Trigger specific topic
-            topicName != null -> {
-                this.dequeueTopicTriggerSubject.onNext(topicName)
-            }
+            listOf(topicName)
+        else
         // Trigger all topics
-            else -> this.persistence.getTopics().forEach {
-                this.dequeueTopicTriggerSubject.onNext(it)
-            }
+            this.persistence.getTopics()
+
+        topics.forEach {
+            log.debug { "Triggering [${it}]" }
+            this.dequeueTopicTriggerSubject.onNext(it)
         }
     }
 
@@ -369,7 +370,7 @@ class MqttDispatcher(
      */
     private fun reconnect() {
         this.lock.withLock {
-            log.debug{ "Reconnecting to ${this.client.uri}" }
+            log.debug { "Reconnecting to ${this.client.uri}" }
             val hasConnectionSubscription = this.connectionSubscription != null
 
             if (this.connectionSubscription?.isDisposed ?: true)
