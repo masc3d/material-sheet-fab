@@ -817,7 +817,7 @@ class StopProcessScreen :
         }
 
         // Stops may only be merged under specific conditions (eg. zipcode matches)
-        val isMergeAllowed = sourceStop.address.zipCode == this.tourStop.entity.address.zipCode
+        val isMergeAllowed = true // sourceStop.address.zipCode == this.tourStop.entity.address.zipCode
 
         if (!isMergeAllowed) {
             log.warn("Merge is not allowed")
