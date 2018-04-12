@@ -4,8 +4,10 @@ import android.databinding.Bindable
 import android.databinding.Observable
 import io.requery.*
 import org.deku.leoz.mobile.data.BR
+import org.deku.leoz.model.TourStopRouteMeta
 import sx.android.databinding.BaseRxObservable
 import sx.io.serialization.Serializable
+import sx.io.serialization.Serializer
 import java.util.*
 
 /**
@@ -16,7 +18,12 @@ import java.util.*
 @Table(name = "stop")
 abstract class Stop : BaseRxObservable(), Persistable, Observable {
 
-    companion object {}
+    companion object {
+        init {
+            // Serializable must be registered here
+            Serializer.types.register(TourStopRouteMeta::class.java)
+        }
+    }
 
     @Serializable(0xd37a60a1a80ea6)
     class Signature(
@@ -83,8 +90,18 @@ fun Stop.Companion.create(
 @Entity
 @Table(name = "stop_meta")
 abstract class StopMeta : Meta() {
+    companion object {}
+
     @get:Lazy
     @get:Column(nullable = false)
     @get:ManyToOne(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract var stop: Stop
+}
+
+fun StopMeta.Companion.create(
+        value: Any
+): StopMeta {
+    return StopMetaEntity().also {
+        it.set(value)
+    }
 }

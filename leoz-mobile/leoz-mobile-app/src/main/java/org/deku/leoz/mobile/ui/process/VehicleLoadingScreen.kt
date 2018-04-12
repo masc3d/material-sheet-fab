@@ -57,9 +57,8 @@ import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.format.format
 import sx.log.slf4j.trace
-import sx.log.slf4j.warn
-import sx.log.slf4j.info
 import sx.rx.ObservableRxProperty
+import java.util.*
 
 /**
  * Vehicle loading screen
@@ -463,39 +462,31 @@ class VehicleLoadingScreen :
                     }
 
             // Synthetic inputs for delivery lists, retrieved via online service
-            val ovDeliveryLists = Observable.fromCallable {
+            val ovTours = Observable.fromCallable {
                 val tourService = Kodein.global.instance<TourServiceV1>()
                 tourService.get(overview = true)
             }
                     .toHotIoObservable()
                     .composeAsRest(this.activity)
-                    .map { dlInfos ->
+                    .map { tours ->
                         SyntheticInput(
-                                name = "Delivery lists",
+                                name = "Tours",
                                 multipleChoice = true,
-                                entries = dlInfos
+                                entries = tours
                                         .sortedWith(
                                                 compareByDescending({ it.date?.date })
                                         )
-                                        .mapNotNull { tour ->
-                                            val customId = tour.customId
+                                        .map { tour ->
+                                            val id = tour.id!!.toInt()
+                                            val uid = UUID.fromString(tour.uid)
 
-                                            if (customId == null)
-                                                return@mapNotNull null
-
-                                            DekuDeliveryListNumber.parse(customId).let {
-                                                when {
-                                                    it.hasError -> {
-                                                        log.warn { it.error }
-                                                        null
-                                                    }
-                                                    else -> SyntheticInput.Entry(
-                                                            symbologyType = SymbologyType.Interleaved25,
-                                                            data = it.value.label,
-                                                            name = "${tour.date}: ${it.value.label}"
-                                                    )
-                                                }
-                                            }
+                                            SyntheticInput.Entry(
+                                                    symbologyType = SymbologyType.QrCode,
+                                                    data = TourIdentification(
+                                                            id = id,
+                                                            uid = uid).label,
+                                                    name = "${tour.date}: t${id} ${tour.optimized?.let { "optimized" } ?: ""}"
+                                            )
                                         }
                         )
                     }
@@ -510,7 +501,7 @@ class VehicleLoadingScreen :
             // Final synthetic inputs observable
             Observable.combineLatest(
                     ovParcels,
-                    ovDeliveryLists,
+                    ovTours,
 
                     BiFunction { a: SyntheticInput, b: SyntheticInput ->
                         listOf<SyntheticInput>(a, b)

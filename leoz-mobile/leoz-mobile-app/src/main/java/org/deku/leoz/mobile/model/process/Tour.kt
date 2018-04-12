@@ -187,9 +187,9 @@ class Tour : CompositeDisposableSupplier {
 
             // Process stops
             val stops = tour.stops
-                    ?.map {
+                    ?.map { srcStop ->
                         Stop.create(
-                                tasks = it.tasks.map {
+                                tasks = srcStop.tasks.map {
                                     val order = orderRepository
                                             .findById(it.orderId)
                                             .blockingGet()
@@ -207,7 +207,14 @@ class Tour : CompositeDisposableSupplier {
                                         }
                                     }
                                 }.filterNotNull()
-                        )
+                        ).also {
+                            // Add route meta data to stop
+                            srcStop.route?.also { route ->
+                                it.meta.add(StopMeta.create(
+                                        route
+                                ))
+                            }
+                        }
                     }
                     ?: listOf()
 
