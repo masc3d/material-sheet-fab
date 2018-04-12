@@ -16,6 +16,8 @@ import { AbstractTranslateComponent } from '../../../core/translate/abstract-tra
 import { TranslateService } from '../../../core/translate/translate.service';
 import { MsgService } from '../../../shared/msg/msg.service';
 import { PermissionCheck } from '../../../core/auth/permission-check';
+import { AuthenticationService } from '../../../core/auth/authentication.service';
+import { Station } from '../../../core/auth/station.model';
 
 interface CallbackArguments {
   driver: Driver;
@@ -140,6 +142,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   private periodicallyUsedFilter: string;
   displayedMapmode: string;
   private selectedLocationFlag: string;
+  private activeStation: Station;
 
   constructor( private driverService: DriverService,
                private tourService: TourService,
@@ -147,7 +150,8 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
                protected msgService: MsgService,
                private userService: UserService,
                protected translate: TranslateService,
-               private roleGuard: RoleGuard ) {
+               private roleGuard: RoleGuard,
+               private auth: AuthenticationService ) {
     super( translate, cd, msgService, () => {
       this.intervalOptions = this.createIntervalOptions();
       if (this.tourDate) {
@@ -179,16 +183,24 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
       { label: '30', value: 30 },
       { label: '60', value: 60 } ];
 
+    this.auth.activeStation$
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
+      .subscribe( ( activeStation: Station ) => {
+        this.activeStation = activeStation;
+      } );
+
     this.drivers = [];
     this.driverService.drivers$
       .pipe(
-        takeUntil(this.ngUnsubscribe)
+        takeUntil( this.ngUnsubscribe )
       )
-      .subscribe(drivers => {
+      .subscribe( drivers => {
         this.drivers.length = 0;
-        this.drivers.push(...this.filterDrivers(drivers, this.filterName));
+        this.drivers.push( ...this.filterDrivers( drivers, this.filterName ) );
         this.cd.markForCheck();
-      });
+      } );
     this.isPermitted = (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
     this.tourService.resetMarkerAndRoute();
     this.tableIsVisible = false;
@@ -206,7 +218,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
             this.showPositionPeriodically( currentDriver );
           }
         } );
-      this.driverService.getDrivers();
+      this.driverService.getDrivers( this.activeStation );
     }
   }
 
@@ -220,7 +232,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
 
   allDrivers() {
     this.tableIsVisible = false;
-    this.driverService.getDrivers();
+    this.driverService.getDrivers( this.activeStation );
     this.filterName = 'driverfilter';
     this.displayedMapmode = 'alldrivers';
     this.selectedLocationFlag = null;
@@ -283,7 +295,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
       }
       this.latestRefresh = new Date();
       if (this.displayedMapmode === 'alldrivers' || this.displayedMapmode === 'allusers') {
-        this.tourService.fetchAllPositions( this.displayedMapmode, 0, this.tourDate );
+        this.tourService.fetchAllPositions( this.activeStation, this.displayedMapmode, 0, this.tourDate );
       } else {
         if (this.selectedLocationFlag === 'position') {
           this.tourService.changeActiveMarker( this.periodicallyUsedDriver, 0, this.tourDate );
@@ -350,7 +362,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   showAllPositions( args: CallbackArguments ) {
-    args.tourService.fetchAllPositions( this.periodicallyUsedFilter, this.selectedInterval * 60, this.tourDate );
+    args.tourService.fetchAllPositions( this.activeStation, this.periodicallyUsedFilter, this.selectedInterval * 60, this.tourDate );
   }
 
   showPosition( args: CallbackArguments ) {
