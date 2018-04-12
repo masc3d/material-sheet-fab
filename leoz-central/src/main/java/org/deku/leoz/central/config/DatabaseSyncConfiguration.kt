@@ -252,33 +252,33 @@ class DatabaseSyncConfiguration {
                     accurateDeletes = true
             ),
 
-            SyncPreset(
-                    Tables.TAD_NODE_GEOPOSITION,
-                    Tables.TAD_NODE_GEOPOSITION.SYNC_ID,
-                    QTadNodeGeoposition.tadNodeGeoposition,
-                    QTadNodeGeoposition.tadNodeGeoposition.syncId,
-                    { s ->
-                        TadNodeGeoposition().also { d ->
-                            d.id = s.positionId.toLong()
-                            d.userId = s.userId
-                            d.nodeId = s.nodeId
-                            d.tsCreated = s.tsCreated
-                            d.tsUpdated = s.tsUpdated
-                            d.latitude = s.latitude
-                            d.longitude = s.longitude
-                            d.positionDatetime = s.positionDatetime
-                            d.speed = s.speed
-                            d.bearing = s.bearing
-                            d.altitude = s.altitude
-                            d.accuracy = s.accuracy
-                            d.vehicleType = s.vehicleType
-                            d.debitorId = s.debitorId
-                            d.syncId = s.syncId
-                            //TODO
-                            //d.node_uid
-                        }
-                    }
-            ),
+//            SyncPreset(
+//                    Tables.TAD_NODE_GEOPOSITION,
+//                    Tables.TAD_NODE_GEOPOSITION.SYNC_ID,
+//                    QTadNodeGeoposition.tadNodeGeoposition,
+//                    QTadNodeGeoposition.tadNodeGeoposition.syncId,
+//                    { s ->
+//                        TadNodeGeoposition().also { d ->
+//                            d.id = s.positionId.toLong()
+//                            d.userId = s.userId
+//                            d.nodeId = s.nodeId
+//                            d.tsCreated = s.tsCreated
+//                            d.tsUpdated = s.tsUpdated
+//                            d.latitude = s.latitude
+//                            d.longitude = s.longitude
+//                            d.positionDatetime = s.positionDatetime
+//                            d.speed = s.speed
+//                            d.bearing = s.bearing
+//                            d.altitude = s.altitude
+//                            d.accuracy = s.accuracy
+//                            d.vehicleType = s.vehicleType
+//                            d.debitorId = s.debitorId
+//                            d.syncId = s.syncId
+//                            //TODO
+//                            //d.node_uid
+//                        }
+//                    }
+//            ),
 
             NotifyPreset(
                     Tables.RKKOPF,

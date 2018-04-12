@@ -378,14 +378,18 @@ class TourServiceV1
                 .toNullable()
                 ?: throw NoSuchElementException("No tour with id [${id}]")
 
-        val nodeUid = tourRecord.nodeId?.let {
-            this.nodeService.get(id = listOf(tourRecord.nodeId.toInt()))
-                    .firstOrNull()
-                    ?.uid
-                    ?: throw NoSuchElementException("No node uid for id [${tourRecord.nodeId}]")
-        }
+        return tourRecord.toTour()
+    }
 
-        return tourRecord.toTour(nodeUid)
+    /**
+     * Get tour by uid
+     */
+    override fun getByUid(uid: String): Tour {
+        val tourRecord = tourRepo.findOne(tadTour.uid.eq(UUID.fromString(uid)))
+                .toNullable()
+                ?: throw NoSuchElementException("No tour with uid [${uid}]")
+
+        return tourRecord.toTour()
     }
 
     /**

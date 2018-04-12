@@ -82,7 +82,7 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
     }
 
     override fun dumpDeliveryLists(stationNo: Int?, from: ShortDate?, to: ShortDate?): Response {
-        val rkIds = dsl.select(RKKOPF.ID)
+        val rkNos = dsl.select(RKKOPF.ROLLKARTENNUMMER)
                 .from(RKKOPF)
                 .where()
                 .letWithNotNull(stationNo, {
@@ -94,22 +94,22 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
                 .letWithNotNull(to, {
                     and(RKKOPF.ROLLKARTENDATUM.le(it.date.toTimestamp()))
                 })
-                .fetch(RKKOPF.ID)
+                .fetch(RKKOPF.ROLLKARTENNUMMER)
                 .toList()
 
         val orderIds = dsl.select(RKDETAILS.ORDERID)
                 .from(RKDETAILS)
-                .where(RKDETAILS.RK_ID.`in`(rkIds))
+                .where(RKDETAILS.ROLLKARTENNUMMER.`in`(rkNos))
                 .fetch(RKDETAILS.ORDERID)
                 .toList()
 
         return Observable.concat(
                 dsl.selectFrom(RKKOPF)
-                        .where(RKKOPF.ID.`in`(rkIds))
+                        .where(RKKOPF.ROLLKARTENNUMMER.`in`(rkNos))
                         .dump(),
 
                 dsl.selectFrom(RKDETAILS)
-                        .where(RKDETAILS.RK_ID.`in`(rkIds))
+                        .where(RKDETAILS.ROLLKARTENNUMMER.`in`(rkNos))
                         .dump(),
 
                 dsl.selectFrom(TBLAUFTRAG)

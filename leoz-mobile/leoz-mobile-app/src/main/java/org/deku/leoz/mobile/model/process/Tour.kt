@@ -19,11 +19,13 @@ import org.deku.leoz.mobile.model.service.toOrder
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.model.DekuDeliveryListNumber
+import org.deku.leoz.model.TourIdentification
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
+import sx.log.slf4j.trace
 import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.requery.ObservableTupleQuery
@@ -45,6 +47,10 @@ class Tour : CompositeDisposableSupplier {
     // Repositories
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
+
+    // Services
+    private val tourService: TourServiceV1 by Kodein.global.lazy.instance()
+    private val orderService: OrderService by Kodein.global.lazy.instance()
 
     private val login: Login by Kodein.global.lazy.instance()
     private val identity: Identity by Kodein.global.lazy.instance()
@@ -113,7 +119,7 @@ class Tour : CompositeDisposableSupplier {
     /**
      * Behavioral observable list of delivery list ids
      */
-    val ids = deliveryListIdQuery.result
+    val deliveryListIds = deliveryListIdQuery.result
 
     /**
      * Damaged parcels
@@ -153,90 +159,113 @@ class Tour : CompositeDisposableSupplier {
     }
 
     /**
-     * Loads delivery list data from remote peer and merge into local database
-     * @param deliveryListNumber Delivery list id
-     * @return Hot observable which completes with a list of stops
+     * Load tour
+     * @return mobile tour stops
+     */
+    fun store(tour: TourServiceV1.Tour): List<Stop> {
+        val sw = Stopwatch.createStarted()
+
+        log.trace { "Storing tour [${tour.uid}] with orders [${tour.orders?.count()}] parcels [${tour.orders?.flatMap { it.parcels }?.count()}]" }
+
+        // Process orders
+        return db.store.withTransaction {
+            run {
+                val orders = tour.orders
+                        ?.distinctOrders()
+                        ?: listOf()
+
+                // masc20180405. it has been seen that app deadlocks in release
+                // builds when requery @Bindable is used on `Order` entity.
+                // TODO: investigate
+
+                orderRepository
+                        .merge(orders.map {
+                            it.toOrder(tour.customId?.toLongOrNull())
+                        })
+                        .blockingGet()
+            }
+
+            // Process stops
+            val stops = tour.stops
+                    ?.map {
+                        Stop.create(
+                                tasks = it.tasks.map {
+                                    val order = orderRepository
+                                            .findById(it.orderId)
+                                            .blockingGet()
+
+                                    when {
+                                        order != null -> {
+                                            when (it.taskType) {
+                                                TourServiceV1.Task.Type.DELIVERY -> order.deliveryTask
+                                                TourServiceV1.Task.Type.PICKUP -> order.pickupTask
+                                            }
+                                        }
+                                        else -> {
+                                            log.warn("Skipping order task. Referenced order [${it.orderId}] does not exist")
+                                            null
+                                        }
+                                    }
+                                }.filterNotNull()
+                        )
+                    }
+                    ?: listOf()
+
+            stopRepository
+                    .merge(stops)
+                    .blockingAwait()
+
+            log.trace("Stored tour in $sw")
+
+            stops
+        }
+                .subscribeOn(db.scheduler)
+                .blockingGet()
+    }
+
+    /**
+     * Load tour by delivery list id
+     * @param deliveryListNumber delivery list id
+     * @return hot observable which completes with a list of stops
      */
     fun load(deliveryListNumber: DekuDeliveryListNumber): Observable<List<Stop>> {
         val sw = Stopwatch.createStarted()
 
-        log.user { "Loads delivery list [${deliveryListNumber.value}]" }
+        log.user { "Loads tour by delivery list id [${deliveryListNumber.value}]" }
 
         return Observable.fromCallable {
+            val tour = tourService.getByCustomId(
+                    customId = deliveryListNumber.value)
 
-            val tourService = Kodein.global.instance<TourServiceV1>()
+            this.store(tour)
+        }
+                .toHotIoObservable(log)
+    }
 
-            // Retrieve delivery list
-            val deliveryListId = deliveryListNumber.value
-            val tour = tourService.getByCustomId(customId = deliveryListId)
-            log.trace("Delivery list loaded in $sw orders [${tour.orders?.count()}] parcels [${tour.orders?.flatMap { it.parcels }?.count()}]")
+    /**
+     * Load tour by delivery list id
+     * @param deliveryListNumber delivery list id
+     * @return hot observable which completes with a list of stops
+     */
+    fun load(tourIdent: TourIdentification): Observable<List<Stop>> {
+        val sw = Stopwatch.createStarted()
 
-            // Process orders
-            db.store.withTransaction {
-                run {
-                    val orders = tour.orders
-                            ?.distinctOrders()
-                            ?: listOf()
+        log.user { "Loads tour [${tourIdent}]" }
 
-                    // masc20180405. it has been seen that app deadlocks in release
-                    // builds when requery @Bindable is used on `Order` entity.
-                    // TODO: investigate
+        return Observable.fromCallable {
+            val tour = tourService.getByUid("${tourIdent.uid}")
 
-                    orderRepository
-                            .merge(orders.map {
-                                it.toOrder(deliveryListId.toLong())
-                            })
-                            .blockingGet()
-                }
-
-                // Process stops
-                val stops = tour.stops
-                        ?.map {
-                            Stop.create(
-                                    tasks = it.tasks.map {
-                                        val order = orderRepository
-                                                .findById(it.orderId)
-                                                .blockingGet()
-
-                                        when {
-                                            order != null -> {
-                                                when (it.taskType) {
-                                                    TourServiceV1.Task.Type.DELIVERY -> order.deliveryTask
-                                                    TourServiceV1.Task.Type.PICKUP -> order.pickupTask
-                                                }
-                                            }
-                                            else -> {
-                                                log.warn("Skipping order task. Referenced order [${it.orderId}] does not exist")
-                                                null
-                                            }
-                                        }
-                                    }.filterNotNull()
-                            )
-                        }
-                        ?: listOf()
-
-                stopRepository
-                        .merge(stops)
-                        .blockingAwait()
-
-                log.trace("Delivery list transformed and stored in $sw")
-
-                stops
-            }
-                    .subscribeOn(db.scheduler)
-                    .blockingGet()
+            this.store(tour)
         }
                 .toHotIoObservable(log)
     }
 
     /**
      * Retrieve order for a single unit
-     * @param unitNumber Unit number
+     * @param unitNumber unit number
      */
     fun retrieveOrder(unitNumber: UnitNumber): Observable<Order> {
         return Observable.fromCallable {
-            val orderService = Kodein.global.instance<OrderService>()
-
             val orders = orderService.get(
                     labelRef = null,
                     custRef = null,

@@ -249,7 +249,7 @@ class Stopwatch {
         fun createStarted(ticker: Ticker): Stopwatch = Stopwatch(ticker).start()
 
         private fun createLogMessage(stopwatch: Stopwatch, name: String): String =
-                "${name} [${stopwatch}]"
+                "${name} took ${stopwatch}"
 
         /**
          * Creates (and starts) a new stopwatch and executes a block with automatic logging
@@ -260,6 +260,7 @@ class Stopwatch {
         fun <T> createStarted(name: String, log: LogAction = {}, block: (Stopwatch, LogAction) -> T): T {
             val sw = Stopwatch.createStarted()
             try {
+                log.invoke(name)
                 return block(sw, log)
             } finally {
                 log.invoke(this.createLogMessage(sw, name))
@@ -276,6 +277,7 @@ class Stopwatch {
             val log = LoggerFactory.getLogger(instance.javaClass)
             val sw = Stopwatch.createStarted()
             try {
+                log.message(level, name)
                 return block()
             } finally {
                 log.message(level, { this.createLogMessage(sw, name) })

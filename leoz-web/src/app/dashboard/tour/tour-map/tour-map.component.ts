@@ -103,7 +103,6 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
               latMax = !latMax || markerModel.position.latitude > latMax ? markerModel.position.latitude : latMax;
               lngMin = !lngMin || markerModel.position.longitude < lngMin ? markerModel.position.longitude : lngMin;
               lngMax = !lngMax || markerModel.position.longitude > lngMax ? markerModel.position.longitude : lngMax;
-
             }
           );
           this.bbox = L.latLngBounds( [ latMin, lngMin ], [ latMax, lngMax ] );
@@ -160,6 +159,7 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
         this.markerPhonemobile = activeMarker.driver.phoneMobile;
         this.markerLastactivity = activeMarker.position.time;
         this.yagaMap.flyTo( L.latLng( activeMarker.position.latitude, activeMarker.position.longitude ) );
+        this.cd.detectChanges();
       } );
 
     this.tourService.activeRoute$

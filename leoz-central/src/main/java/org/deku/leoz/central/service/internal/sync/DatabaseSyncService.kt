@@ -66,7 +66,7 @@ class NotifyPreset<TCentralRecord : org.jooq.Record>(
         interval = interval
 ) {
     override fun toString(): String =
-            "Notify preset [${srcJooqTable.name}]"
+            "Notify [${srcJooqTable.name}]"
 }
 
 /**
@@ -96,8 +96,10 @@ class SyncPreset<TCentralRecord : org.jooq.Record, TEntity>(
         srcJooqSyncIdField = srcJooqSyncIdField,
         interval = interval
 ) {
-    override fun toString(): String =
-            "Sync preset [${srcJooqTable.name} -> ${dstJpaEntityPath.metadata.name}]"
+    fun toString(fullDescription: Boolean = true): String =
+            "Sync [${srcJooqTable.name}${if (fullDescription) " -> ${dstJpaEntityPath.metadata.name}}" else ""}]"
+
+    override fun toString() = this.toString(true)
 }
 
 /**
@@ -247,7 +249,7 @@ constructor(
                                     clean = false
                             )
 
-                            val message = { "${step.preset.javaClass.simpleName} [${step.preset.tableName}] took ${sw}" }
+                            val message = { "${step.preset} took ${sw}" }
 
                             if (updated)
                                 log.debug(message)
@@ -384,13 +386,13 @@ constructor(
         val sw = Stopwatch.createStarted()
 
         // Log formatter
-        val lfmt = { s: String -> "[${dstJpaEntityPath.type.name}] ${s}" }
+        val lfmt = { s: String -> "${this.toString(false)} ${s}" }
 
         em.flushMode = FlushModeType.COMMIT
 
         if (clean || dstJpaSyncIdPath == null) {
             transactionJpa.execute<Any> { _ ->
-                log.info { lfmt("Deleting all entities") }
+                log.info { lfmt("removing all destination entities") }
 
                 em.truncate(dstJpaEntityPath.type)
                 em.flush()
@@ -456,7 +458,8 @@ constructor(
                     // Save to destination/jpa
                     // REMARKS
                     // * saving/transaction commit gets very slow when deleting and inserting within the same transaction
-                    log.info(lfmt("outdated [${dstSyncIdRange?.endInclusive}]"))
+                    log.info { lfmt("outdated: sync-ids source [${srcSyncIdRange}] destination [${dstSyncIdRange}]") }
+
                     var count = 0
 
                     val JPA_FLUSH_BATCH_SIZE = 100
@@ -498,7 +501,7 @@ constructor(
                         }
                     })
 
-                    // Re-query destination timestamp
+                    // Re-query destination
                     if (dstJpaSyncIdPath != null) {
                         // Query embedded database for updated latest timestamp
                         dstSyncIdRange = syncRepository.findSyncIdMinMax(
@@ -507,7 +510,7 @@ constructor(
                         )
                     }
 
-                    log.info { lfmt("updated ${count} entities [${dstSyncIdRange?.endInclusive}]") }
+                    log.info { lfmt("updated ${count} [${dstJpaEntityPath.metadata.name}] sync-ids [${dstSyncIdRange?.endInclusive}]") }
 
                     // Emit update event
                     updatesSubject.onNext(
