@@ -489,7 +489,7 @@ class SmartlaneBridge {
                         val missingStops = missingStopUids.map { uid -> tour.stops?.first { it.uid == uid } }
 
                         throw IllegalStateException(
-                                "(${routes.count()}] optimized route(s) are missing ${missingStops.count()} stops"
+                                "${routes.count()} optimized route(s) are missing ${missingStops.count()} stops"
                         )
                     }
 
