@@ -474,7 +474,8 @@ class VehicleLoadingScreen :
                                 multipleChoice = true,
                                 entries = tours
                                         .sortedWith(
-                                                compareByDescending({ it.date?.date })
+                                                compareByDescending<TourServiceV1.Tour> { it.date?.date }
+                                                        .thenByDescending { it.id }
                                         )
                                         .map { tour ->
                                             val id = tour.id!!.toInt()
@@ -485,7 +486,8 @@ class VehicleLoadingScreen :
                                                     data = TourIdentification(
                                                             id = id,
                                                             uid = uid).label,
-                                                    name = "${tour.date}: t${id} ${tour.optimized?.let { "optimized" } ?: ""}"
+                                                    name = "${tour.date}: t${id} ${tour.optimized?.let { "optimized" }
+                                                            ?: ""}"
                                             )
                                         }
                         )
