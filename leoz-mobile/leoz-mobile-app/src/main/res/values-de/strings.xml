@@ -97,7 +97,7 @@
     <string name="error_incorrect_password">Das Passwort ist falsch</string>
     <string name="error_invalid_barcode">Ungültiger barcode</string>
     <string name="error_invalid_credentials">Email/Passwort Kombination konnte nicht gefunden werden.</string>
-    <string name="error_invalid_tour">Ungültige Rollkarte</string>
+    <string name="error_invalid_tour">Ungültige Tour</string>
     <string name="error_invalid_email">Die eMail-Adresse ist falsch</string>
     <string name="error_invalid_parcel">Ungültiges Paket</string>
     <string name="error_invalid_password">Das Passwort ist zu kurz</string>
