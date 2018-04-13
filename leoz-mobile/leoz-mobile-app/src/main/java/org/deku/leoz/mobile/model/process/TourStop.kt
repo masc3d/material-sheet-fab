@@ -554,7 +554,8 @@ class TourStop(
         val stop = this.entity
 
         return db.store.withTransaction {
-            // Split excluded orders into separate stops
+
+            //region Split excluded orders into separate stops
             this@TourStop.excludedOrders.forEach {
                 // Remove excluded order tasks
                 stop.tasks.remove(it.deliveryTask)
@@ -569,6 +570,32 @@ class TourStop(
                     insert(it)
                 }
             }
+            //endregion
+
+            //region Split orders with event into separate (closed) stops
+            val orders = stop.tasks.map { it.order }
+
+            // If stop has any delivered parcels
+            if (orders.flatMap { it.parcels }.any { it.state == Parcel.State.DELIVERED }) {
+                // Split order tasks referring to parcels which are still loaded (eg. had event)
+                orders
+                        .filter { it.parcels.any { it.state == Parcel.State.LOADED  } }
+                        .map { it.deliveryTask }
+                        .also { tasks ->
+                            stop.tasks.removeAll(tasks)
+                            update(stop)
+
+                            // Create new stop
+                            Stop.create(
+                                    state = Stop.State.CLOSED,
+                                    position = 0.0,
+                                    tasks = tasks
+                            ).also {
+                                insert(it)
+                            }
+                        }
+            }
+            //endregion
 
             // Close this stop persistently
             stop.state = Stop.State.CLOSED

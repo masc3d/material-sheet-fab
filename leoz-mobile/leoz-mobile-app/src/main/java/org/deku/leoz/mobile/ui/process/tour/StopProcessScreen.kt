@@ -41,10 +41,7 @@ import org.deku.leoz.mobile.databinding.ScreenTourStopProcessBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.log.user
-import org.deku.leoz.mobile.model.entity.OrderEntity
-import org.deku.leoz.mobile.model.entity.ParcelEntity
-import org.deku.leoz.mobile.model.entity.StopEntity
-import org.deku.leoz.mobile.model.entity.address
+import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.TourStop
@@ -834,7 +831,7 @@ class StopProcessScreen :
         }
 
         // Stops may only be merged under specific conditions (eg. zipcode matches)
-        val isMergeAllowed = sourceStop.address.zipCode == this.tourStop.entity.address.zipCode
+        val isMergeAllowed = sourceStop.address.isCompatibleStopAddressForMergeWith(this.tourStop.entity.address)
 
         if (!isMergeAllowed) {
             log.warn("Merge is not allowed")

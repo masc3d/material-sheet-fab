@@ -15,12 +15,8 @@ class Rsync() {
     companion object {
         val log = LoggerFactory.getLogger(Rsync::class.java)
 
-        val executable = EmbeddedExecutable("sx-rsync", {
-            when {
-                SystemUtils.IS_OS_LINUX -> File("/usr/bin/rsync")
-                else -> null
-            }
-        })
+        /** Rsync executable */
+        val executable = EmbeddedExecutable("sx-rsync")
     }
 
     /**

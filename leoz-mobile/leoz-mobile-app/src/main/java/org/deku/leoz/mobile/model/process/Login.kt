@@ -65,6 +65,15 @@ class Login {
 
     /** c'tor */
     init {
+        // Clean out unencrypted (legacy) api keys
+        db.store.select(UserEntity::class)
+                .get().observable().blockingIterable()
+                .forEach {
+                    if (it.apiKeyDecrypted == null)
+                        db.store.delete(it).blockingAwait()
+                }
+
+        // Monitor authenticated user
         this.authenticatedUserProperty
                 .observeOnMainThread()
                 .subscribe { user ->

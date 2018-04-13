@@ -15,6 +15,7 @@ import { TranslateService } from '../../core/translate/translate.service';
 import { DriverService } from './driver.service';
 import RoleEnum = Driver.RoleEnum;
 import { InetConnectionService } from '../../core/inet-connection.service';
+import { Station } from '../../core/auth/station.model';
 
 @Injectable()
 export class TourService {
@@ -211,11 +212,11 @@ export class TourService {
     this.msgService.error( this.translate.instant( 'could not get route' ) );
   }
 
-  fetchAllPositions( filter: string, duration: number, selectedDate: Date ) {
+  fetchAllPositions( activeStation: Station, filter: string, duration: number, selectedDate: Date ) {
     this.duration = duration;
     this.selectedDate = selectedDate;
     this.resetDisplay();
-    this.driverService.getDrivers();
+    this.driverService.getDrivers(activeStation);
     this.getAllLocations()
       .subscribe( ( allLocations: any[] ) => {
           const allMarkers = [];
