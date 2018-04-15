@@ -4,6 +4,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
+import org.deku.leoz.node.data.jooq.Tables
 import org.deku.leoz.time.ShortDate
 import org.jooq.DSLContext
 import org.jooq.Record
@@ -35,8 +36,12 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
-    @Qualifier(PersistenceConfiguration.QUALIFIER)
+    @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext
+
+    @Inject
+    @Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
+    private lateinit var dslh2: DSLContext
 
     @Inject
     private lateinit var executorService: ExecutorService
@@ -121,5 +126,16 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
                         .dump()
         )
                 .toResponse("deliverylist")
+    }
+
+    override fun dumpTours(): Response {
+        return Observable.concat(
+                dslh2.selectFrom(Tables.TAD_TOUR)
+                        .dump(),
+
+                dslh2.selectFrom(Tables.TAD_TOUR_ENTRY)
+                        .dump()
+        )
+                .toResponse("tours")
     }
 }
