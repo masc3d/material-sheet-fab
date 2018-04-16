@@ -67,7 +67,9 @@ class EmbeddedExecutable(
     private fun setExecutablePermissions(path: File) {
         Files.walk(Paths.get(path.toURI()), 1)
                 .filter { p ->
-                    val filename = p.toString().toLowerCase()
+                    val filename = p.fileName.toString().toLowerCase()
+
+                    log.debug("Filename [${filename}]")
 
                     // Filter on relevant / potentially executable files
                     Files.isRegularFile(p) &&
@@ -76,13 +78,14 @@ class EmbeddedExecutable(
                                     filename.endsWith(".dll"))
                 }
                 .forEach { p ->
+                    log.debug("Verifying executable permission for [${p}]")
+
                     when {
                         SystemUtils.IS_OS_WINDOWS -> {
                             // Get file attribute view
                             val fav = Files.getFileAttributeView(p, AclFileAttributeView::class.java)
 
                             if (fav != null) {
-                                log.debug("Verifying executable permission for [${p}]")
 
                                 val oldAcls = fav.acl
                                 val newAcls = ArrayList<AclEntry>()
