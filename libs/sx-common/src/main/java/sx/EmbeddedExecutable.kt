@@ -10,6 +10,7 @@ import java.nio.file.Paths
 import java.nio.file.attribute.AclEntry
 import java.nio.file.attribute.AclEntryPermission
 import java.nio.file.attribute.AclFileAttributeView
+import java.nio.file.attribute.PosixFilePermission
 import java.util.*
 
 /**
@@ -67,35 +68,56 @@ class EmbeddedExecutable(
         Files.walk(Paths.get(path.toURI()), 1)
                 .filter { p ->
                     val filename = p.toString().toLowerCase()
-                    Files.isRegularFile(p) && (!filename.contains('.') || filename.endsWith(".exe") || filename.endsWith(".dll"))
+
+                    // Filter on relevant / potentially executable files
+                    Files.isRegularFile(p) &&
+                            (!filename.contains('.') ||
+                                    filename.endsWith(".exe") ||
+                                    filename.endsWith(".dll"))
                 }
                 .forEach { p ->
-                    // Get file attribute view
-                    val fav = Files.getFileAttributeView(p, AclFileAttributeView::class.java)
+                    when {
+                        SystemUtils.IS_OS_WINDOWS -> {
+                            // Get file attribute view
+                            val fav = Files.getFileAttributeView(p, AclFileAttributeView::class.java)
 
-                    if (fav != null) {
-                        log.debug("Verifying executable permission for [${p}]")
+                            if (fav != null) {
+                                log.debug("Verifying executable permission for [${p}]")
 
-                        val oldAcls = fav.acl
-                        val newAcls = ArrayList<AclEntry>()
-                        var update = false
-                        for (acl in oldAcls) {
-                            // Add executable permission if it's not there yet
-                            val perms = acl.permissions()
-                            if (!perms.contains(AclEntryPermission.EXECUTE)) {
-                                perms.add(AclEntryPermission.EXECUTE)
-                                // Build new acl from old one with updated permissions
-                                val aclb = AclEntry.newBuilder(acl)
-                                aclb.setPermissions(perms)
-                                newAcls.add(aclb.build())
-                                update = true
-                            } else {
-                                newAcls.add(acl)
+                                val oldAcls = fav.acl
+                                val newAcls = ArrayList<AclEntry>()
+                                var update = false
+                                for (acl in oldAcls) {
+                                    // Add executable permission if it's not there yet
+                                    val perms = acl.permissions()
+                                    if (!perms.contains(AclEntryPermission.EXECUTE)) {
+                                        perms.add(AclEntryPermission.EXECUTE)
+                                        // Build new acl from old one with updated permissions
+                                        val aclb = AclEntry.newBuilder(acl)
+                                        aclb.setPermissions(perms)
+                                        newAcls.add(aclb.build())
+                                        update = true
+                                    } else {
+                                        newAcls.add(acl)
+                                    }
+                                }
+                                if (update) {
+                                    log.debug("Adding permission to execute to [${p}]")
+                                    fav.acl = newAcls
+                                }
                             }
                         }
-                        if (update) {
-                            log.debug("Adding permission to execute to [${p}]")
-                            fav.acl = newAcls
+                        SystemUtils.IS_OS_LINUX -> {
+                            val posixPermissions = Files.getPosixFilePermissions(p)
+                            posixPermissions.addAll(listOf(
+                                    PosixFilePermission.OWNER_EXECUTE,
+                                    PosixFilePermission.GROUP_EXECUTE,
+                                    PosixFilePermission.OTHERS_EXECUTE
+                            ))
+                            Files.setPosixFilePermissions(
+                                    p,
+                                    posixPermissions
+                            )
                         }
                     }
                 }
