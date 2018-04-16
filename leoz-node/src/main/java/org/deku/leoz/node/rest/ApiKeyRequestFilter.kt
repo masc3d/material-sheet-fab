@@ -107,6 +107,12 @@ val HttpServletRequest.authorizedUser: UserService.User
             ?: throw WebApplicationException(Response.Status.UNAUTHORIZED)
 
 /**
+ * Indicates if http request is valid / available
+ */
+val HttpServletRequest.isAvailable: Boolean
+    get() = try { this.requestURI != null } catch(t: Throwable) { false }
+
+/**
  * Restrict access by debitor
  * @param debitorId The debitor id to check against
  * @throws WebApplicationException If authorized user's debitor id doesn't match

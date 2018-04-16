@@ -29,6 +29,7 @@ class TourServiceV1
 
     @Inject
     private lateinit var userService: UserService
+
     @Inject
     private lateinit var locationService: LocationServiceV2
 
