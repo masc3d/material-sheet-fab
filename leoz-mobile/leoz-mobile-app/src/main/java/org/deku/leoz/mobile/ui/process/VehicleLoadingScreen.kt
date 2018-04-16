@@ -66,7 +66,18 @@ import java.util.*
 class VehicleLoadingScreen :
         ScreenFragment<Any>(),
         BaseCameraScreen.Listener {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    companion object {
+        /** List of static tour uids for synthetic input / testing */
+        val SYNTHETIC_TOURS = listOf<String>(
+        )
+
+        /** List of static parcel numbers for synthetic input / testing */
+        val SYNTHETIC_PARCELS = listOf<String>(
+        )
+    }
 
     interface Listener {
         fun onVehicleLoadingFinalized()
@@ -319,7 +330,11 @@ class VehicleLoadingScreen :
                                             .where(ParcelEntity.STATE.eq(Parcel.State.PENDING))
                                             .get().toList()
                             )
-                                    .subscribe()
+                                    .subscribeBy(
+                                            onError = { e ->
+                                                log.error(e.message, e)
+                                            }
+                                    )
                         }
                     }
                 }
@@ -449,13 +464,19 @@ class VehicleLoadingScreen :
             // Synthetic inputs for parcels translated live from entity store
             val ovParcels = this.parcelRepository.entitiesProperty
                     .map {
+                        SYNTHETIC_PARCELS.plus(
+                                it.value.map { it.number }
+                        ).map {
+                            DekuUnitNumber.parse(it).value
+                        }
+                    }
+                    .map { unitNumbers ->
                         SyntheticInput(
                                 name = "Parcels",
-                                entries = it.value.map {
-                                    val unitNumber = DekuUnitNumber.parse(it.number).value
+                                entries = unitNumbers.map {
                                     SyntheticInput.Entry(
                                             symbologyType = SymbologyType.Interleaved25,
-                                            data = unitNumber.label
+                                            data = it.label
                                     )
                                 }
                         )
@@ -472,24 +493,34 @@ class VehicleLoadingScreen :
                         SyntheticInput(
                                 name = "Tours",
                                 multipleChoice = true,
-                                entries = tours
-                                        .sortedWith(
-                                                compareByDescending<TourServiceV1.Tour> { it.date?.date }
-                                                        .thenByDescending { it.id }
-                                        )
-                                        .map { tour ->
-                                            val id = tour.id!!.toInt()
-                                            val uid = UUID.fromString(tour.uid)
+                                entries = SYNTHETIC_TOURS.map {
+                                    SyntheticInput.Entry(
+                                            symbologyType = SymbologyType.QrCode,
+                                            data = TourIdentification(
+                                                    id = 0,
+                                                    uid = UUID.fromString(it)).label,
+                                            name = it
+                                    )
+                                }.plus(
+                                        tours
+                                                .sortedWith(
+                                                        compareByDescending<TourServiceV1.Tour> { it.date?.date }
+                                                                .thenByDescending { it.id }
+                                                )
+                                                .map { tour ->
+                                                    val id = tour.id!!.toInt()
+                                                    val uid = UUID.fromString(tour.uid)
 
-                                            SyntheticInput.Entry(
-                                                    symbologyType = SymbologyType.QrCode,
-                                                    data = TourIdentification(
-                                                            id = id,
-                                                            uid = uid).label,
-                                                    name = "${tour.date}: t${id} ${tour.optimized?.let { "optimized" }
-                                                            ?: ""}"
-                                            )
-                                        }
+                                                    SyntheticInput.Entry(
+                                                            symbologyType = SymbologyType.QrCode,
+                                                            data = TourIdentification(
+                                                                    id = id,
+                                                                    uid = uid).label,
+                                                            name = "${tour.date}: t${id} ${tour.optimized?.let { "optimized" }
+                                                                    ?: ""}"
+                                                    )
+                                                }
+                                )
                         )
                     }
                     .doOnError {
