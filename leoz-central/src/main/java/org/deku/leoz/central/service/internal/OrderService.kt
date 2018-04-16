@@ -54,7 +54,13 @@ class OrderService
 
                 orders = listOf(order)
             }
-            ids != null && ids.count() > 0 -> {
+            labelRef != null -> {
+                TODO("Lookup by label ref not implemented")
+            }
+            custRef != null -> {
+                TODO("Lookup by cust ref not implemented")
+            }
+            ids != null -> {
                 val rOrders = this.orderRepository.findByIds(ids)
 
                 val rParcelsByOrderId = this.orderRepository
@@ -71,7 +77,7 @@ class OrderService
                     }
                 }
             }
-            else -> TODO("Handle other query types here")
+            else -> TODO("Not supported")
         }
 
         orders.forEach { order ->
