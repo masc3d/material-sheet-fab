@@ -34,6 +34,32 @@ fun <R : Record> DSLContext.replace(table: Table<R>, vararg values: List<Any>): 
 }
 
 /**
+ * MERGE statement
+ */
+fun <R : Record> DSLContext.merge(table: Table<R>, vararg values: List<Any>): ResultQuery<Record> {
+    val valuesTemplate = values.mapIndexed { index, _ ->
+        "({${index + 2}})"
+    }.joinToString(",")
+
+    return this.resultQuery("MERGE INTO {0} ({1}) VALUES ${valuesTemplate}",
+            // Query part arguments
+            *kotlin.arrayOf(
+                    table,
+                    DSL.list(table.fields().map { it.unqualifiedName })
+            ).plus(
+                    // Format values
+                    values.map { DSL.list(it.map(DSL::`val`)) }
+            )
+    )
+}
+
+/**
+ * Generate (terminated) SQL statement suitable for dumps
+ */
+fun Query.toSql(): String =
+        this.getSQL(ParamType.INLINED) + ";\n"
+
+/**
  * Dump jooq select
  * @param table Table spec
  * @return Observable sql statements
@@ -50,12 +76,19 @@ fun <R : Record> Select<R>.dump(): Observable<String> {
             )
     )
 
+    dsl.dialect().isFamily
+
     return Observable.fromIterable(
             // Prepare and fetch jooq cursor
             this
                     .resultSetConcurrency(CONCUR_READ_ONLY)
                     .resultSetType(TYPE_FORWARD_ONLY)
-                    .fetchSize(Int.MIN_VALUE)
+                    .let {
+                        when (dsl.dialect().family()) {
+                            SQLDialect.MYSQL -> it.fetchSize(Int.MIN_VALUE)
+                            else -> it
+                        }
+                    }
                     .fetchLazy()
     )
             // Buffer records per statement
@@ -68,13 +101,27 @@ fun <R : Record> Select<R>.dump(): Observable<String> {
                         ?: throw IllegalArgumentException("Dump requires table records")
 
                 // Generate statement
-                dsl.replace(
-                        table = table,
-                        values = *records.map { record ->
-                            record.fields().map { it.getValue(record) }
-                        }.toTypedArray()
-                )
-                        .getSQL(ParamType.INLINED) + ";\n"
+                when (dsl.dialect().family()) {
+                    SQLDialect.MYSQL -> {
+                        dsl.replace(
+                                table = table,
+                                values = *records.map { record ->
+                                    record.fields().map { it.getValue(record) }
+                                }.toTypedArray()
+                        )
+                                .toSql()
+                    }
+                    else -> {
+                        dsl.merge(
+                                table = table,
+                                values = *records.map { record ->
+                                    record.fields().map { it.getValue(record) }
+                                }.toTypedArray()
+                        )
+                                .toSql()
+                    }
+                }
+
             }
             .doFinally {
                 dsl.close()

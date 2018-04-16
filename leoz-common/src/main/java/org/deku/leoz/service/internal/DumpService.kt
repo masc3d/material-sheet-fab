@@ -57,4 +57,9 @@ interface DumpService {
             @QueryParam(FROM) @ApiParam(value = "From date", example = "2018-01-01") from: ShortDate?,
             @QueryParam(TO) @ApiParam(value = "To date", example = "2019-01-01") to: ShortDate?
     ): Response
+
+    @GET
+    @Path("/node/tours")
+    @ApiOperation(value = "Dump node tour(s)")
+    fun dumpTours(): Response
 }

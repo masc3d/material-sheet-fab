@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.service
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.support.v4.content.ContextCompat
 import com.patloew.rxlocation.RxLocation
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -38,10 +39,17 @@ class LocationServiceRX:
         disposable.clear()
         disposable.add(
                 rxLocationUpdates
-                        .subscribe {
-                            this.log.trace("RxLocation Update [${it}]")
-                            this.reportLocation(it)
-                        }
+                        .subscribe(
+                                {
+                                this.log.trace("RxLocation Update [${it}]")
+                                this.reportLocation(it)
+                                },
+                                {
+                                    ContextCompat.startForegroundService(this.applicationContext, Intent(applicationContext, LocationServiceAOSP::class.java))
+                                    this.stopSelf()
+                                }
+                        )
+
         )
 
         return ret

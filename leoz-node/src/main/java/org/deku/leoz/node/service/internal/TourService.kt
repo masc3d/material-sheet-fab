@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.zalando.problem.Status
+import sx.log.slf4j.debug
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
@@ -161,9 +162,12 @@ class TourServiceV1
 
                         // Lookup tour by node uid if applicable
                         if (nodeId != null) {
-                            tour.id = this.tourRepo.findOne(tadTour.nodeId.eq(nodeId))
+                            this.tourRepo.findOne(tadTour.nodeId.eq(nodeId))
                                     .toNullable()
-                                    ?.id
+                                    ?.also {
+                                        tour.id = it.id
+                                        tour.uid = it.uid.toString()
+                                    }
                         }
 
                         val tourExists = tour.id != null
@@ -943,7 +947,7 @@ class TourServiceV1
             this.put(listOf(tour))
 
         } catch (e: Throwable) {
-            log.error(e.message)
+            log.error(e.message, e)
         }
     }
     //endregion
