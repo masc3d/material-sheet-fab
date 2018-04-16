@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType
 @ApiKey
 interface OrderService {
     companion object {
+        const val ID = "id"
         const val PARCELSCAN = "parcel-scan"
         const val ORDERID = "order-id"
         const val LABELREFERENCE = "label-reference"
@@ -47,14 +48,15 @@ interface OrderService {
      */
     @GET
     @Path("/")
-    @ApiOperation(value = "Get orders")
+    @ApiOperation(value = "Get order(s)")
     fun get(
-            @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String?,
-            @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String?,
-            @QueryParam(PARCELSCAN) @ApiParam(value = "Parcel scan reference") parcelScan: String?
+            @QueryParam(ID) @ApiParam(value = "Order id(s)", required = false) ids: List<Long>? = null,
+            @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
+            @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null,
+            @QueryParam(PARCELSCAN) @ApiParam(value = "Parcel scan reference") parcelScan: String? = null
     ): List<Order>
 
-    @ApiModel(description = "Order Model")
+    @ApiModel(description = "Order model")
     data class Order(
 
             @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "OrderID")
@@ -96,12 +98,6 @@ interface OrderService {
             @get:ApiModelProperty(position = 150, required = false, value = "Parcels")
             var parcels: List<Parcel> = listOf()
     ) {
-        companion object {
-            val pN = "12345678901"
-        }
-
-
-
         data class CashService(
                 @get:ApiModelProperty(example = "10.99", position = 130, required = false, value = "cashAmount")
                 var cashAmount: Double = 0.0,
@@ -153,8 +149,6 @@ interface OrderService {
             )
         }
     }
-
-    fun getByIds(ids: List<Long>): List<OrderService.Order>
 }
 
 

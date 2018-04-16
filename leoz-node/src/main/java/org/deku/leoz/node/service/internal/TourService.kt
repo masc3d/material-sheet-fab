@@ -359,7 +359,7 @@ class TourServiceV1
 
         val orders =
                 if (!overview)
-                    this.orderService.getByIds(tourEntries
+                    this.orderService.get(ids = tourEntries
                             .map { it.orderId }
                             .distinct())
                 else
@@ -986,9 +986,7 @@ class TourServiceV1
         val ordersById = if (orderRecordsById != null)
             orderRecordsById
         else
-            this@TourServiceV1.orderService.getByIds(
-                    tourEntryRecords.map { it.orderId }.distinct()
-            )
+            this@TourServiceV1.orderService.get(ids = tourEntryRecords.map { it.orderId }.distinct())
                     .associateBy { it.id }
 
         // Gather orders for this tour
