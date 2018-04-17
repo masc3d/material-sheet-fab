@@ -89,15 +89,15 @@ class BagService : BagService {
         if (un.value.type != UnitNumber.Type.BagId)
             throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
 
-        val bag = stationRepository.getBag(un.value.value.toLong())?.toGeneralBag()
+        val bag = stationRepository.findBag(un.value.value.toLong())?.toGeneralBag()
         bag ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
         val oid = bag.orderhubTodepot
         if (oid != null) {
-            bag.unitNo = stationRepository.getUnitNo(oid)
+            bag.unitNo = stationRepository.findUnitNo(oid)
         }
         val oidBack = bag.orderdepotTohub
         if (oidBack != null) {
-            bag.unitNoBack = stationRepository.getUnitNo(oidBack)
+            bag.unitNoBack = stationRepository.findUnitNo(oidBack)
 
         }
         return bag
@@ -686,7 +686,7 @@ class BagService : BagService {
     }
 
     override fun getCountToSendBackByStation(stationNo: Int): Int {
-        return stationRepository.getCountBagsToSendBagByStation(stationNo)
+        return stationRepository.countBagsToSendBagByStation(stationNo)
     }
 
     fun SsoSMovepoolRecord.toGeneralBag(): BagService.Bag {

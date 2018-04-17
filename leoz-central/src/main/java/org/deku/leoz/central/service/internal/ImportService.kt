@@ -45,13 +45,13 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
 
     override fun getParcelsToImportByStationNo(stationNo: Int, deliveryDate: Date?): List<ImportService.Order> {
 
-        val orders = if (deliveryDate != null) parcelRepository.getOrdersToImportByStation(stationNo, deliveryDate.toLocalDate()) else parcelRepository.getOrdersToImportByStation(station = stationNo)
+        val orders = if (deliveryDate != null) parcelRepository.findOrdersToImportByStation(stationNo, deliveryDate.toLocalDate()) else parcelRepository.findOrdersToImportByStation(station = stationNo)
         if (orders.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
                     title = ImportService.ResponseMsg.NO_ORDERS_FOUND.value //"No orders found"
             )
-        val allParcels = parcelRepository.getParcelsNotDeliveredByOrderids(orders
+        val allParcels = parcelRepository.findParcelsNotDeliveredByOrderids(orders
                 .map { it.orderid.toLong() }
                 .toList()
         )
@@ -151,7 +151,7 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
             }
         }
 
-        val orderRecord = parcelRepository.getOrderById(unitRecord.orderid.toLong())
+        val orderRecord = parcelRepository.findOrderById(unitRecord.orderid.toLong())
         orderRecord ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
                 title = ImportService.ResponseMsg.ORDER_NOT_FOUND.value//"Order not found"
@@ -240,12 +240,12 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
                 unitRecord.gewichteffektiv = parcelEffWeight
             unitRecord.storeWithHistoryImportservice(unitRecord.colliebelegnr.toLong())
         }
-        val newSumWeightReal = parcelRepository.getSumUnitRealWeight(unitRecord.orderid.toLong())?.toDoubleWithTwoDecimalDigits()
+        val newSumWeightReal = parcelRepository.sumUnitRealWeight(unitRecord.orderid.toLong())?.toDoubleWithTwoDecimalDigits()
         newSumWeightReal ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
                 title = ImportService.ResponseMsg.PARCEL_NOT_FOUND.value//"Parcel not found"
         )
-        val newSumWeightVol = parcelRepository.getSumUnitVolWeight(unitRecord.orderid.toLong())?.toDoubleWithTwoDecimalDigits()
+        val newSumWeightVol = parcelRepository.sumUnitVolWeight(unitRecord.orderid.toLong())?.toDoubleWithTwoDecimalDigits()
         newSumWeightVol ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
                 title = ImportService.ResponseMsg.PARCEL_NOT_FOUND.value//"Parcel not found"
@@ -275,7 +275,7 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
                 val gun = GlsUnitNumber.parseLabel(scanCode)
                 when {
                     gun.hasError -> {
-                        val unitRecords = parcelRepository.getImportParcelsByCreferenceAndStation(stationNo, scanCode)
+                        val unitRecords = parcelRepository.findImportParcelsByCreferenceAndStation(stationNo, scanCode)
                         if (unitRecords.count() == 0)
                             throw RestProblem(
                                     status = Response.Status.NOT_FOUND,
@@ -315,14 +315,14 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
                 status = Response.Status.NOT_FOUND,
                 title = ImportService.ResponseMsg.PARCEL_NOT_FOUND.value//"Parcel not found"
         )
-        val orderRecord = parcelRepository.getOrderById(unitRecord.orderid.toLong())
+        val orderRecord = parcelRepository.findOrderById(unitRecord.orderid.toLong())
         orderRecord ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
                 title = ImportService.ResponseMsg.ORDER_NOT_FOUND.value//"Order not found"
         )
         val parcelImport = unitRecord.toParcelToImport()
         if (parcelImport.tourNo == 0) {
-            parcelImport.tourNo = stationRepository.getStationTour(orderRecord.plzd, orderRecord.depotnrld)
+            parcelImport.tourNo = stationRepository.findStationTour(orderRecord.plzd, orderRecord.depotnrld)
         }
 
 
