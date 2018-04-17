@@ -86,7 +86,7 @@ class ParcelProcessingService {
                 val checkPictureFile = parcelAddInfo.pictureFileUID != null
 
                 val parcel = it.parcelId ?: 0.toLong()
-                val parcelRecord = parcelRepository.getParcelByParcelId(parcel)
+                val parcelRecord = parcelRepository.findParcelByParcelId(parcel)
 
                 when (parcel) {
                     0.toLong() -> {
@@ -107,7 +107,7 @@ class ParcelProcessingService {
                     //return@forEach
                     continue@loop
                 }
-                val orderRecord = parcelRepository.getOrderById(parcelRecord.orderid.toLong())
+                val orderRecord = parcelRepository.findOrderById(parcelRecord.orderid.toLong())
                 if (orderRecord == null) {
                     log.info("parcelId=$parcel,messageID=${it.id} no orderRecord")
                     it.isProccessed = 1
@@ -226,7 +226,7 @@ class ParcelProcessingService {
                     val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
                     val file = File(storage.workTmpDataDirectory, "$pictureUID.jpg")
                     if (!file.exists()) {
-                        val countBmp = parcelRepository.getCountParcelsByBmp(bmp)
+                        val countBmp = parcelRepository.countParcelsByBmp(bmp)
                         //if (mobileFilename.getPath().resolve(newFile).toFile().exists()) { //LeoRobo war evtl. schneller
                         if (countBmp > 0) {
 //wenn LEO soweit ist .jpg anzuzeigen...
@@ -411,7 +411,7 @@ class ParcelProcessingService {
                                         unitInBagStatusRecord.infotext = r.infotext
                                         unitInBagStatusRecord.store()
 
-                                        val unitInBagOrderRecord = parcelRepository.getOrderById(it.orderid.toLong())
+                                        val unitInBagOrderRecord = parcelRepository.findOrderById(it.orderid.toLong())
                                         if (unitInBagOrderRecord != null) {
                                             //wird jetzt an anderer Stelle behandelt sendstatus
 //                                            val unitInBagPasClearingartmaster = unitInBagOrderRecord.clearingartmaster
