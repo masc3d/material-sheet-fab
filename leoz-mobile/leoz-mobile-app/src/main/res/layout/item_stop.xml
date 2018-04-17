@@ -222,32 +222,70 @@
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal"
+                                android:orientation="vertical"
+                                android:showDividers="middle"
+                                android:divider="@drawable/divider_vertical_small"
                                 >
 
-                                <TextView
+                                <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginEnd="@dimen/margin"
-                                    android:gravity="top"
-                                    android:text="@{stop.countdownText, default = `59:59`}"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                                    android:textColor="@{safeUnbox(stop.countdownColor)}"
-                                    android:visibility="@{safeUnbox(stop.isCountdownVisible) ? View.VISIBLE : View.GONE}"
-                                    />
+                                    android:layout_marginTop="2dp"
+                                    android:gravity="center_vertical"
+                                    android:layout_gravity="end"
+                                    android:orientation="horizontal"
+                                    android:visibility="@{safeUnbox(stop.isClockAreaVisible()) ? View.VISIBLE : View.GONE}"
+                                    >
 
-                                <sx.android.view.ClockView
-                                    android:id="@+id/uxAppointmentClock"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:visibility="@{safeUnbox(stop.isClockVisible) ? View.VISIBLE : View.GONE}"
-                                    app:color="@{stop.clockColor}"
-                                    app:hour="@{stop.appointmentHour}"
-                                    app:minute="@{stop.appointmentMinute}"
-                                    />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="@dimen/margin"
+                                        android:gravity="top"
+                                        android:text="@{stop.countdownText, default = `-110:15`}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                        android:textColor="@{safeUnbox(stop.countdownColor)}"
+                                        />
 
+                                    <sx.android.view.ClockView
+                                        android:id="@+id/uxAppointmentClock"
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
+                                        app:color="@{stop.clockColor}"
+                                        app:hour="@{stop.appointmentHour}"
+                                        app:minute="@{stop.appointmentMinute}"
+                                        />
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:layout_gravity="end"
+                                    android:orientation="horizontal"
+                                    android:visibility="@{stop.hasEta ? View.VISIBLE : View.GONE}"
+                                    >
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="@dimen/margin"
+                                        android:gravity="top"
+                                        android:text="@{stop.etaText, default = `59:59`}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                        />
+
+                                    <ImageView
+                                        android:layout_width="@dimen/icon_size_small"
+                                        android:layout_height="@dimen/icon_size_small"
+                                        android:scaleType="fitCenter"
+                                        android:contentDescription="TODO"
+                                        android:src="@drawable/ic_drive_eta"
+                                        android:tint="@color/colorGrey"
+                                        />
+
+                                </LinearLayout>
                             </LinearLayout>
 
                         </LinearLayout>

@@ -19,6 +19,7 @@ import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toField
+import sx.android.databinding.toObservable
 import sx.rx.ObservableRxProperty
 import sx.rx.toSingletonObservable
 import sx.time.TimeSpan
@@ -91,10 +92,10 @@ class StopViewModel(
     }
 
     val appointmentFrom: String
-        get() = timeFormat.format(appointmentFromDate)
+        get() = appointmentFromDate?.let { timeFormat.format(it) } ?: ""
 
     val appointmentTo: String
-        get() = timeFormat.format(appointmentToDate)
+        get() = appointmentToDate?.let { timeFormat.format(it) } ?: ""
 
     private val appointmentEndCalendar by lazy {
         this.appointmentToDate?.toCalendar()
@@ -108,6 +109,14 @@ class StopViewModel(
 
     val isFixedAppointment: Boolean
         get() = stop.tasks.any { it.isFixedAppointment }
+
+    val eta: Date? by lazy {
+        this.stop.eta
+    }
+
+    val etaText: String by lazy {
+        this.eta?.let { this.timeFormat.format(it) } ?: ""
+    }
 
     val orderAmount: String
         get() = stop.tasks.map { it.order }.distinct().count().toString()
@@ -125,6 +134,10 @@ class StopViewModel(
 
     val hasServices: Boolean by lazy {
         this.services.count() > 0
+    }
+
+    val hasEta: Boolean by lazy {
+        this.eta != null
     }
 
     val isStatusBarVisible by lazy {
@@ -185,6 +198,15 @@ class StopViewModel(
                 .toField()
     }
     //endregion
+
+    val isClockAreaVisible by lazy {
+        Observable.combineLatest(
+                this.isClockVisible.toObservable(),
+                this.isCountdownVisible.toObservable(),
+                BiFunction { x: Boolean, y: Boolean -> x && y }
+        )
+                .toField()
+    }
 
     /** Stop parcels (observable fireing when stop state changes) */
     private val parcels by lazy {

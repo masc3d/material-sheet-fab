@@ -1,6 +1,8 @@
 package org.deku.leoz.mobile.model.entity
 
+import org.deku.leoz.model.TourStopRouteMeta
 import sx.time.TimeSpan
+import sx.time.plusMinutes
 import sx.time.replaceTime
 import java.util.*
 
@@ -63,6 +65,25 @@ val Stop.appointmentTimeLeft: TimeSpan?
             end != null -> TimeSpan.between(Date(), end)
             else -> null
         }
+    }
+
+/**
+ * Median eta date/time
+ */
+val Stop.eta: Date?
+    get() {
+        return this.meta.firstValueByTypeOrNull(TourStopRouteMeta::class.java)
+                ?.let {
+                    val etaFrom = it.eta?.from
+                    val etaTo = it.eta?.to
+
+                    if (etaFrom != null && etaTo != null)
+                        etaFrom.plusMinutes(
+                                TimeSpan.between(etaFrom, etaTo).absMinutes
+                        )
+                    else
+                        null
+                }
     }
 
 /** Indicates if stop has appointment(s) */
