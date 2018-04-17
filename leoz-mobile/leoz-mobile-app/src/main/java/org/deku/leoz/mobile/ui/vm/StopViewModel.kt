@@ -201,9 +201,12 @@ class StopViewModel(
 
     val isClockAreaVisible by lazy {
         Observable.combineLatest(
+                this.editModeProperty.map { it.value },
                 this.isClockVisible.toObservable(),
                 this.isCountdownVisible.toObservable(),
-                BiFunction { x: Boolean, y: Boolean -> x && y }
+                io.reactivex.functions.Function3 { editMode: Boolean, clockVisible: Boolean, countdownVisible: Boolean ->
+                    !editMode && clockVisible && countdownVisible
+                }
         )
                 .toField()
     }
