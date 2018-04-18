@@ -137,15 +137,21 @@ class StopRepository(
     }
 
     /**
-     * Updates stop order, placing a stop after another one
+     * Updates stop order, placing a stop after another one.
+     *
+     * When persisting the move, this operation will also invalidate (remove) calculated etas
+     * from all subsequent stops.
+     *
      * @param stop The stop to move positionally
      * @param after The stop after which stop should be moved or null for first position
+     * @param invalidateEtas Invalidate etas of subsequent stops
      * @param persist Persist the change against the entity store, otherwise merely applies
      * the change to this repository's reference cache
      */
     fun move(
             stop: Stop,
             after: Stop?,
+            invalidateEtas: Boolean = false,
             persist: Boolean = false
     ): Completable {
         return Completable.fromCallable {
@@ -154,15 +160,15 @@ class StopRepository(
             val afterPosition = after?.position ?: 0.0
 
             // Get first stop where position is greater or null if there's none (last position)
-            val nextAfter = when (persist) {
+
+            val nextStops = when (persist) {
                 true -> {
                     store
                             .select(StopEntity::class)
                             .where(StopEntity.POSITION.gt(afterPosition))
                             .orderBy(StopEntity.POSITION.asc())
-                            .limit(1)
-                            .get()
-                            .firstOrNull()
+                            .get().toList()
+
                 }
                 false -> {
                     // If changes are not persisted, query reference cache instead for consistency
@@ -170,10 +176,11 @@ class StopRepository(
                             .asSequence()
                             .filter { it.position > afterPosition }
                             .sortedBy { it.position }
-                            .firstOrNull()
+                            .toList()
                 }
             }
 
+            val nextAfter = nextStops.firstOrNull()
 
             when {
                 nextAfter != null -> {
@@ -185,8 +192,19 @@ class StopRepository(
                 }
             }
 
-            if (persist)
+            if (invalidateEtas) {
+                nextStops.forEach {
+                    it.eta = null
+                }
+                stop.eta = null
+            }
+
+            if (persist) {
                 store.update(stop)
+
+                if (invalidateEtas)
+                    store.update(nextStops)
+            }
         }
     }
 

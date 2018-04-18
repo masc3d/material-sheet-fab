@@ -304,7 +304,8 @@ class TourScreen
 
                             db.store.withTransaction {
                                 stopRepository.entities.forEach {
-                                    refresh(it, StopEntity.POSITION)
+                                    refresh(it, StopEntity.POSITION, StopEntity.ETA)
+                                    it.etaProperty.reset()
                                 }
                             }
                                     .toCompletable()
@@ -459,7 +460,7 @@ class TourScreen
                                                     stop.state = Stop.State.PENDING
 
                                                     // Move re-activated stop to top
-                                                    stopRepository.move(stop, null)
+                                                    stopRepository.move(stop, after = null, invalidateEtas = false)
                                                             .blockingGet()
 
                                                     stopRepository
@@ -549,6 +550,8 @@ class TourScreen
             }
 
             log.user { "Starts tour optimization [${options}]" }
+
+            // TODO: move optimization logic to model class (Tour)
             subscription = tourService.optimize(
                     options = options,
                     startStationNo = mobileOptions.stationNo
@@ -700,6 +703,7 @@ class TourScreen
                                                 .move(
                                                         stop = itemViewModel.stop,
                                                         after = previousItemViewModel?.stop,
+                                                        invalidateEtas = true,
                                                         // Only persist immedaitely when not in edit mode
                                                         persist = !this@TourScreen.editMode
                                                 )
