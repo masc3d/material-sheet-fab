@@ -48,8 +48,9 @@ class JooqNodeRepository {
      * Find node record by key starting with
      * @param partialKey Partial key
      */
-    fun findByKeyStartingWith(partialKey: String): MstNodeRecord? {
-        return dsl.fetchOne(MstNode.MST_NODE, Tables.MST_NODE.KEY.startsWith(partialKey))
+    fun findByUid(nodeUid: String, strict: Boolean = true ): MstNodeRecord? {
+        return dsl.selectFrom(MstNode.MST_NODE)
+                .fetchByUid(nodeUid, strict)
     }
 
     /**
@@ -78,7 +79,7 @@ val MstNodeRecord.uid: String
  * @param nodeUid Node uid
  * @param strict Allows lookups by short/truncated uid as long as the result is unique
  */
-fun SelectWhereStep<MstNodeRecord>.fetchByUid(nodeUid: String, strict: Boolean = true ): MstNodeRecord? {
+fun SelectWhereStep<MstNodeRecord>.fetchByUid(nodeUid: String, strict: Boolean = true): MstNodeRecord? {
     return when {
         strict -> {
             // Only allow precise matches

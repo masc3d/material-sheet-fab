@@ -47,10 +47,7 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
 
     @Inject
     private lateinit var executorService: ExecutorService
-
-    @Inject
-    private lateinit var nodeJooqRepository: JooqNodeRepository
-
+    
     /** Timestamp format used for dumps */
     private val timestampFormat by lazy { SimpleDateFormat("yyyyMMddHHmmss") }
 

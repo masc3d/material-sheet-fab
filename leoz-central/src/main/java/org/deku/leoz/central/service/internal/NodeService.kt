@@ -85,7 +85,7 @@ class NodeServiceV1
     }
 
     override fun getByUid(uid: String): NodeServiceV1.Node {
-        return this.nodeJooqRepository.findByKeyStartingWith(uid)
+        return this.nodeJooqRepository.findByUid(uid, strict = false)
                 ?.toNode()
                 ?: throw NoSuchElementException("Unknown node uid [${uid}]")
     }
