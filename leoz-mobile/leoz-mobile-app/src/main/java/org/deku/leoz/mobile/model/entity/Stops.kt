@@ -1,6 +1,9 @@
 package org.deku.leoz.mobile.model.entity
 
+import org.deku.leoz.model.TourStopRouteMeta
+import org.deku.leoz.model.median
 import sx.time.TimeSpan
+import sx.time.plusMinutes
 import sx.time.replaceTime
 import java.util.*
 

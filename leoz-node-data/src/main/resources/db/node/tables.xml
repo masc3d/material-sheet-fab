@@ -23,4 +23,6 @@
     <table name="mst_key" uid="0x8556806322cf47" />
     <table name="mst_user" uid="0xd0345b4eedac00" />
     <table name="mst_station_user" uid="0xea2337d04d0a2b" />
+    <table name="tad_order" uid="0x9a5068e155ba00" />
+    <table name="tad_order_parcel" uid="0x08cfee2e2d5075" />
 </tables>

@@ -79,7 +79,7 @@ class JooqStationRepository {
                 .fetchOneInto(TbldepotlisteRecord::class.java)
     }
 
-    fun getCountBagsToSendBagByStation(stationNo: Int): Int {
+    fun countBagsToSendBagByStation(stationNo: Int): Int {
         val countBagsUsedByStation: Int = dsl.selectCount()
                 .from(SSO_S_MOVEPOOL)
                 .where(SSO_S_MOVEPOOL.LASTDEPOT.eq(stationNo.toDouble())
@@ -101,7 +101,7 @@ class JooqStationRepository {
         return diff
     }
 
-    fun getBag(bagId: Long): SsoSMovepoolRecord? {
+    fun findBag(bagId: Long): SsoSMovepoolRecord? {
 //        val record = dsl.select()
 //                .from(SSO_S_MOVEPOOL)
 //                .where(SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagId.toDouble()))
@@ -110,11 +110,11 @@ class JooqStationRepository {
         //return record
     }
 
-    fun getBagByBagBackOrderId(bagBackOrderId:Long):SsoSMovepoolRecord? {
+    fun findBagByBagBackOrderId(bagBackOrderId:Long):SsoSMovepoolRecord? {
         return dsl.fetchOne(SsoSMovepool.SSO_S_MOVEPOOL, SSO_S_MOVEPOOL.ORDERDEPOT2HUB.eq(bagBackOrderId.toDouble()))
     }
 
-    fun getUnitNo(orderid: Long): Long? {
+    fun findUnitNo(orderid: Long): Long? {
         if (orderid == 0.toLong()) return null
         return dsl.select(TBLAUFTRAGCOLLIES.COLLIEBELEGNR).from(TBLAUFTRAGCOLLIES)
                 .where(TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble())
@@ -123,11 +123,11 @@ class JooqStationRepository {
                 .fetchOne(0, Long::class.java)
     }
 
-    fun getSeal(sealNo: Long): SsoPMovRecord? {
+    fun findSeal(sealNo: Long): SsoPMovRecord? {
         return dsl.fetchOne(SsoPMov.SSO_P_MOV, SSO_P_MOV.PLOMBENNUMMER.eq(sealNo.toDouble()))
     }
 
-    fun getStationTour(zip: String, stationNo: Int): Int {
+    fun findStationTour(zip: String, stationNo: Int): Int {
         if (zip.trim() == "") return 99
         val tour = dsl.select(TBLROUTENDEPOT.TOURNR).from(TBLROUTENDEPOT)
                 .where(TBLROUTENDEPOT.DEPOTID.eq(stationNo)

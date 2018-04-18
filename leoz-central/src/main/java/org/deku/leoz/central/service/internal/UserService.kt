@@ -12,6 +12,7 @@ import org.deku.leoz.central.data.repository.toUser
 import org.deku.leoz.model.UserActivity
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.node.rest.authorizedUser
+import org.deku.leoz.node.rest.isAvailable
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.internal.UserService.User
 import org.jooq.DSLContext
@@ -24,6 +25,7 @@ import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.rs.RestProblem
 import sx.time.toSqlDate
+import java.util.*
 import javax.inject.Inject
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
@@ -65,9 +67,9 @@ class UserService :
     override fun get(email: String?, debitorId: Int?): List<User> {
         var debitor_id = debitorId
 
-        val authorizedUser = httpRequest.authorizedUser
+        val authorizedUser = if (httpRequest.isAvailable) httpRequest.authorizedUser else null
 
-        if (debitor_id == null && email == null) {
+        if (debitor_id == null && email == null && authorizedUser != null) {
             debitor_id = authorizedUser.debitorId
         }
 
@@ -85,7 +87,7 @@ class UserService :
                 val user = mutableListOf<User>()
                 userRecList.forEach {
 
-                    if (authorizedUser.role == UserRole.ADMIN.name) {
+                    if (authorizedUser == null || authorizedUser.role == UserRole.ADMIN.name) {
                         user.add(it.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(it.id) })
                     } else {
                         if (authorizedUser.debitorId == it.debitorId) {
@@ -104,7 +106,7 @@ class UserService :
                                 status = Response.Status.NOT_FOUND,
                                 title = "No user found by email")
 
-                if (UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                if (authorizedUser == null || UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
                     return listOf(userRecord.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(userRecord.id) })
                 if ((UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value) &&
                         (authorizedUser.debitorId == userRecord.debitorId)) {

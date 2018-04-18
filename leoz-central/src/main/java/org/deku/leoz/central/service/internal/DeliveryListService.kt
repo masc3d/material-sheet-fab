@@ -93,10 +93,10 @@ class DeliveryListService
                     .groupBy { it.id }
 
 
-            val ordersById = this.orderService.getByIds(
-                    dlDetailRecordsByDlId
-                            .flatMap { it.value }
-                            .map { it.orderId.toLong() }
+            val ordersById = this.orderService.get(ids =
+            dlDetailRecordsByDlId
+                    .flatMap { it.value }
+                    .map { it.orderId.toLong() }
             )
                     .associateBy { it.id }
 
@@ -247,9 +247,8 @@ class DeliveryListService
                 .findDetailsByIds(this.map { it.id.toLong() })
                 .groupBy { it.id }
 
-        val orders = orderService.getByIds(
-                dlDetailRecordsById.flatMap { it.value }.map { it.orderId.toLong() }.distinct()
-        )
+        val orders = orderService.get(ids = dlDetailRecordsById.flatMap { it.value }.map { it.orderId.toLong() }
+                .distinct())
                 .associateBy { it.id }
 
         return this.map { dlRecord ->

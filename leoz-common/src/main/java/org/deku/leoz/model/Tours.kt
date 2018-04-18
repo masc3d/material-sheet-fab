@@ -2,6 +2,8 @@ package org.deku.leoz.model
 
 import sx.Result
 import sx.io.serialization.Serializable
+import sx.time.TimeSpan
+import sx.time.plusMinutes
 import java.util.*
 
 /**
@@ -17,6 +19,21 @@ data class TimeRange(
         var from: Date? = null,
         var to: Date? = null
 )
+
+/**
+ * Calculates median of this time range
+ */
+fun TimeRange.median(): Date? {
+    val etaFrom = this.from
+    val etaTo = this.to
+
+    return if (etaFrom != null && etaTo != null)
+        etaFrom.plusMinutes(
+                TimeSpan.between(etaFrom, etaTo).absMinutes
+        )
+    else
+        null
+}
 
 /**
  * Tour route (optimization) meta data

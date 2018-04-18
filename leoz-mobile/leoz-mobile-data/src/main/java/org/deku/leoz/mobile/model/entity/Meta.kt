@@ -5,6 +5,7 @@ import io.requery.*
 import org.deku.leoz.mobile.model.entity.converter.JsonConverter
 import sx.android.databinding.BaseRxObservable
 import sx.io.serialization.Serializer
+import kotlin.reflect.KClass
 
 /**
  * Mobile meta data entity baseclass.
@@ -42,8 +43,11 @@ abstract class Meta : BaseRxObservable(), Persistable, Observable {
 
 // Extension methods for metadata collections
 
-fun <T : Meta> List<T>.filterByType(cls: Class<*>): List<T> {
-    val uid = Serializer.types.typeOrNullOf(cls)?.uid
+/**
+ * Filter metas by type
+ */
+fun <T : Meta> List<T>.filter(cls: KClass<*>): List<T> {
+    val uid = Serializer.types.typeOrNullOf(cls.java)?.uid
 
     if (uid == null)
         return listOf()
@@ -51,8 +55,11 @@ fun <T : Meta> List<T>.filterByType(cls: Class<*>): List<T> {
     return this.filter { it.typeUid == uid }
 }
 
-fun <T : Meta> List<T>.firstByTypeOrNull(cls: Class<*>): T? {
-    val uid = Serializer.types.typeOrNullOf(cls)?.uid
+/**
+ * First meta by type
+ */
+fun <T : Meta> List<T>.firstOrNull(cls: KClass<*>): T? {
+    val uid = Serializer.types.typeOrNullOf(cls.java)?.uid
 
     if (uid == null)
         return null
@@ -60,14 +67,28 @@ fun <T : Meta> List<T>.firstByTypeOrNull(cls: Class<*>): T? {
     return this.filter { it.typeUid == uid }.firstOrNull()
 }
 
-fun <T: Meta, R : Any> List<T>.filterValuesByType(cls: Class<R>): List<R> {
-    return this.filterByType(cls).mapNotNull {
+/**
+ * Meta values by type
+ */
+fun <T: Meta, R : Any> List<T>.values(cls: KClass<R>): List<R> {
+    return this.filter(cls).mapNotNull {
         @Suppress("UNCHECKED_CAST")
         it.value as? R
     }
 }
 
-fun <T : Meta, R : Any> List<T>.firstValueByTypeOrNull(cls: Class<R>): R? {
+/**
+ * Meta value by type
+ */
+fun <T : Meta, R : Any> List<T>.valueOrNull(cls: KClass<R>): R? {
     @Suppress("UNCHECKED_CAST")
-    return this.firstByTypeOrNull(cls)?.value as? R?
+    return this.firstOrNull(cls)?.value as? R?
+}
+
+/**
+ * Set meta of specific type, replacing all existing meta values of this type
+ */
+fun <T : Meta> MutableList<T>.set(meta: T) {
+    this.removeAll { it.typeUid == meta.typeUid }
+    this.add(meta)
 }

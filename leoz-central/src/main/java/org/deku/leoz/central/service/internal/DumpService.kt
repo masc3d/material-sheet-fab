@@ -4,6 +4,8 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
+import org.deku.leoz.central.data.repository.JooqNodeRepository
+import org.deku.leoz.central.data.repository.fetchByUid
 import org.deku.leoz.node.data.jooq.Tables
 import org.deku.leoz.time.ShortDate
 import org.jooq.DSLContext
@@ -45,7 +47,7 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
 
     @Inject
     private lateinit var executorService: ExecutorService
-
+    
     /** Timestamp format used for dumps */
     private val timestampFormat by lazy { SimpleDateFormat("yyyyMMddHHmmss") }
 
@@ -87,7 +89,7 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
     }
 
     override fun dumpDeliveryLists(stationNo: Int?, from: ShortDate?, to: ShortDate?): Response {
-        val rkNos = dsl.select(RKKOPF.ROLLKARTENNUMMER)
+        val rkIds = dsl.select(RKKOPF.ID)
                 .from(RKKOPF)
                 .where()
                 .letWithNotNull(stationNo, {
@@ -99,22 +101,22 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
                 .letWithNotNull(to, {
                     and(RKKOPF.ROLLKARTENDATUM.le(it.date.toTimestamp()))
                 })
-                .fetch(RKKOPF.ROLLKARTENNUMMER)
+                .fetch(RKKOPF.ID)
                 .toList()
 
         val orderIds = dsl.select(RKDETAILS.ORDERID)
                 .from(RKDETAILS)
-                .where(RKDETAILS.ROLLKARTENNUMMER.`in`(rkNos))
+                .where(RKDETAILS.RK_ID.`in`(rkIds))
                 .fetch(RKDETAILS.ORDERID)
                 .toList()
 
         return Observable.concat(
                 dsl.selectFrom(RKKOPF)
-                        .where(RKKOPF.ROLLKARTENNUMMER.`in`(rkNos))
+                        .where(RKKOPF.ID.`in`(rkIds))
                         .dump(),
 
                 dsl.selectFrom(RKDETAILS)
-                        .where(RKDETAILS.ROLLKARTENNUMMER.`in`(rkNos))
+                        .where(RKDETAILS.RK_ID.`in`(rkIds))
                         .dump(),
 
                 dsl.selectFrom(TBLAUFTRAG)
@@ -137,5 +139,71 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
                         .dump()
         )
                 .toResponse("tours")
+    }
+
+    override fun dumpOrders(parcelNos: List<String>?, withStatus: Boolean): Response {
+        val orderIds = mutableListOf<Double>()
+
+        if (parcelNos != null && parcelNos.isNotEmpty()) {
+            orderIds.addAll(
+                    dsl.select(TBLAUFTRAGCOLLIES.ORDERID)
+                            .from(TBLAUFTRAGCOLLIES)
+                            .where(TBLAUFTRAGCOLLIES.COLLIEBELEGNR.`in`(parcelNos))
+                            .fetch(TBLAUFTRAGCOLLIES.ORDERID)
+                            .toList()
+            )
+        }
+
+        return Observable.concat(
+                dsl.selectFrom(TBLAUFTRAG)
+                        .where(TBLAUFTRAG.ORDERID.`in`(orderIds))
+                        .dump(),
+
+                dsl.selectFrom(TBLAUFTRAGCOLLIES)
+                        .where(TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds))
+                        .dump(),
+
+                if (withStatus) {
+                    dsl.selectFrom(TBLSTATUS)
+                            .where(TBLSTATUS.ORDERIDSTA.`in`(orderIds))
+                            .dump()
+                } else {
+                    Observable.fromArray("")
+                }
+
+        )
+                .toResponse("orders")
+    }
+
+    override fun dumpLoadedOrders(nodeUidShort: String, loadingDate: ShortDate): Response {
+        val node = dsl.selectFrom(MST_NODE).fetchByUid(nodeUidShort, false)
+                ?: throw NoSuchElementException()
+
+        val parcelIds = dsl.select(TAD_PARCEL_MESSAGES.PARCEL_ID)
+                .from(TAD_PARCEL_MESSAGES)
+                .where(
+                        TAD_PARCEL_MESSAGES.NODE_ID_X.eq(node.nodeId)
+                                .and(TAD_PARCEL_MESSAGES.EVENT_VALUE.eq(120))
+                )
+                .fetch(TAD_PARCEL_MESSAGES.PARCEL_ID)
+                .toList()
+
+        val orderIds = dsl.select(TBLAUFTRAGCOLLIES.ORDERID)
+                .from(TBLAUFTRAGCOLLIES)
+                .where(TBLAUFTRAGCOLLIES.PARCEL_ID.`in`(parcelIds))
+                .fetch(TBLAUFTRAGCOLLIES.ORDERID)
+                .toList()
+
+        return Observable.concat(
+                dsl.selectFrom(TBLAUFTRAG)
+                        .where(TBLAUFTRAG.ORDERID.`in`(orderIds))
+                        .dump(),
+
+                dsl.selectFrom(TBLAUFTRAGCOLLIES)
+                        .where(TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds))
+                        .dump()
+
+        )
+                .toResponse("mobile-loaded-orders")
     }
 }

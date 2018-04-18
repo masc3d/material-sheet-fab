@@ -20,10 +20,11 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.toCompletable
+import io.requery.kotlin.invoke
 import kotlinx.android.synthetic.main.screen_tour.*
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.databinding.ScreenTourBinding
@@ -32,10 +33,7 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.OptimizationOptions
-import org.deku.leoz.mobile.model.entity.Stop
-import org.deku.leoz.mobile.model.entity.StopEntity
-import org.deku.leoz.mobile.model.entity.address
-import org.deku.leoz.mobile.model.entity.appointmentEnd
+import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -50,6 +48,7 @@ import org.deku.leoz.mobile.ui.vm.StopListStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.StopViewModel
 import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.model.median
 import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
@@ -288,6 +287,12 @@ class TourScreen
                             // Persist all positional changes
                             this.stopRepository
                                     .updateAll()
+                                    .concatWith(
+                                            // Remove stale entries
+                                            db.store.delete(StopMetaEntity::class)
+                                                    .where(StopMetaEntity.STOP.isNull())
+                                                    .invoke().toCompletable()
+                                    )
                                     .subscribeOn(db.scheduler)
                                     .subscribe()
 
@@ -484,7 +489,7 @@ class TourScreen
             }
 
             override fun shouldMoveItem(fromPosition: Int, toPosition: Int): Boolean =
-                    // Prevent move before statistics header
+            // Prevent move before statistics header
                     toPosition >= this@TourScreen.adapterFirstStopItemIndex
 
         })
@@ -543,7 +548,7 @@ class TourScreen
                         .show()
             }
 
-            log.user { "Starts tour optimization [${options}]"}
+            log.user { "Starts tour optimization [${options}]" }
             subscription = tourService.optimize(
                     options = options,
                     startStationNo = mobileOptions.stationNo
@@ -566,18 +571,19 @@ class TourScreen
                                             result.tour?.also { optimizedTour ->
                                                 val pendingStops = this.tour.pendingStops.blockingFirst().value
 
-                                                optimizedTour.stops!!.map { optimizedStop ->
+                                                optimizedTour.stops!!.forEachIndexed { index, optimizedStop ->
+                                                    // Lookup matching pending stop
                                                     pendingStops.first { it.tasks.first().order.id == optimizedStop.tasks.first().orderId }
-                                                }
-                                                        .also {
-                                                            it.forEachIndexed { index, stopEntity ->
-                                                                stopEntity.position = index.toDouble()
+                                                            .also { stop ->
+                                                                // Update stop position
+                                                                stop.position = index.toDouble()
+                                                                stop.eta = optimizedStop.route?.eta?.median()
                                                             }
+                                                }
 
-                                                            this.updateAdapterPositions(
-                                                                    pendingStops.sortedBy { it.position }
-                                                            )
-                                                        }
+                                                this.updateAdapterPositions(
+                                                        pendingStops.sortedBy { it.position }
+                                                )
                                             }
                                         } catch (e: Throwable) {
                                             onError()

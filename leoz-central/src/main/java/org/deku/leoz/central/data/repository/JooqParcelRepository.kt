@@ -33,7 +33,7 @@ class JooqParcelRepository {
 
     lateinit var dsl: DSLContext
 
-    fun getCountParcelsByBmp(bmpFilename: String): Int {
+    fun countParcelsByBmp(bmpFilename: String): Int {
         return dsl.selectCount()
                 .from(Tables.TBLAUFTRAGCOLLIES)
                 .where(Tables.TBLAUFTRAGCOLLIES.BMPFILENAME.eq(bmpFilename)
@@ -51,7 +51,7 @@ class JooqParcelRepository {
                 .execute()
     }
 
-    fun getParcelByParcelId(id: Long): TblauftragcolliesRecord? {
+    fun findParcelByParcelId(id: Long): TblauftragcolliesRecord? {
         if (id == 0.toLong()) return null
         return dsl.select()
                 .from(Tables.TBLAUFTRAGCOLLIES)
@@ -89,7 +89,7 @@ class JooqParcelRepository {
         )
     }
 
-    fun getParcelsByOrderId(orderId: Long): List<TblauftragcolliesRecord> {
+    fun findParcelsByOrderId(orderId: Long): List<TblauftragcolliesRecord> {
         return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
@@ -99,7 +99,7 @@ class JooqParcelRepository {
         )
     }
 
-    fun getParcelsByLoadingList(loadinglistNo: Long): List<TblauftragcolliesRecord> {
+    fun findParcelsByLoadingList(loadinglistNo: Long): List<TblauftragcolliesRecord> {
         return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.eq(loadinglistNo.toDouble())
@@ -107,7 +107,7 @@ class JooqParcelRepository {
         )
     }
 
-    fun getOrderById(orderId: Long): TblauftragRecord? {
+    fun findOrderById(orderId: Long): TblauftragRecord? {
         return dsl.fetchOne(
                 Tables.TBLAUFTRAG,
                 Tables.TBLAUFTRAG.ORDERID.eq(orderId.toDouble())
@@ -115,7 +115,7 @@ class JooqParcelRepository {
         )
     }
 
-    fun getOrdersByIds(orderIds: List<Long>): List<TblauftragRecord> {
+    fun findOrdersByIds(orderIds: List<Long>): List<TblauftragRecord> {
         return dsl.fetch(
                 Tables.TBLAUFTRAG,
                 Tables.TBLAUFTRAG.ORDERID.`in`(orderIds.map { it.toDouble() })
@@ -124,8 +124,8 @@ class JooqParcelRepository {
 
     }
 
-    //fun getParcelsToExportByLoadingList(loadinglistNo: Long, sendDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<ExportService.Order> {
-    fun getParcelsToExportByLoadingList(loadinglistNo: Long): List<ExportService.Order> {
+    //fun findParcelsToExportByLoadingList(loadinglistNo: Long, sendDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<ExportService.Order> {
+    fun findParcelsToExportByLoadingList(loadinglistNo: Long): List<ExportService.Order> {
         val result = listOf<ExportService.Order>()
         val records = dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES
@@ -162,7 +162,7 @@ class JooqParcelRepository {
 
     }
 
-    fun getParcelsToExportInBagByStation(station: Int, sendDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<ExportService.Order> {
+    fun findParcelsToExportInBagByStation(station: Int, sendDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<ExportService.Order> {
         val result = listOf<ExportService.Order>()
         val records = dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES
@@ -174,7 +174,7 @@ class JooqParcelRepository {
                         .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
                         .and(Tables.TBLAUFTRAGCOLLIES.VERPACKUNGSART.eq(91)//Valore
                                 .or(Tables.TBLAUFTRAGCOLLIES.GEWICHTEFFEKTIV.lessOrEqual(maxWeightForParcelBag)))
-                      //  .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.isNull)//alle auch die schon beladen sind-konsistent zu "normalen"
+                        .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.isNull)//alle auch die schon beladen sind-konsistent zu "normalen"//wieder rein um Datenmenge zu reduzieren
                         .and(Tables.TBLAUFTRAG.VERLADEDATUM.eq(sendDate.toTimestamp()))
                         .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
                         .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0)))//fehlende anfahrt raus
@@ -201,7 +201,7 @@ class JooqParcelRepository {
         }.filter { it.parcels.count() > 0 }
     }
 
-    fun getOrderToExportById(orderId: Long): TblauftragRecord? {
+    fun findOrderToExportById(orderId: Long): TblauftragRecord? {
         return dsl.fetchOne(
                 Tables.TBLAUFTRAG,
                 Tables.TBLAUFTRAG.ORDERID.eq(orderId.toDouble())
@@ -212,7 +212,7 @@ class JooqParcelRepository {
 
     }
 
-    fun getOrdersToExportByStation(station: Int, sendDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<TblauftragRecord> {
+    fun findOrdersToExportByStation(station: Int, sendDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<TblauftragRecord> {
         return dsl.fetch(
                 Tables.TBLAUFTRAG,
                 Tables.TBLAUFTRAG.DEPOTNRABD.eq(station)
@@ -226,7 +226,7 @@ class JooqParcelRepository {
     }
 
 
-    fun getParcelsToExportByOrderid(orderId: Long): List<TblauftragcolliesRecord> {
+    fun findParcelsToExportByOrderid(orderId: Long): List<TblauftragcolliesRecord> {
         return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
@@ -237,7 +237,7 @@ class JooqParcelRepository {
 
     }
 
-    fun getParcelsNotDeliveredByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
+    fun findParcelsNotDeliveredByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
 //        return dsl.select()
 //                .from(Tables.TBLAUFTRAGCOLLIES)
 //                .where(
@@ -253,8 +253,19 @@ class JooqParcelRepository {
                         .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
     }
+    fun findParcelsNotDeliveredNotLoadedByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
 
-    fun getLoadedParcelsToExportByOrderid(orderId: Long): List<TblauftragcolliesRecord> {
+        return dsl.fetch(
+                Tables.TBLAUFTRAGCOLLIES,
+                Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
+                        .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                        .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+                        .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.isNull)//äquivalent zu bag-orders alle noch nicht geladenen
+        )
+    }
+
+    fun findLoadedParcelsToExportByOrderid(orderId: Long): List<TblauftragcolliesRecord> {
         return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
@@ -266,7 +277,7 @@ class JooqParcelRepository {
 
     }
 
-    fun getLoadedParcelsToExportByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
+    fun findLoadedParcelsToExportByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
         return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
@@ -278,7 +289,7 @@ class JooqParcelRepository {
 
     }
 
-    fun getLoadedParcelsToExportInBagByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
+    fun findLoadedParcelsToExportInBagByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
         return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
@@ -290,7 +301,7 @@ class JooqParcelRepository {
 
     }
 
-    fun getLoadinglistNoByOrderids(orderIds: List<Long>): List<Long> {
+    fun findLoadinglistNoByOrderids(orderIds: List<Long>): List<Long> {
         return dsl.select(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD)
                 .from(Tables.TBLAUFTRAGCOLLIES)
                 .where(
@@ -303,7 +314,7 @@ class JooqParcelRepository {
 
     }
 
-    fun getParcelsToExportByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord>? {
+    fun findParcelsToExportByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord>? {
         return dsl.select()
                 .from(Tables.TBLAUFTRAGCOLLIES)
                 .join(Tables.TBLAUFTRAG)
@@ -319,7 +330,7 @@ class JooqParcelRepository {
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
 
-    fun getParcelsToExportByCreference(cReference: String): List<TblauftragcolliesRecord> {
+    fun findParcelsToExportByCreference(cReference: String): List<TblauftragcolliesRecord> {
         return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference)
@@ -329,7 +340,7 @@ class JooqParcelRepository {
         )
     }
 
-    fun getExportParcelsByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord> {
+    fun findExportParcelsByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord> {
         val unitRecords: List<TblauftragcolliesRecord>
         if (station == 800) {
             unitRecords = dsl.fetch(
@@ -352,7 +363,7 @@ class JooqParcelRepository {
         return unitRecords
     }
 
-    fun getImportParcelsByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord> {
+    fun findImportParcelsByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord> {
         val unitRecords: List<TblauftragcolliesRecord>
 
         unitRecords = dsl.fetch(
@@ -366,7 +377,7 @@ class JooqParcelRepository {
         return unitRecords
     }
 
-    fun getOrdersToImportByStation(station: Int, deliveryDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<TblauftragRecord> {
+    fun findOrdersToImportByStation(station: Int, deliveryDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<TblauftragRecord> {
         return dsl.fetch(
                 Tables.TBLAUFTRAG,
                 Tables.TBLAUFTRAG.DEPOTNRLD.eq(station)
@@ -379,13 +390,13 @@ class JooqParcelRepository {
 
     }
 
-    fun getSumUnitRealWeight(orderId: Long): BigDecimal? {
+    fun sumUnitRealWeight(orderId: Long): BigDecimal? {
         return dsl.select(sum(Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL)).from(Tables.TBLAUFTRAGCOLLIES).where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
                 .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )?.fetchOne(0, BigDecimal::class.java)
     }
 
-    fun getSumUnitVolWeight(orderId: Long): BigDecimal? {
+    fun sumUnitVolWeight(orderId: Long): BigDecimal? {
         return dsl.select(sum(Tables.TBLAUFTRAGCOLLIES.GEWICHTLBH)).from(Tables.TBLAUFTRAGCOLLIES).where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
                 .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )?.fetchOne(0, BigDecimal::class.java)

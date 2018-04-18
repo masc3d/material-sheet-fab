@@ -313,14 +313,14 @@ class TourStop(
     val cashAmountToCollect: Double
         get() =
             this.orders.blockingFirst()
-                    .mapNotNull { it.meta.firstValueByTypeOrNull(Order.CashService::class.java)?.cashAmount }
+                    .mapNotNull { it.meta.valueOrNull(Order.CashService::class)?.cashAmount }
                     .sum()
 
 
     val cashCurrencyCode: String
         get() =
             this.orders.blockingFirst()
-                    .mapNotNull { it.meta.firstValueByTypeOrNull(Order.CashService::class.java)?.currency }
+                    .mapNotNull { it.meta.valueOrNull(Order.CashService::class)?.currency }
                     .firstOrNull() ?: CurrencyCode.EUR.name
 
     val recipientCountryCode by lazy {
@@ -662,7 +662,7 @@ class TourStop(
                                                     it.isDamaged -> {
                                                         ParcelServiceV1.Event.DamagedInfo(
                                                                 pictureFileUids = it.meta
-                                                                        .filterValuesByType(Parcel.DamagedInfo::class.java)
+                                                                        .values(Parcel.DamagedInfo::class)
                                                                         .mapNotNull {
                                                                             it.pictureFileUid
                                                                         }

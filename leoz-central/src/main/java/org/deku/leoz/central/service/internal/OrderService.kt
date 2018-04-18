@@ -38,7 +38,7 @@ class OrderService
     @Context
     private lateinit var httpRequest: HttpServletRequest
 
-    override fun get(labelRef: String?, custRef: String?, parcelScan: String?): List<OrderService.Order> {
+    override fun get(ids: List<Long>?, labelRef: String?, custRef: String?, parcelScan: String?): List<OrderService.Order> {
         val orders: List<Order>
 
         when {
@@ -54,7 +54,30 @@ class OrderService
 
                 orders = listOf(order)
             }
-            else -> TODO("Handle other query types here")
+            labelRef != null -> {
+                TODO("Lookup by label ref not implemented")
+            }
+            custRef != null -> {
+                TODO("Lookup by cust ref not implemented")
+            }
+            ids != null -> {
+                val rOrders = this.orderRepository.findByIds(ids)
+
+                val rParcelsByOrderId = this.orderRepository
+                        .findParcelsByOrderIds(rOrders.map { it.id.toLong() })
+                        .groupBy { it.orderId.toLong() }
+
+                // TODO: debitor restricition validation, but only if it was http request. check must be skipped for internal consumers
+
+                orders = rOrders.map {
+                    it.toOrder().also { order ->
+                        order.parcels = rParcelsByOrderId
+                                .getOrDefault(order.id, listOf())
+                                .map { it.toParcel() }
+                    }
+                }
+            }
+            else -> TODO("Not supported")
         }
 
         orders.forEach { order ->
@@ -81,22 +104,6 @@ class OrderService
                 .map { it.toParcel() }
 
         return order
-    }
-
-    override fun getByIds(ids: List<Long>): List<OrderService.Order> {
-        val rOrders = this.orderRepository.findByIds(ids)
-
-        val rParcelsByOrderId = this.orderRepository
-                .findParcelsByOrderIds(rOrders.map { it.id.toLong() })
-                .groupBy { it.orderId.toLong() }
-
-        return rOrders.map {
-            it.toOrder().also { order ->
-                order.parcels = rParcelsByOrderId
-                        .getOrDefault(order.id, listOf())
-                        .map { it.toParcel() }
-            }
-        }
     }
 
     //todo include send_date

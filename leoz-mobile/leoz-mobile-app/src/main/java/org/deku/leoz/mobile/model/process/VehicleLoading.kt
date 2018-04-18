@@ -11,7 +11,7 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
-import org.deku.leoz.mobile.model.entity.filterValuesByType
+import org.deku.leoz.mobile.model.entity.values
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
@@ -134,7 +134,7 @@ class VehicleLoading : CompositeDisposableSupplier {
                                             it.isDamaged -> {
                                                 ParcelServiceV1.Event.DamagedInfo(
                                                         pictureFileUids = it.meta
-                                                                .filterValuesByType(Parcel.DamagedInfo::class.java)
+                                                                .values(Parcel.DamagedInfo::class)
                                                                 .mapNotNull {
                                                                     it.pictureFileUid
                                                                 }

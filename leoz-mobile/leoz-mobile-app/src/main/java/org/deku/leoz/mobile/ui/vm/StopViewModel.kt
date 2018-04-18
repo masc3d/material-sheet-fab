@@ -19,6 +19,7 @@ import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toField
+import sx.android.databinding.toObservable
 import sx.rx.ObservableRxProperty
 import sx.rx.toSingletonObservable
 import sx.time.TimeSpan
@@ -91,10 +92,10 @@ class StopViewModel(
     }
 
     val appointmentFrom: String
-        get() = timeFormat.format(appointmentFromDate)
+        get() = appointmentFromDate?.let { timeFormat.format(it) } ?: ""
 
     val appointmentTo: String
-        get() = timeFormat.format(appointmentToDate)
+        get() = appointmentToDate?.let { timeFormat.format(it) } ?: ""
 
     private val appointmentEndCalendar by lazy {
         this.appointmentToDate?.toCalendar()
@@ -108,6 +109,12 @@ class StopViewModel(
 
     val isFixedAppointment: Boolean
         get() = stop.tasks.any { it.isFixedAppointment }
+
+    val etaText by lazy {
+        this.stop.etaProperty.map {
+            it.value?.let { timeFormat.format(it) } ?: ""
+        }.toField()
+    }
 
     val orderAmount: String
         get() = stop.tasks.map { it.order }.distinct().count().toString()
@@ -125,6 +132,10 @@ class StopViewModel(
 
     val hasServices: Boolean by lazy {
         this.services.count() > 0
+    }
+
+    val hasEta by lazy {
+        this.stop.etaProperty.map { it.value != null }.toField()
     }
 
     val isStatusBarVisible by lazy {
@@ -185,6 +196,18 @@ class StopViewModel(
                 .toField()
     }
     //endregion
+
+    val isClockAreaVisible by lazy {
+        Observable.combineLatest(
+                this.editModeProperty.map { it.value },
+                this.isClockVisible.toObservable(),
+                this.isCountdownVisible.toObservable(),
+                io.reactivex.functions.Function3 { editMode: Boolean, clockVisible: Boolean, countdownVisible: Boolean ->
+                    !editMode && clockVisible && countdownVisible
+                }
+        )
+                .toField()
+    }
 
     /** Stop parcels (observable fireing when stop state changes) */
     private val parcels by lazy {

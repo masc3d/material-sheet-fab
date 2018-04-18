@@ -145,7 +145,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
             }
         }
         if (unScan.value.type == UnitNumber.Type.BagBack) {
-            val bagBack = stationRepository.getBagByBagBackOrderId(unitRecord.orderid.toLong())
+            val bagBack = stationRepository.findBagByBagBackOrderId(unitRecord.orderid.toLong())
             bagBack ?: throw RestProblem(
                     status = Response.Status.BAD_REQUEST,
                     title = ExportService.ResponseMsg.BAG_ID_NULL.value
@@ -180,13 +180,13 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
 
     override fun getLoadedParcelsToExportByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
 
-        val orders = if (sendDate != null) parcelRepository.getOrdersToExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.getOrdersToExportByStation(station = stationNo)
+        val orders = if (sendDate != null) parcelRepository.findOrdersToExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.findOrdersToExportByStation(station = stationNo)
         if (orders.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
                     title = ExportService.ResponseMsg.NO_ORDERS_FOUND.value//"No orders found"
             )
-        var allParcels = parcelRepository.getLoadedParcelsToExportByOrderids(orders.map { it.orderid.toLong() }.toList()).groupBy { it.orderid }
+        var allParcels = parcelRepository.findLoadedParcelsToExportByOrderids(orders.map { it.orderid.toLong() }.toList()).groupBy { it.orderid }
         if (allParcels.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
@@ -205,13 +205,13 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getLoadedParcelsToExportInBagByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
-        val orders = if (sendDate != null) parcelRepository.getOrdersToExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.getOrdersToExportByStation(station = stationNo)
+        val orders = if (sendDate != null) parcelRepository.findOrdersToExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.findOrdersToExportByStation(station = stationNo)
         if (orders.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
                     title = ExportService.ResponseMsg.NO_ORDERS_FOUND.value//"No orders found"
             )
-        var allParcels = parcelRepository.getLoadedParcelsToExportInBagByOrderids(orders.map { it.orderid.toLong() }.toList()).groupBy { it.orderid }
+        var allParcels = parcelRepository.findLoadedParcelsToExportInBagByOrderids(orders.map { it.orderid.toLong() }.toList()).groupBy { it.orderid }
         if (allParcels.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
@@ -232,7 +232,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
         var loadlistNo: Long
         do {
             loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 300000
-            var checklist = parcelRepository.getParcelsByLoadingList(loadlistNo)
+            var checklist = parcelRepository.findParcelsByLoadingList(loadlistNo)
         } while (checklist.count() > 0)
 
         return ExportService.Loadinglist(loadinglistNo = loadlistNo)
@@ -240,7 +240,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
 
     override fun getParcelsToExportByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
 
-        val orders = if (sendDate != null) parcelRepository.getOrdersToExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.getOrdersToExportByStation(station = stationNo)
+        val orders = if (sendDate != null) parcelRepository.findOrdersToExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.findOrdersToExportByStation(station = stationNo)
         if (orders.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
@@ -248,7 +248,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
             )
 
 
-        val allParcels = parcelRepository.getParcelsNotDeliveredByOrderids(orders
+        val allParcels = parcelRepository.findParcelsNotDeliveredNotLoadedByOrderids(orders
                 .map { it.orderid.toLong() }
                 .toList()
         )
@@ -272,7 +272,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
 
     override fun getParcelsToExportInBagByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
 
-        val parcels = if (sendDate != null) parcelRepository.getParcelsToExportInBagByStation(stationNo, sendDate = sendDate.toLocalDate()) else parcelRepository.getParcelsToExportInBagByStation(station = stationNo)
+        val parcels = if (sendDate != null) parcelRepository.findParcelsToExportInBagByStation(stationNo, sendDate = sendDate.toLocalDate()) else parcelRepository.findParcelsToExportInBagByStation(station = stationNo)
         if (parcels.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
@@ -302,7 +302,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
                     status = Response.Status.NOT_FOUND,
                     title = ExportService.ResponseMsg.LL_NOT_VALID.value//"Loadinglist not valid"
             )
-        val parcels = parcelRepository.getParcelsToExportByLoadingList(un.value.value.toLong())
+        val parcels = parcelRepository.findParcelsToExportByLoadingList(un.value.value.toLong())
         if (parcels.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
@@ -327,7 +327,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
                     status = Response.Status.NOT_FOUND,
                     title = ExportService.ResponseMsg.LL_NOT_VALID.value//"Loadinglist not valid"
             )
-        val parcels = parcelRepository.getParcelsToExportByLoadingList(un.value.value.toLong())
+        val parcels = parcelRepository.findParcelsToExportByLoadingList(un.value.value.toLong())
         if (parcels.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
@@ -348,19 +348,19 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
                         .execute()
                 loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 10000
             }
-            var checklist = parcelRepository.getParcelsByLoadingList(loadlistNo)
+            var checklist = parcelRepository.findParcelsByLoadingList(loadlistNo)
         } while (checklist.count() > 0)
         return ExportService.Loadinglist(loadinglistNo = loadlistNo)
     }
 
     override fun getAllLoadingList(stationNo: Int, sendDate: Date?, includeParcels: Boolean): List<ExportService.Loadinglist> {
-        val orders = if (sendDate != null) parcelRepository.getOrdersToExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.getOrdersToExportByStation(station = stationNo)
+        val orders = if (sendDate != null) parcelRepository.findOrdersToExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.findOrdersToExportByStation(station = stationNo)
         if (orders.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
                     title = ExportService.ResponseMsg.NO_ORDERS_FOUND.value//"No orders found"
             )
-        var allLoadinglistNo = parcelRepository.getLoadinglistNoByOrderids(orders.map { it.orderid.toLong() }.toList()).distinct()
+        var allLoadinglistNo = parcelRepository.findLoadinglistNoByOrderids(orders.map { it.orderid.toLong() }.toList()).distinct()
         if (allLoadinglistNo.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
@@ -368,7 +368,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
             )
         val result: List<ExportService.Loadinglist>
         if (includeParcels) {
-            result = allLoadinglistNo.map { ExportService.Loadinglist(loadinglistNo = it, orders = parcelRepository.getParcelsToExportByLoadingList(it)) }
+            result = allLoadinglistNo.map { ExportService.Loadinglist(loadinglistNo = it, orders = parcelRepository.findParcelsToExportByLoadingList(it)) }
 
         } else
             result = allLoadinglistNo.map { ExportService.Loadinglist(loadinglistNo = it) }
@@ -436,7 +436,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
                     status = Response.Status.CONFLICT,
                     title = ExportService.ResponseMsg.RED_SEAL_NOT_VALID.value//"Redseal not valid"
             )
-        val recSeal = stationRepository.getSeal(unRedSeal.value.value.toLong())
+        val recSeal = stationRepository.findSeal(unRedSeal.value.value.toLong())
         recSeal ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
                 title = ExportService.ResponseMsg.RED_SEAL_NOT_FOUND.value//"RedSeal not found"
@@ -615,7 +615,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
                     title = ExportService.ResponseMsg.LL_WRONG_TYPE.value//"Loadinglist not of Bag-Type"
             )
 
-        val checklistBagBackUnit = parcelRepository.getParcelsByLoadingList(un.value.value.toLong())
+        val checklistBagBackUnit = parcelRepository.findParcelsByLoadingList(un.value.value.toLong())
         if (checklistBagBackUnit.count() > 0) {
             val usedLoadinglistNoList = checklistBagBackUnit.map { it.bagbelegnrc.toLong() }.distinct()
             if (usedLoadinglistNoList.count() > 1)
@@ -928,7 +928,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
                     title = ExportService.ResponseMsg.BAG_ID_NOT_VALID.value //"BagId not valid"
             )
 
-        val bag = stationRepository.getBag(un.value.value.toLong())?.toBag()
+        val bag = stationRepository.findBag(un.value.value.toLong())?.toBag()
         bag ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
                 title = ExportService.ResponseMsg.BAG_ID_NOT_FOUND.value//"BagId not found"
@@ -961,7 +961,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
 
         val oid = bag.orderhubTodepot
         if (oid != null) {
-            val b = stationRepository.getUnitNo(oid)
+            val b = stationRepository.findUnitNo(oid)
             bag.unitNo = b
             if (b != null) {
                 val unUn = DekuUnitNumber.parse(b.toString())
@@ -978,7 +978,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
         )
 
 
-        val backUnit = stationRepository.getUnitNo(oidBack)
+        val backUnit = stationRepository.findUnitNo(oidBack)
         bag.unitNoBack = backUnit
         backUnit ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
@@ -991,7 +991,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
         }
 
         if (bag.lastStation == 2) {
-            val bagBackOrder = parcelRepository.getOrderById(oidBack)
+            val bagBackOrder = parcelRepository.findOrderById(oidBack)
             bagBackOrder ?: throw RestProblem(
                     status = Response.Status.CONFLICT,
                     title = ExportService.ResponseMsg.BAG_ID_OK_NO_BACK_ORDER.value//"BagId found - bagback-order not found"
@@ -1038,7 +1038,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
             return listOf()
 
         }
-        val orders = parcelRepository.getOrdersByIds(parcels.keys.map { it.toLong() }.toList().distinct())//?.groupBy { it.orderid }
+        val orders = parcelRepository.findOrdersByIds(parcels.keys.map { it.toLong() }.toList().distinct())//?.groupBy { it.orderid }
         if (orders.count() == 0) {
             return listOf()
 
@@ -1062,7 +1062,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
                 val gun = GlsUnitNumber.parseLabel(scanCode)
                 when {
                     gun.hasError -> {
-                        val unitRecords = parcelRepository.getExportParcelsByCreferenceAndStation(stationNo, scanCode)
+                        val unitRecords = parcelRepository.findExportParcelsByCreferenceAndStation(stationNo, scanCode)
                         if (unitRecords.count() == 0)
                             throw RestProblem(
                                     status = Response.Status.NOT_FOUND,
@@ -1105,7 +1105,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
             )
         }
 
-        val orderRecord = parcelRepository.getOrderById(unitRecord.orderid.toLong())
+        val orderRecord = parcelRepository.findOrderById(unitRecord.orderid.toLong())
         orderRecord ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
                 title = ExportService.ResponseMsg.ORDER_NOT_FOUND.value//"Order not found"
@@ -1127,7 +1127,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
             }
         }
         var checkOk = true
-        val allUnitsOfOrder = parcelRepository.getParcelsByOrderId(orderRecord.orderid.toLong())
+        val allUnitsOfOrder = parcelRepository.findParcelsByOrderId(orderRecord.orderid.toLong())
         if (allUnitsOfOrder.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,

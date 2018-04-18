@@ -52,144 +52,136 @@
                     >
 
                     <!-- Content area with margins -->
-                    <FrameLayout
+
+                    <!-- Icon bar -->
+                    <LinearLayout
                         style="@style/AppTheme.Layout.List"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
+                        android:orientation="horizontal"
                         >
 
-                        <!-- Icon bar -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_large"
+                            android:layout_height="@dimen/icon_size_large"
                             android:layout_gravity="center_vertical"
-                            android:orientation="horizontal"
-                            >
+                            android:contentDescription="TODO"
+                            android:src="@drawable/ic_delivery"
+                            android:tint="@color/colorGrey"/>
 
-                            <ImageView
-                                android:layout_width="@dimen/icon_size_large"
-                                android:layout_height="@dimen/icon_size_large"
-                                android:layout_gravity="center_vertical"
-                                android:contentDescription="TODO"
-                                android:src="@drawable/ic_delivery"
-                                android:tint="@color/colorGrey"/>
-
-                            <!-- Order count -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:visibility="gone"
-                                >
-
-                                <ImageView
-                                    android:layout_width="@dimen/icon_size"
-                                    android:layout_height="@dimen/icon_size"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_marginEnd="@dimen/margin"
-                                    android:contentDescription="TODO"
-                                    android:src="@drawable/ic_order"
-                                    android:tint="@color/colorGrey"/>
-
-                                <TextView
-                                    android:id="@+id/uxOrderCount"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_marginEnd="@dimen/margin"
-                                    android:text="@{stop.orderAmount, default = `1`}"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                                    />
-
-                            </LinearLayout>
-
-                            <!-- Parcel count -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="top|end"
-                                android:orientation="horizontal"
-                                android:visibility="gone"
-                                >
-
-                                <ImageView
-                                    android:layout_width="@dimen/icon_size"
-                                    android:layout_height="@dimen/icon_size"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_marginEnd="@dimen/margin"
-                                    android:contentDescription="TODO"
-                                    android:src="@drawable/ic_package_variant_closed"
-                                    android:tint="@color/colorGrey"/>
-
-                                <TextView
-                                    android:id="@+id/uxParcelCount"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:text="@{stop.parcelAmount, default = `1`}"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                                    />
-
-                            </LinearLayout>
-
-                            <org.deku.leoz.mobile.ui.vm.ServicesView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="end|center_vertical"
-                                android:layout_marginStart="@dimen/medium_margin"
-                                android:visibility="@{stop.hasServices ? View.VISIBLE : View.GONE}"
-                                app:imageMargin="@dimen/small_margin"
-                                app:imageSize="24dp"
-                                app:imageTint="@color/colorService"
-                                app:services="@{stop.services}"
-                                >
-
-                            </org.deku.leoz.mobile.ui.vm.ServicesView>
-
-                        </LinearLayout>
-
-                        <!-- Appointment -->
+                        <!-- Order count -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="end|center_vertical"
                             android:orientation="horizontal"
+                            android:visibility="gone"
                             >
 
+                            <ImageView
+                                android:layout_width="@dimen/icon_size"
+                                android:layout_height="@dimen/icon_size"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginEnd="@dimen/margin"
+                                android:contentDescription="TODO"
+                                android:src="@drawable/ic_order"
+                                android:tint="@color/colorGrey"/>
+
                             <TextView
-                                android:id="@+id/uxAppointmentTo"
+                                android:id="@+id/uxOrderCount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginEnd="@dimen/margin"
-                                android:text="@{stop.appointmentFrom, default = `08:00`}"
-                                android:textAppearance="@{stop.isFixedAppointment ? R.style.AppTheme_TextAppearance_AppointmentLarge : R.style.AppTheme_TextAppearance_AppointmentSmall}"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginEnd="@dimen/margin"
-                                android:text="-"
-                                android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
-
-                            <TextView
-                                android:id="@+id/uxAppointmentFrom"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:text="@{stop.appointmentTo, default = `10:00`}"
-                                android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+                                android:text="@{stop.orderAmount, default = `1`}"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                />
 
                         </LinearLayout>
 
-                    </FrameLayout>
+                        <!-- Parcel count -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="top|end"
+                            android:orientation="horizontal"
+                            android:visibility="gone"
+                            >
+
+                            <ImageView
+                                android:layout_width="@dimen/icon_size"
+                                android:layout_height="@dimen/icon_size"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginEnd="@dimen/margin"
+                                android:contentDescription="TODO"
+                                android:src="@drawable/ic_package_variant_closed"
+                                android:tint="@color/colorGrey"/>
+
+                            <TextView
+                                android:id="@+id/uxParcelCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:text="@{stop.parcelAmount, default = `1`}"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                />
+
+                        </LinearLayout>
+
+                        <org.deku.leoz.mobile.ui.vm.ServicesView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end|center_vertical"
+                            android:layout_marginStart="@dimen/medium_margin"
+                            android:visibility="@{stop.hasServices ? View.VISIBLE : View.GONE}"
+                            app:imageMargin="@dimen/small_margin"
+                            app:imageSize="24dp"
+                            app:imageTint="@color/colorService"
+                            app:services="@{stop.services}"
+                            >
+
+                        </org.deku.leoz.mobile.ui.vm.ServicesView>
+
+                    </LinearLayout>
+
+                    <!-- Appointment -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|center_vertical"
+                        android:orientation="horizontal"
+                        >
+
+                        <TextView
+                            android:id="@+id/uxAppointmentTo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="@dimen/margin"
+                            android:text="@{stop.appointmentFrom, default = `08:00`}"
+                            android:textAppearance="@{stop.isFixedAppointment ? R.style.AppTheme_TextAppearance_AppointmentLarge : R.style.AppTheme_TextAppearance_AppointmentSmall}"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="@dimen/margin"
+                            android:text="-"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+                        <TextView
+                            android:id="@+id/uxAppointmentFrom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@{stop.appointmentTo, default = `10:00`}"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+
+                    </LinearLayout>
 
                 </FrameLayout>
 
-
-                <!-- address -->
+                <!-- Address -->
                 <FrameLayout
                     style="@style/AppTheme.Layout.List"
                     android:layout_width="match_parent"
@@ -199,32 +191,81 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
+                        android:gravity="top"
+                        android:orientation="horizontal"
                         >
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="top"
-                            android:orientation="horizontal"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
                             >
 
                             <TextView
                                 android:id="@+id/uxRecipient"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
+                                android:layout_width="wrap_content"
+                                android:layout_height="0dp"
                                 android:layout_marginEnd="@dimen/margin"
                                 android:layout_weight="1"
                                 android:text="@{stop.address.line1, default = `Recipient Recipient Recipient Recipient Recipient`}"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                                 />
 
+                            <TextView
+                                android:id="@+id/uxAddressLine2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{stop.address.line2, default = `Address Line 2`}"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                                android:visibility="@{safeUnbox(stop.addressLine2Visible) ? View.VISIBLE : View.GONE}"
+                                />
+
+                            <TextView
+                                android:id="@+id/uxAddressLine3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/medium_margin"
+                                android:text="@{stop.address.line3, default = `Address Line 3`}"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                                android:visibility="@{safeUnbox(stop.addressLine3Visible) ? View.VISIBLE : View.GONE}"/>
+
+                            <TextView
+                                android:id="@+id/uxStreet"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{stop.address.street, default = `Street`}"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                                />
+
+                            <TextView
+                                android:id="@+id/uxCity"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{stop.address.city, default = `City`}"
+                                android:textAlignment="center"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                                />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:layout_weight="0"
+                            android:divider="@drawable/divider_vertical_small"
+                            android:orientation="vertical"
+                            android:showDividers="middle"
+                            >
+
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
+                                android:layout_gravity="end"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal"
+                                android:visibility="@{safeUnbox(stop.isClockAreaVisible()) ? View.VISIBLE : View.GONE}"
                                 >
 
                                 <TextView
@@ -232,17 +273,15 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginEnd="@dimen/margin"
                                     android:gravity="top"
-                                    android:text="@{stop.countdownText, default = `59:59`}"
+                                    android:text="@{stop.countdownText, default = `-110:15`}"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                                     android:textColor="@{safeUnbox(stop.countdownColor)}"
-                                    android:visibility="@{safeUnbox(stop.isCountdownVisible) ? View.VISIBLE : View.GONE}"
                                     />
 
                                 <sx.android.view.ClockView
                                     android:id="@+id/uxAppointmentClock"
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:visibility="@{safeUnbox(stop.isClockVisible) ? View.VISIBLE : View.GONE}"
                                     app:color="@{stop.clockColor}"
                                     app:hour="@{stop.appointmentHour}"
                                     app:minute="@{stop.appointmentMinute}"
@@ -250,42 +289,36 @@
 
                             </LinearLayout>
 
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:visibility="@{stop.hasEta ? View.VISIBLE : View.GONE}"
+                                >
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="@dimen/margin"
+                                    android:gravity="top"
+                                    android:text="@{stop.etaText, default = `59:59`}"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                    />
+
+                                <ImageView
+                                    android:layout_width="@dimen/icon_size_small"
+                                    android:layout_height="@dimen/icon_size_small"
+                                    android:contentDescription="TODO"
+                                    android:scaleType="fitCenter"
+                                    android:src="@drawable/ic_drive_eta"
+                                    android:tint="@color/colorGrey"
+                                    />
+
+                            </LinearLayout>
+
                         </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/uxAddressLine2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@{stop.address.line2, default = `Address Line 2`}"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                            android:visibility="@{safeUnbox(stop.addressLine2Visible) ? View.VISIBLE : View.GONE}"
-                            />
-
-                        <TextView
-                            android:id="@+id/uxAddressLine3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/medium_margin"
-                            android:text="@{stop.address.line3, default = `Address Line 3`}"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                            android:visibility="@{safeUnbox(stop.addressLine3Visible) ? View.VISIBLE : View.GONE}"/>
-
-                        <TextView
-                            android:id="@+id/uxStreet"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@{stop.address.street, default = `Street`}"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                            />
-
-                        <TextView
-                            android:id="@+id/uxCity"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@{stop.address.city, default = `City`}"
-                            android:textAlignment="center"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                            />
 
                     </LinearLayout>
 

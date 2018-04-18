@@ -131,7 +131,7 @@ class VehicleUnloading : CompositeDisposableSupplier {
                                             it.isDamaged -> {
                                                 ParcelServiceV1.Event.DamagedInfo(
                                                         pictureFileUids = it.meta
-                                                                .filterValuesByType(Parcel.DamagedInfo::class.java)
+                                                                .values(Parcel.DamagedInfo::class)
                                                                 .mapNotNull {
                                                                     it.pictureFileUid
                                                                 }

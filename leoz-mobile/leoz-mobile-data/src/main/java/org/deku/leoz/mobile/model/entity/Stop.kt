@@ -48,6 +48,7 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     @get:Column(nullable = false)
     @get:Index("stop_state_index")
     abstract var state: State
+    val stateProperty by lazy { ObservableRxField(BR.state, { this.state }) }
 
     @get:Lazy
     @get:OneToMany
@@ -57,6 +58,11 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     @get:Column(nullable = false)
     /** Stop position as a decimal. Insertions or position changes require calculation of average */
     abstract var position: Double
+
+    @get:Column
+    @get:Bindable
+    abstract var eta: Date?
+    val etaProperty by lazy { ObservableRxField(BR.eta, { this.eta }) }
 
     @get:Lazy
     @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
@@ -72,7 +78,6 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
 
     val stateProperty by lazy { ObservableRxField<Stop.State>(BR.state, { this.state }) }
     val modificationTimeProperty by lazy { ObservableRxField(BR.modificationTime, { this.modificationTime }) }
-
 }
 
 fun Stop.Companion.create(
@@ -96,8 +101,9 @@ fun Stop.Companion.create(
 abstract class StopMeta : Meta() {
     companion object {}
 
+    // TODO: column can't be not null, as requery will always set foreign key to null instead of deleting the reference
     @get:Lazy
-    @get:Column(nullable = false)
+    @get:Column
     @get:ManyToOne(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract var stop: Stop
 }
