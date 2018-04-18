@@ -28,6 +28,9 @@ interface DumpService {
         const val FROM = "from"
         const val STATION_NO = "station-no"
         const val TO = "to"
+        const val WITH_STATUS = "with-status"
+        const val NODE_UID = "node-uid"
+        const val LOADING_DATE = "loading-date"
     }
 
     /**
@@ -62,4 +65,20 @@ interface DumpService {
     @Path("/node/tours")
     @ApiOperation(value = "Dump node tour(s)")
     fun dumpTours(): Response
+
+    @POST
+    @Path("/central/orders")
+    @ApiOperation(value = "Dump central (DEKU) orders by parcel no's")
+    fun dumpOrders(
+            @ApiParam(value = "Parcel no's") parcelNos: List<String>?,
+            @QueryParam(WITH_STATUS) @ApiParam(value = "Export with status", defaultValue = "false", example = "false") @DefaultValue("false") withStatus: Boolean
+    ): Response
+
+    @GET
+    @Path("/central/mobileLoadedOrders")
+    @ApiOperation(value = "Dump node tour(s)")
+    fun dumpMobileLoadedOrders(
+            @QueryParam(NODE_UID) @ApiParam(value = "UID of mobile node (short)") nodeUidShort: String,
+            @QueryParam(LOADING_DATE) @ApiParam(value = "Loading date", example = "2019-01-01") loadingDate: ShortDate
+    ): Response
 }
