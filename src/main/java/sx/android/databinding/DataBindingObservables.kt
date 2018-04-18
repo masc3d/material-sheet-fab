@@ -43,6 +43,14 @@ abstract class BaseRxObservable : BaseObservable() {
             this.emitValue()
         }
 
+        /**
+         * Reset observable field.
+         * This may be required after refresh, as requery does not updated `@Bindable`s in this case
+         */
+        fun reset() {
+            this.emitValue()
+        }
+
         internal fun emitValue() {
             this.subject.onNext(FieldUpdate(valueSupplier.invoke()))
         }
