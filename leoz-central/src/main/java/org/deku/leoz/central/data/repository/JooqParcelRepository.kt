@@ -174,7 +174,7 @@ class JooqParcelRepository {
                         .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
                         .and(Tables.TBLAUFTRAGCOLLIES.VERPACKUNGSART.eq(91)//Valore
                                 .or(Tables.TBLAUFTRAGCOLLIES.GEWICHTEFFEKTIV.lessOrEqual(maxWeightForParcelBag)))
-                      //  .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.isNull)//alle auch die schon beladen sind-konsistent zu "normalen"
+                        .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.isNull)//alle auch die schon beladen sind-konsistent zu "normalen"//wieder rein um Datenmenge zu reduzieren
                         .and(Tables.TBLAUFTRAG.VERLADEDATUM.eq(sendDate.toTimestamp()))
                         .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
                         .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0)))//fehlende anfahrt raus
@@ -251,6 +251,17 @@ class JooqParcelRepository {
                         .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
                         .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
                         .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+        )
+    }
+    fun findParcelsNotDeliveredNotLoadedByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
+
+        return dsl.fetch(
+                Tables.TBLAUFTRAGCOLLIES,
+                Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
+                        .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                        .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+                        .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.isNull)//äquivalent zu bag-orders alle noch nicht geladenen
         )
     }
 

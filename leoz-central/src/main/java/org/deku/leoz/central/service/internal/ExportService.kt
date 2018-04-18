@@ -248,7 +248,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
             )
 
 
-        val allParcels = parcelRepository.findParcelsNotDeliveredByOrderids(orders
+        val allParcels = parcelRepository.findParcelsNotDeliveredNotLoadedByOrderids(orders
                 .map { it.orderid.toLong() }
                 .toList()
         )
