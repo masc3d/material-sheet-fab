@@ -186,7 +186,10 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
 
         val parcelIds = dsl.select(TAD_PARCEL_MESSAGES.PARCEL_ID)
                 .from(TAD_PARCEL_MESSAGES)
-                .where(TAD_PARCEL_MESSAGES.NODE_ID_X.eq(node.nodeId))
+                .where(
+                        TAD_PARCEL_MESSAGES.NODE_ID_X.eq(node.nodeId)
+                                .and(TAD_PARCEL_MESSAGES.EVENT_VALUE.eq(120))
+                )
                 .fetch(TAD_PARCEL_MESSAGES.PARCEL_ID)
                 .toList()
 
