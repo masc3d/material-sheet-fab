@@ -5,6 +5,7 @@ import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
 import org.deku.leoz.central.data.repository.JooqNodeRepository
+import org.deku.leoz.central.data.repository.fetchByUid
 import org.deku.leoz.node.data.jooq.Tables
 import org.deku.leoz.time.ShortDate
 import org.jooq.DSLContext
@@ -178,11 +179,8 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
     }
 
     override fun dumpLoadedOrders(nodeUidShort: String, loadingDate: ShortDate): Response {
-        val node = nodeJooqRepository.findByKeyStartingWith(nodeUidShort)
-
-        if (node == null) {
-            return Response.status(Response.Status.NOT_FOUND).build()
-        }
+        val node = dsl.selectFrom(MST_NODE).fetchByUid(nodeUidShort, false)
+                ?: throw NoSuchElementException()
 
         val parcelIds = dsl.select(TAD_PARCEL_MESSAGES.PARCEL_ID)
                 .from(TAD_PARCEL_MESSAGES)
