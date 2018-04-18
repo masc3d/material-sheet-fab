@@ -1,4 +1,7 @@
-<svg fill="#000000" height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
-    <path d="M18.92 5.01C18.72 4.42 18.16 4 17.5 4h-11c-.66 0-1.21.42-1.42 1.01L3 11v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 15c-.83 0-1.5-.67-1.5-1.5S5.67 12 6.5 12s1.5.67 1.5 1.5S7.33 15 6.5 15zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 10l1.5-4.5h11L19 10H5z"/>
-    <path d="M0 0h24v24H0z" fill="none"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="48" height="48" viewBox="0, 0, 48, 48">
+  <g id="Layer_1">
+    <path d="M28.8,12 L40,12 L40,32 L26,32 L25.2,28 L14,28 L14,42 L10,42 L10,8 L28,8 L28.8,12 M28,28 L32,28 L32,24 L36,24 L36,20 L32,20 L32,16 L28,16 L28,20 L26,16 L26,12 L22,12 L22,16 L18,16 L18,12 L14,12 L14,16 L18,16 L18,20 L14,20 L14,24 L18,24 L18,20 L22,20 L22,24 L26,24 L26,20 L28,24 L28,28 M22,20 L22,16 L26,16 L26,20 L22,20 M28,20 L32,20 L32,24 L28,24 L28,20 z" fill="#000000"/>
+  </g>
 </svg>
