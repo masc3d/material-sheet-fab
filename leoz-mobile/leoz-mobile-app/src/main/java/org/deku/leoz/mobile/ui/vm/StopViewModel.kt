@@ -110,12 +110,10 @@ class StopViewModel(
     val isFixedAppointment: Boolean
         get() = stop.tasks.any { it.isFixedAppointment }
 
-    val eta: Date? by lazy {
-        this.stop.eta
-    }
-
-    val etaText: String by lazy {
-        this.eta?.let { this.timeFormat.format(it) } ?: ""
+    val etaText by lazy {
+        this.stop.etaProperty.map {
+            it.value?.let { timeFormat.format(it) } ?: ""
+        }.toField()
     }
 
     val orderAmount: String
@@ -136,8 +134,8 @@ class StopViewModel(
         this.services.count() > 0
     }
 
-    val hasEta: Boolean by lazy {
-        this.eta != null
+    val hasEta by lazy {
+        this.stop.etaProperty.map { it.value != null }.toField()
     }
 
     val isStatusBarVisible by lazy {

@@ -21,6 +21,7 @@ import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.TourIdentification
 import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.model.median
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
@@ -210,9 +211,7 @@ class Tour : CompositeDisposableSupplier {
                         ).also {
                             // Add route meta data to stop
                             srcStop.route?.also { route ->
-                                it.meta.add(StopMeta.create(
-                                        route
-                                ))
+                                it.eta = route.eta?.median()
                             }
                         }
                     }
