@@ -62,12 +62,12 @@ interface DumpService {
     ): Response
 
     @GET
-    @Path("/node/tours")
+    @Path("/node/tour")
     @ApiOperation(value = "Dump node tour(s)")
     fun dumpTours(): Response
 
     @POST
-    @Path("/central/orders")
+    @Path("/central/order")
     @ApiOperation(value = "Dump central (DEKU) orders by parcel no's")
     fun dumpOrders(
             @ApiParam(value = "Parcel no's") parcelNos: List<String>?,
@@ -75,9 +75,9 @@ interface DumpService {
     ): Response
 
     @GET
-    @Path("/central/mobileLoadedOrders")
+    @Path("/central/order/loaded")
     @ApiOperation(value = "Dump node tour(s)")
-    fun dumpMobileLoadedOrders(
+    fun dumpLoadedOrders(
             @QueryParam(NODE_UID) @ApiParam(value = "UID of mobile node (short)") nodeUidShort: String,
             @QueryParam(LOADING_DATE) @ApiParam(value = "Loading date", example = "2019-01-01") loadingDate: ShortDate
     ): Response

@@ -177,7 +177,7 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
                 .toResponse("orders")
     }
 
-    override fun dumpMobileLoadedOrders(nodeUidShort: String, loadingDate: ShortDate): Response {
+    override fun dumpLoadedOrders(nodeUidShort: String, loadingDate: ShortDate): Response {
         val node = nodeJooqRepository.findByKeyStartingWith(nodeUidShort)
 
         if (node == null) {
