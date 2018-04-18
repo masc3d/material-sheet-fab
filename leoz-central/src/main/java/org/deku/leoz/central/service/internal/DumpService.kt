@@ -4,6 +4,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
+import org.deku.leoz.central.data.repository.JooqNodeRepository
 import org.deku.leoz.node.data.jooq.Tables
 import org.deku.leoz.time.ShortDate
 import org.jooq.DSLContext
@@ -45,6 +46,9 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
 
     @Inject
     private lateinit var executorService: ExecutorService
+
+    @Inject
+    private lateinit var nodeJooqRepository: JooqNodeRepository
 
     /** Timestamp format used for dumps */
     private val timestampFormat by lazy { SimpleDateFormat("yyyyMMddHHmmss") }
@@ -137,5 +141,74 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
                         .dump()
         )
                 .toResponse("tours")
+    }
+
+    override fun dumpOrders(parcelNos: List<String>?, withStatus: Boolean): Response {
+        val orderIds = mutableListOf<Double>()
+
+        if (parcelNos != null && parcelNos.isNotEmpty()) {
+            orderIds.addAll(
+                    dsl.select(TBLAUFTRAGCOLLIES.ORDERID)
+                            .from(TBLAUFTRAGCOLLIES)
+                            .where(TBLAUFTRAGCOLLIES.COLLIEBELEGNR.`in`(parcelNos))
+                            .fetch(TBLAUFTRAGCOLLIES.ORDERID)
+                            .toList()
+            )
+        }
+
+        return Observable.concat(
+                dsl.selectFrom(TBLAUFTRAG)
+                        .where(TBLAUFTRAG.ORDERID.`in`(orderIds))
+                        .dump(),
+
+                dsl.selectFrom(TBLAUFTRAGCOLLIES)
+                        .where(TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds))
+                        .dump(),
+
+                if (withStatus) {
+                    dsl.selectFrom(TBLSTATUS)
+                            .where(TBLSTATUS.ORDERIDSTA.`in`(orderIds))
+                            .dump()
+                } else {
+                    Observable.fromArray("")
+                }
+
+        )
+                .toResponse("orders")
+    }
+
+    override fun dumpMobileLoadedOrders(nodeUidShort: String, loadingDate: ShortDate): Response {
+        val node = nodeJooqRepository.findByKeyStartingWith(nodeUidShort)
+
+        if (node == null) {
+            return Response.status(Response.Status.NOT_FOUND).build()
+        }
+
+        val parcelIds = dsl.select(TAD_PARCEL_MESSAGES.PARCEL_ID)
+                .from(TAD_PARCEL_MESSAGES)
+                .where(
+                        TAD_PARCEL_MESSAGES.NODE_ID_X.eq(node.nodeId)
+                                .and(TAD_PARCEL_MESSAGES.EVENT_VALUE.eq(120))
+                )
+                .fetch(TAD_PARCEL_MESSAGES.PARCEL_ID)
+                .toList()
+
+        val orderIds = dsl.select(TBLAUFTRAGCOLLIES.ORDERID)
+                .from(TBLAUFTRAGCOLLIES)
+                .where(TBLAUFTRAGCOLLIES.PARCEL_ID.`in`(parcelIds))
+                .fetch(TBLAUFTRAGCOLLIES.ORDERID)
+                .toList()
+
+        return Observable.concat(
+                dsl.selectFrom(TBLAUFTRAG)
+                        .where(TBLAUFTRAG.ORDERID.`in`(orderIds))
+                        .dump(),
+
+                dsl.selectFrom(TBLAUFTRAGCOLLIES)
+                        .where(TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds))
+                        .dump()
+
+        )
+                .toResponse("mobile-loaded-orders")
     }
 }
