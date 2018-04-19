@@ -199,17 +199,19 @@ class MqttDispatcher(
      * In case a subscription is already active, the old one will be disposed accordingly.
      */
     private fun startDequeue() {
+        fun lfmt(topic: String, message: String) = "[${topic}] ${message}"
+
         // This observable never completes, as it's subject based.
         this.dequeueSubscription = this.dequeueTopicTrigger
+                .doOnNext { log.debug { lfmt(it, "trigger") } }
                 .groupBy { it }
                 .flatMap { topicTrigger ->
                     val topic = topicTrigger.key ?: throw NoSuchElementException()
 
                     topicTrigger
+                            .doOnNext { log.debug { lfmt(it, "trigger pre-throttle") } }
                             .throttleLast(1, TimeUnit.SECONDS)
-                            .doOnNext {
-                                log.debug { "Topic triggered [${it}|" }
-                            }
+                            .doOnNext { log.debug { lfmt(it, "starting dequeue") } }
                             .concatMap { _ ->
                                 val sw = Stopwatch.createUnstarted()
                                 var count: Int = 0
@@ -218,7 +220,6 @@ class MqttDispatcher(
                                         // Counters
                                         .doOnSubscribe {
                                             count = 0; sw.reset(); sw.start()
-                                            log.debug { "Starting dequeue flow for [${topic}]" }
                                         }
                                         .doOnNext { count++ }
 
@@ -226,7 +227,7 @@ class MqttDispatcher(
                                         .publishToWire()
 
                                         .doOnComplete {
-                                            log.info { "Dequeued ${count} for [${topic}] in [${sw}]" }
+                                            log.info { lfmt(topic, "dequeued ${count} in [${sw}]") }
                                         }
 
                                         // Subscribe on topic specific scheduler
