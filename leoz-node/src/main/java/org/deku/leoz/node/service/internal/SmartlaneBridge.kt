@@ -344,12 +344,12 @@ class SmartlaneBridge {
         return this.getRoutes(tours)
                 // Collect for batch deletion
                 .toList().toObservable()
-                .flatMap {
-                    routeApi.delete(it.map { it.id })
+                .flatMap { routes ->
+                    deliveryApi.delete(routes.flatMap { it.deliveries }.map { it.id })
+                            .concatWith(
+                                    routeApi.delete(routes.map { it.id })
+                            )
                             .toObservable<Unit>()
-                }
-                .doFinally {
-                    deliveryApi.deleteUnreferenced()
                 }
                 .composeRest(domain)
                 .ignoreElements()

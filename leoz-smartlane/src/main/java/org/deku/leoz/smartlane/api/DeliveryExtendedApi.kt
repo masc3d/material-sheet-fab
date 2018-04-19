@@ -1,5 +1,6 @@
 package org.deku.leoz.smartlane.api
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import org.deku.leoz.smartlane.model.Delivery
 import sx.rs.FlaskFilter
@@ -68,16 +69,23 @@ fun DeliveryExtendedApi.deleteAll() {
     }
 }
 
-fun DeliveryExtendedApi.delete(ids: List<Int>) {
-    amendDeleteErrorResponse{
-        this.deleteDelivery(q = FlaskFilter(
-                expression = FlaskPredicate(
-                        name = "id",
-                        op = FlaskOperator.IN,
-                        value = ids
-                )).toJson()
-        )
-    }
+fun DeliveryExtendedApi.delete(ids: List<Int>): Completable {
+    return Observable.fromIterable(ids)
+            .buffer(10)
+            .flatMap {
+                Observable.fromCallable {
+                    amendDeleteErrorResponse{
+                        this.deleteDelivery(q = FlaskFilter(
+                                expression = FlaskPredicate(
+                                        name = "id",
+                                        op = FlaskOperator.IN,
+                                        value = ids
+                                )).toJson()
+                        )
+                    }
+                }
+            }
+            .ignoreElements()
 }
 
 /**
