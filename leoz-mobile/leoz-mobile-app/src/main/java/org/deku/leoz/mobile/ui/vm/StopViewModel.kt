@@ -18,6 +18,7 @@ import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
+import org.threeten.bp.temporal.ChronoUnit
 import sx.android.databinding.toField
 import sx.android.databinding.toObservable
 import sx.android.getColorCompat
@@ -25,6 +26,7 @@ import sx.rx.ObservableRxProperty
 import sx.rx.just
 import sx.time.TimeSpan
 import sx.time.toCalendar
+import sx.time.toLocalDateTime
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -117,6 +119,25 @@ class StopViewModel(
         this.stop.etaProperty.map {
             it.value?.let { timeFormat.format(it) } ?: ""
         }.toField()
+    }
+
+    val etaColor by lazy {
+        val default = context.getColorCompat(R.color.colorGreen)
+
+        this.stop.etaProperty.map {
+
+            val eta = it.value?.toLocalDateTime() ?: return@map default
+            val appointmentTo = this.appointmentToDate?.toLocalDateTime() ?: return@map default
+
+            val minutes = eta.until(appointmentTo, ChronoUnit.MINUTES)
+
+            when {
+                minutes < 0 -> context.getColorCompat(R.color.colorRed)
+                minutes <= 15 -> context.getColorCompat(R.color.colorOrange)
+                else -> default
+            }
+        }
+                .toField(default)
     }
 
     val orderAmount: String

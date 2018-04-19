@@ -336,7 +336,7 @@
                                     android:contentDescription="TODO"
                                     android:scaleType="fitCenter"
                                     android:src="@drawable/ic_drive_eta"
-                                    android:tint="@color/colorGrey"
+                                    android:tint="@{stop.etaColor, default = @color/colorGrey}"
                                     />
 
                             </LinearLayout>
