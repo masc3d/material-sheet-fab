@@ -247,7 +247,7 @@ dependencies {
             "io.requery:requery:$v_requery",
             "io.requery:requery-kotlin:$v_requery",
             "io.requery:requery-android:$v_requery",
-            "io.requery:sqlite-android:3.22.0",
+            "io.requery:sqlite-android:3.23.1",
 
             "javax.transaction:jta:1.1",
 
