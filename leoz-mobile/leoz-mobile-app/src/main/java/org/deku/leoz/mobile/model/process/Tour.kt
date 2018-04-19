@@ -189,25 +189,25 @@ class Tour : CompositeDisposableSupplier {
             // Process stops
             val stops = tour.stops
                     ?.map { srcStop ->
-                        Stop.create(
-                                tasks = srcStop.tasks.map {
-                                    val order = orderRepository
-                                            .findById(it.orderId)
-                                            .blockingGet()
+                        Stop.create(tasks = srcStop.tasks.map {
+                            val order = orderRepository
+                                    .findById(it.orderId)
+                                    .blockingGet()
 
-                                    when {
-                                        order != null -> {
-                                            when (it.taskType) {
-                                                TourServiceV1.Task.Type.DELIVERY -> order.deliveryTask
-                                                TourServiceV1.Task.Type.PICKUP -> order.pickupTask
-                                            }
-                                        }
-                                        else -> {
-                                            log.warn("Skipping order task. Referenced order [${it.orderId}] does not exist")
-                                            null
-                                        }
+                            when {
+                                order != null -> {
+                                    when (it.taskType) {
+                                        TourServiceV1.Task.Type.DELIVERY -> order.deliveryTask
+                                        TourServiceV1.Task.Type.PICKUP -> order.pickupTask
                                     }
-                                }.filterNotNull()
+                                }
+                                else -> {
+                                    log.warn("Skipping order task. Referenced order [${it.orderId}] does not exist")
+                                    null
+                                }
+                            }
+                        }
+                                .filterNotNull()
                         ).also {
                             // Add route meta data to stop
                             srcStop.route?.also { route ->
@@ -325,31 +325,30 @@ class Tour : CompositeDisposableSupplier {
                 .subscribe { parcels ->
                     log.trace("Sending tour update")
 
-                    Observable.fromCallable {
-                        this.mqttEndpoints.central.main.channel().send(
-                                TourServiceV1.TourUpdate(tour = TourServiceV1.Tour(
-                                        nodeUid = identity.uid.value,
-                                        userId = login.authenticatedUser?.id?.toLong() ?: 0,
-                                        stops = parcels.map { stop ->
-                                            TourServiceV1.Stop(
-                                                    tasks = stop.tasks.map {
-                                                        TourServiceV1.Task(
-                                                                orderId = it.order.id,
-                                                                taskType = when (it.type) {
-                                                                    OrderTask.TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
-                                                                    OrderTask.TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
-                                                                }
-                                                        )
+                    // Send tour update
+                    TourServiceV1.TourUpdate(tour = TourServiceV1.Tour(
+                            nodeUid = identity.uid.value,
+                            userId = login.authenticatedUser?.id?.toLong() ?: 0,
+                            stops = parcels.map { stop ->
+                                TourServiceV1.Stop(
+                                        tasks = stop.tasks.map {
+                                            TourServiceV1.Task(
+                                                    orderId = it.order.id,
+                                                    taskType = when (it.type) {
+                                                        OrderTask.TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
+                                                        OrderTask.TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
                                                     }
                                             )
                                         }
-                                ))
-                        )
+                                )
+                            }
+                    )).also {
+                        this.mqttEndpoints.central.main.channel().sendAsync(it)
+                                .subscribeOn(Schedulers.io())
+                                .subscribeBy(onError = {
+                                    log.error("Error sending tour update [${it.message}]", it)
+                                })
                     }
-                            .subscribeOn(Schedulers.io())
-                            .subscribeBy(onError = {
-                                log.error("Error sending tour update [${it.message}]", it)
-                            })
                 }
                 .bind(this)
     }

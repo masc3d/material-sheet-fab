@@ -84,13 +84,8 @@ class StopViewModel(
     /** The actual appointment date is always displayed as today */
     private val appointmentDate by lazy { Date() }
 
-    private val appointmentFromDate by lazy {
-        stop.appointmentStartDate
-    }
-
-    private val appointmentToDate by lazy {
-        stop.appointmentEndDate
-    }
+    private val appointmentFromDate get() = stop.appointmentStart
+    private val appointmentToDate get() = stop.appointmentEnd
 
     val appointmentFrom: String
         get() = appointmentFromDate?.let { timeFormat.format(it) } ?: ""

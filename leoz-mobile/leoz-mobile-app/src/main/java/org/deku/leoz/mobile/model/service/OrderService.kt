@@ -2,12 +2,19 @@ package org.deku.leoz.mobile.model.service
 
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.service.internal.OrderService
+import sx.time.replaceDate
+import java.util.*
 
 // Order service to mobile model conversions
 
+/**
+ * Transform service order to mobile entity.
+ */
 fun OrderService.Order.toOrder(
         deliveryListId: Long? = null
 ): Order {
+    val now = Date()
+
     return Order.create(
             //TODO
             id = this.id,
@@ -18,8 +25,8 @@ fun OrderService.Order.toOrder(
                     type = OrderTask.TaskType.DELIVERY,
                     address = this.deliveryAddress.toAddress(),
                     isFixedAppointment = this.deliveryAppointment.notBeforeStart,
-                    appointmentStart = this.deliveryAppointment.dateStart,
-                    appointmentEnd = this.deliveryAppointment.dateEnd,
+                    appointmentStart = this.deliveryAppointment.dateStart?.replaceDate(now),
+                    appointmentEnd = this.deliveryAppointment.dateEnd?.replaceDate(now),
                     notice = this.deliveryNotice ?: "",
                     services = this.deliveryServices ?: listOf()
             ),
@@ -27,8 +34,8 @@ fun OrderService.Order.toOrder(
                     type = OrderTask.TaskType.PICKUP,
                     address = this.pickupAddress.toAddress(),
                     isFixedAppointment = this.pickupAppointment.notBeforeStart,
-                    appointmentStart = this.pickupAppointment.dateStart,
-                    appointmentEnd = this.pickupAppointment.dateEnd,
+                    appointmentStart = this.pickupAppointment.dateStart?.replaceDate(now),
+                    appointmentEnd = this.pickupAppointment.dateEnd?.replaceDate(now),
                     notice = this.pickupNotice ?: "",
                     services = this.pickupServices ?: listOf()
             ),

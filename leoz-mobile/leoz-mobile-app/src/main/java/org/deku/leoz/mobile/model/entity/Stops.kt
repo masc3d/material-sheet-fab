@@ -37,31 +37,11 @@ val Stop.appointmentEnd: Date?
     get() = this.tasks.map { it.appointmentEnd }.filterNotNull().min()
 
 /**
- * Appointment start date
- */
-val Stop.appointmentStartDate: Date?
-    get() {
-        return this.appointmentStart?.let {
-            Date().replaceTime(it)
-        }
-    }
-
-/**
- * Appointment end date
- */
-val Stop.appointmentEndDate: Date?
-    get() {
-        return this.appointmentEnd?.let {
-            Date().replaceTime(it)
-        }
-    }
-
-/**
  * Time left until the end of appointment time frame is reached
  */
 val Stop.appointmentTimeLeft: TimeSpan?
     get() {
-        val end = this.appointmentEndDate
+        val end = this.appointmentEnd
         return when {
             end != null -> TimeSpan.between(Date(), end)
             else -> null

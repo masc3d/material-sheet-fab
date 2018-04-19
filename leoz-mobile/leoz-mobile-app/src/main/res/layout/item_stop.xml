@@ -277,7 +277,7 @@
                             android:layout_height="match_parent"
                             android:layout_marginTop="2dp"
                             android:layout_weight="0"
-                            android:divider="@drawable/divider_vertical_small"
+                            android:divider="@drawable/divider"
                             android:orientation="vertical"
                             android:showDividers="middle"
                             >
@@ -305,7 +305,7 @@
                                     android:id="@+id/uxAppointmentClock"
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    app:color="@{stop.clockColor}"
+                                    app:color="@{stop.clockColor, default = @color/colorGrey}"
                                     app:hour="@{stop.appointmentHour}"
                                     app:minute="@{stop.appointmentMinute}"
                                     />
@@ -327,6 +327,7 @@
                                     android:layout_marginEnd="@dimen/margin"
                                     android:gravity="top"
                                     android:text="@{stop.etaText, default = `59:59`}"
+                                    android:textColor="@color/colorDarkGrey"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                                     />
 
