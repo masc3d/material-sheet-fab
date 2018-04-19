@@ -1,5 +1,6 @@
 package sx.mq.mqtt
 
+import io.reactivex.Completable
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
@@ -33,16 +34,15 @@ class MqttChannel(
         throw UnsupportedOperationException("MQTT channel clients do not support receiving messages on demand")
     }
 
-    override fun send(message: Any) {
+    override fun sendAsync(message: Any): Completable {
         val mqttMessage = MqttMessage(
                 // Payload
                 this.endpoint.serializer.serializeToByteArray(message))
 
         mqttMessage.qos = this.endpoint.qos
 
-        this.mqttClient
+        return this.mqttClient
                 .publish(this.endpoint.topicName, mqttMessage)
                 .timeout(DEFAULT_SEND_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)
-                .blockingAwait()
     }
 }

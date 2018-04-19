@@ -1,5 +1,6 @@
 package sx.mq
 
+import io.reactivex.Completable
 import sx.Disposable
 import java.io.Closeable
 import java.util.concurrent.TimeoutException
@@ -11,5 +12,10 @@ import java.util.concurrent.TimeoutException
 interface MqChannel : Disposable, Closeable {
     @Throws(TimeoutException::class)
     fun <T> receive(messageType: Class<T>): T
-    fun send(message: Any)
+
+    @Throws(TimeoutException::class)
+    fun sendAsync(message: Any): Completable
+
+    @Throws(TimeoutException::class)
+    fun send(message: Any) = this.sendAsync(message).blockingAwait()
 }

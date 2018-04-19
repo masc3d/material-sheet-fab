@@ -1,5 +1,6 @@
 package sx.mq.jms
 
+import io.reactivex.Completable
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.LazyInstance
@@ -384,10 +385,12 @@ class JmsChannel @JvmOverloads constructor(
      * Send object as message using converter
      * @param message
      */
-    override fun send(message: Any) {
-        this.send(
-                message = message,
-                messageConfigurer = null)
+    override fun sendAsync(message: Any): Completable {
+        return Completable.fromCallable {
+            this.send(
+                    message = message,
+                    messageConfigurer = null)
+        }
     }
 
     /**
@@ -414,16 +417,13 @@ class JmsChannel @JvmOverloads constructor(
      * @param messageType Type of message
      */
     @Throws(TimeoutException::class)
-    override fun <T> receive(messageType: Class<T>): T {
-        return this.receive(this.consumer.get(), messageType)
-    }
+    override fun <T> receive(messageType: Class<T>): T =
+            this.receive(this.consumer.get(), messageType)
 
     /**
      * Receive jms message
      */
-    fun receive(): Message? {
-        return this.receive(this.consumer.get())
-    }
+    fun receive(): Message? = this.receive(this.consumer.get())
 
     /**
      * Receive message
