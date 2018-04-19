@@ -4,7 +4,6 @@ import android.content.Context
 import android.databinding.BaseObservable
 import android.databinding.ObservableField
 import android.support.annotation.ColorInt
-import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -13,6 +12,7 @@ import com.gojuno.koptional.None
 import com.gojuno.koptional.toOptional
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.combineLatest
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.mobile
@@ -20,8 +20,9 @@ import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toField
 import sx.android.databinding.toObservable
+import sx.android.getColorCompat
 import sx.rx.ObservableRxProperty
-import sx.rx.toSingletonObservable
+import sx.rx.just
 import sx.time.TimeSpan
 import sx.time.toCalendar
 import java.text.SimpleDateFormat
@@ -59,24 +60,22 @@ class StopViewModel(
     val address = AddressViewModel(stop.address)
 
     val addressLine2Visible by lazy {
-        Observable.combineLatest(
-                this.editModeProperty.map { it.value },
-                Observable.just(address.hasAddressLine2),
-                BiFunction { editMode: Boolean, hasAddressLine2: Boolean ->
-                    !editMode && hasAddressLine2
-                }
+        listOf(
+                this.editModeProperty.map { !it.value },
+                Observable.just(address.hasAddressLine2)
         )
+                .combineLatest { it.all { it } }
                 .toField()
     }
 
     val addressLine3Visible by lazy {
-        Observable.combineLatest(
+        listOf(
                 this.editModeProperty.map { it.value },
-                Observable.just(address.hasAddressLine3),
-                BiFunction { editMode: Boolean, hasAddressLine2: Boolean ->
-                    !editMode && hasAddressLine2
-                }
+                address.hasAddressLine3.just()
         )
+                .combineLatest {
+                    it.all { it }
+                }
                 .toField()
     }
 
@@ -110,6 +109,10 @@ class StopViewModel(
     val isFixedAppointment: Boolean
         get() = stop.tasks.any { it.isFixedAppointment }
 
+    val hasEta by lazy {
+        this.stop.etaProperty.map { it.value != null }.toField()
+    }
+
     val etaText by lazy {
         this.stop.etaProperty.map {
             it.value?.let { timeFormat.format(it) } ?: ""
@@ -134,10 +137,6 @@ class StopViewModel(
         this.services.count() > 0
     }
 
-    val hasEta by lazy {
-        this.stop.etaProperty.map { it.value != null }.toField()
-    }
-
     val isStatusBarVisible by lazy {
         this.editModeProperty.map { !it.value }
                 .toField()
@@ -147,13 +146,13 @@ class StopViewModel(
     @get:ColorInt
     val clockColor: Int
         get() = if (this.isFixedAppointment)
-            ContextCompat.getColor(this.context, R.color.colorService)
+            context.getColorCompat(R.color.colorService)
         else
-            ContextCompat.getColor(this.context, R.color.colorLightGrey)
+            context.getColorCompat(R.color.colorLightGrey)
 
     val isClockVisible: ObservableField<Boolean> by lazy {
         when {
-            isFixedAppointment -> Observable.just(true).toField()
+            isFixedAppointment -> true.just().toField()
             else -> isCountdownVisible
         }
     }
@@ -162,30 +161,29 @@ class StopViewModel(
     //region Countdown
     private val countdownTimespan: Observable<TimeSpan> by lazy {
         when {
-            stop.hasAppointment -> this.tickEvent.map { stop.appointmentTimeLeft ?: throw IllegalArgumentException() }
+            stop.hasAppointment -> this.tickEvent.map {
+                stop.appointmentTimeLeft ?: throw IllegalArgumentException()
+            }
             else -> Observable.empty()
         }
     }
 
     val isCountdownVisible: ObservableField<Boolean> by lazy {
-        Observable.combineLatest(
-                this.editModeProperty.map { it.value },
+        listOf(
+                this.editModeProperty.map { !it.value },
                 this.stop.stateProperty.map { it.value == Stop.State.PENDING },
-                countdownTimespan.map { stop.appointmentState != AppointmentState.NONE },
-                io.reactivex.functions.Function3 { editMode: Boolean, stopState: Boolean, appointmentState: Boolean ->
-                    !editMode && stopState && appointmentState
-                }
+                countdownTimespan.map { stop.appointmentState != AppointmentState.NONE }
         )
-
+                .combineLatest { it.all { it } }
                 .toField()
     }
 
     val countdownColor: ObservableField<Int> by lazy {
         countdownTimespan.map {
             when (stop.appointmentState) {
-                AppointmentState.OVERDUE -> ContextCompat.getColor(this.context, R.color.colorRed)
-                AppointmentState.SOON -> ContextCompat.getColor(this.context, R.color.colorOrange)
-                else -> ContextCompat.getColor(this.context, android.R.color.black)
+                AppointmentState.OVERDUE -> context.getColorCompat(R.color.colorRed)
+                AppointmentState.SOON -> context.getColorCompat(R.color.colorOrange)
+                else -> context.getColorCompat(android.R.color.black)
             }
         }
                 .toField()
@@ -198,14 +196,12 @@ class StopViewModel(
     //endregion
 
     val isClockAreaVisible by lazy {
-        Observable.combineLatest(
-                this.editModeProperty.map { it.value },
+        listOf(
+                this.editModeProperty.map { !it.value },
                 this.isClockVisible.toObservable(),
-                this.isCountdownVisible.toObservable(),
-                io.reactivex.functions.Function3 { editMode: Boolean, clockVisible: Boolean, countdownVisible: Boolean ->
-                    !editMode && clockVisible && countdownVisible
-                }
+                this.isCountdownVisible.toObservable()
         )
+                .combineLatest { it.all { it } }
                 .toField()
     }
 
@@ -215,7 +211,7 @@ class StopViewModel(
                 stop.tasks
                         .map { it.order }
                         .flatMap { it.parcels }
-                        .toSingletonObservable(),
+                        .just(),
                 this.stop.stateProperty.map { it.value },
                 BiFunction { parcels: List<Parcel>, _: Stop.State ->
                     parcels
