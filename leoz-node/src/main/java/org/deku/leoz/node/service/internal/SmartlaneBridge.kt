@@ -343,11 +343,13 @@ class SmartlaneBridge {
 
         return this.getRoutes(tours)
                 // Collect for batch deletion
-                .toList()
-                .toObservable()
-                .doOnNext {
-                    deliveryApi.delete(it.flatMap { it.deliveries }.map { it.id })
+                .toList().toObservable()
+                .flatMap {
                     routeApi.delete(it.map { it.id })
+                            .toObservable<Unit>()
+                }
+                .doFinally {
+                    deliveryApi.deleteUnreferenced()
                 }
                 .composeRest(domain)
                 .ignoreElements()
@@ -526,7 +528,7 @@ class SmartlaneBridge {
 
                     try {
                         deliveryApi.deleteUnreferenced()
-                    } catch(t: Throwable) {
+                    } catch (t: Throwable) {
                         log.warn { "Could not remove unreferenced deliveries [${t.message}]" }
                     }
                 }
@@ -537,7 +539,7 @@ class SmartlaneBridge {
      * Clean routes, deliveries and drivertracking info from smartlane container
      */
     fun clean() {
-        log.info { "Cleaning smartlane container [${customerId}]"}
+        log.info { "Cleaning smartlane container [${customerId}]" }
         val deliveryApi = this.proxy(DeliveryExtendedApi::class.java, customerId)
         val routeApi = this.proxy(RouteExtendedApi::class.java, customerId)
         val addressApi = this.proxy(AddressExtendedApi::class.java, customerId)
