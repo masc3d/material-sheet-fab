@@ -205,7 +205,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            android:divider="@drawable/divider_vertical_small"
                             android:orientation="vertical"
+                            android:showDividers="middle"
                             >
 
                             <TextView
@@ -218,46 +220,61 @@
                                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                                 />
 
-                            <TextView
-                                android:id="@+id/uxAddressLine2"
+                            <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@{stop.address.line2, default = `Address Line 2`}"
-                                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                                android:visibility="@{safeUnbox(stop.addressLine2Visible) ? View.VISIBLE : View.GONE}"
-                                />
+                                android:orientation="vertical"
+                                >
 
-                            <TextView
-                                android:id="@+id/uxAddressLine3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="@dimen/medium_margin"
-                                android:text="@{stop.address.line3, default = `Address Line 3`}"
-                                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                                android:visibility="@{safeUnbox(stop.addressLine3Visible) ? View.VISIBLE : View.GONE}"/>
+                                <TextView
+                                    android:id="@+id/uxAddressLine2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{stop.address.line2, default = `Address Line 2`}"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                                    android:visibility="@{safeUnbox(stop.addressLine2Visible) ? View.VISIBLE : View.GONE}"
+                                    />
 
-                            <TextView
-                                android:id="@+id/uxStreet"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@{stop.address.street, default = `Street`}"
-                                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                                />
+                                <TextView
+                                    android:id="@+id/uxAddressLine3"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{stop.address.line3, default = `Address Line 3`}"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                                    android:visibility="@{safeUnbox(stop.addressLine3Visible) ? View.VISIBLE : View.GONE}"/>
 
-                            <TextView
-                                android:id="@+id/uxCity"
+                            </LinearLayout>
+
+                            <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@{stop.address.city, default = `City`}"
-                                android:textAlignment="center"
-                                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                                />
+                                android:orientation="vertical"
+                                >
+
+                                <TextView
+                                    android:id="@+id/uxStreet"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{stop.address.street, default = `Street`}"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                                    />
+
+                                <TextView
+                                    android:id="@+id/uxCity"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{stop.address.city, default = `City`}"
+                                    android:textAlignment="center"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                                    />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_marginTop="2dp"
                             android:layout_weight="0"
                             android:divider="@drawable/divider_vertical_small"
@@ -324,26 +341,50 @@
 
                             </LinearLayout>
 
+                            <!-- Right bottom area -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="bottom|end"
+                                android:gravity="bottom|end"
+                                android:orientation="vertical"
+                                >
+
+                                <!-- Status bar -->
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="end"
+                                    android:orientation="horizontal"
+                                    android:visibility="@{safeUnbox(stop.isStatusBarVisible) ? View.VISIBLE : View.GONE}"
+                                    >
+
+                                    <ImageView
+                                        android:layout_width="@dimen/icon_size_small"
+                                        android:layout_height="@dimen/icon_size_small"
+                                        android:layout_gravity="end"
+                                        android:contentDescription="TODO"
+                                        android:src="@drawable/ic_phone"
+                                        android:tint="@color/colorGrey"
+                                        android:visibility="@{stop.address.hasValidPhoneNumber ? View.VISIBLE : View.GONE}"/>
+
+                                </LinearLayout>
+
+                                <sx.android.view.BadgeTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="end"
+                                    android:layout_marginEnd="-4dp"
+                                    android:alpha="0.9"
+                                    android:background="@{safeUnbox(stop.tagColor)}"
+                                    android:text="@{stop.tagText, default = `Stop state`}"
+                                    android:textAllCaps="true"
+                                    android:visibility="@{safeUnbox(stop.isStateVisible) ? View.VISIBLE : View.GONE}"
+                                    />
+
+                            </LinearLayout>
+
                         </LinearLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end|bottom"
-                        android:orientation="horizontal"
-                        android:visibility="@{safeUnbox(stop.isStatusBarVisible) ? View.VISIBLE : View.GONE}"
-                        >
-
-                        <ImageView
-                            android:layout_width="@dimen/icon_size_small"
-                            android:layout_height="@dimen/icon_size_small"
-                            android:layout_gravity="center_vertical"
-                            android:contentDescription="TODO"
-                            android:src="@drawable/ic_phone"
-                            android:tint="@color/colorGrey"
-                            android:visibility="@{stop.address.hasValidPhoneNumber ? View.VISIBLE : View.GONE}"/>
 
                     </LinearLayout>
 
@@ -354,7 +395,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/small_margin"
-                    android:visibility="@{safeUnbox(stop.isStateVisible) ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{safeUnbox(stop.isStateVisible) &amp;&amp; false ? View.VISIBLE : View.GONE}"
                     >
 
                     <TextView
@@ -363,17 +404,6 @@
                         android:layout_gravity="start|center_vertical"
                         android:text="@{stop.closingTime, default = `dd.mm HH:mm:ss`}"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        />
-
-                    <sx.android.view.BadgeTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:layout_marginEnd="-4dp"
-                        android:alpha="0.9"
-                        android:background="@{safeUnbox(stop.tagColor)}"
-                        android:text="@{stop.tagText, default = `Stop state`}"
-                        android:textAllCaps="true"
                         />
 
                 </FrameLayout>
