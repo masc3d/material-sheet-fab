@@ -535,6 +535,14 @@ enum class RoutingZoneDe(val value: String) {
     UL("UL")
 }
 
+enum class DelayedAppointmentReason(val value: Int) {
+    BAD_WEATHER(0),
+    TRAFFIC_JAM(1),
+    CAR_ACCIDENT(2),
+    VEHICLE_BREAKDOWN(3),
+    OTHER(100)
+}
+
 enum class UserActivity(val value: String) {
     DATA_PROTECTION_POLICY_ACCEPTED("data protection policy accepted")
 }

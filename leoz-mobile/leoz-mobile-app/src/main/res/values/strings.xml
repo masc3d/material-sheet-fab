@@ -136,7 +136,6 @@
 
     <string name="given_cash">Given cash</string>
     <string name="given_cash_eg_15_00">Given cash (eg. 15,00)</string>
-
     <string name="gps_active">GPS active</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -348,4 +347,13 @@
     <string name="yes_start_tour">Yes, start tour</string>
     <string name="data_protection_policy">Data protection policy</string>
     <string name="data_protection">Data protecion</string>
+    <string name="report_delay">Report delay</string>
+    <string name="attach_note">Attach a note</string>
+    <string name="delay_reason_bad_weather">Bad Weather</string>
+    <string name="delay_reason_car_accident">Car Accident</string>
+    <string name="delay_reason_traffic_jam">Traffic Jam</string>
+    <string name="delay_reason_vehicle_breakdown">Vehicle Breakdown</string>
+    <string name="delay_reason_other">Other</string>
+    <string name="reason">Reason</string>
+    <string name="choose_item">Choose Item</string>
 </resources>

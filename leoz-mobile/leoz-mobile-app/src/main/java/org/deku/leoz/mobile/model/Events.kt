@@ -6,6 +6,7 @@ import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
 import org.deku.leoz.mobile.R
+import org.deku.leoz.model.DelayedAppointmentReason
 import org.deku.leoz.model.EventNotDeliveredReason
 
 /**
