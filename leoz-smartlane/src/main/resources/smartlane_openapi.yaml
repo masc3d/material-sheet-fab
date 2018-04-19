@@ -1125,7 +1125,7 @@ paths:
         - in: formData
           name: deliverytime
           type: string
-          format: dateTime
+          format: date-time
           required: false
           description: Sets the `atd` (actual time of delivery) for the correspondent delivery
         - in: formData
@@ -1168,13 +1168,13 @@ paths:
           description: "start time for query, defaults to midnight of today"
           required: false
           type: string
-          format: dateTime
+          format: date-time
         - in: query
           name: end
           description: "end time for query, defaults to now"
           required: false
           type: string
-          format: dateTime
+          format: date-time
         - in: query
           name: status
           description: "status filter for deliveries (delivered or undelivered or both)"
@@ -2333,14 +2333,14 @@ paths:
             Earliest start date of first interval. Format ISO 8601 (YYYY-MM-DDThh mm ss+tzh tzm) (Default 10 days back from now). timezone (+tzh tzm) is optional. Default is local timezone
           required: false
           type: string
-          format: dateTime
+          format: date-time
         - in: query
           name: enddate
           description: |
             latest end date of last interval. Format ISO 8601 (YYYY-MM-DDThh:mm:ss+tzh:tzm) (Default now). timezone ("+tzh:tzm") is optional. Default is local timezone.
           required: false
           type: string
-          format: dateTime
+          format: date-time
         - in: query
           name: withnull
           description: |
@@ -2400,7 +2400,7 @@ paths:
                 type: string
               expires:
                 type: string
-                format: dateTime
+                format: date-time
                 description: Date the user account expires.
               success:
                 type: boolean
@@ -2613,7 +2613,7 @@ paths:
           description: the token expiry time as ISO time format string
           schema:
             type: string
-            format: dateTime
+            format: date-time
         401:
           description: A failure message caused by missing authentication
           schema:
@@ -3366,7 +3366,7 @@ definitions:
       start_time:
         description: "An optional predefined starting time for the route. It is only used if no delivery time window is set which always would have a higher priority"
         type: string
-        format: dateTime        
+        format: date-time        
       startaddress:
         description: "Address object. Either complete Address data (city, street, ...) or geo positions lat and lng (see 'Inputaddress'). It defines the starting point of the tour. Default is the standard company / depot address. Either 'startaddress_id' (see above) or 'startaddress' or none of both can be given. If both are provided, only startaddress is used."
         $ref: '#/definitions/Inputaddress'
