@@ -6,9 +6,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
+import android.text.InputType
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import android.widget.*
+import com.afollestad.materialdialogs.DialogAction
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -21,6 +25,7 @@ import eu.davidea.flexibleadapter.SelectableAdapter
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_tour_stop_detail.*
+import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
@@ -28,6 +33,7 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.address
+import org.deku.leoz.mobile.model.entity.appointmentTimeLeft
 import org.deku.leoz.mobile.model.entity.hasValidPhoneNumber
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.Tour
@@ -43,9 +49,11 @@ import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.Device
 import sx.android.aidc.*
+import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
+import sx.time.TimeSpan
 
 class StopDetailsScreen
     :
@@ -93,11 +101,13 @@ class StopDetailsScreen
     })
     private val adapter get() = flexibleAdapterInstance.get()
 
+    private var delayMinutes: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         this.title = getString(R.string.title_stop_detailt)
-        this.aidcEnabled = true
+        this.aidcEnabled = false
         this.toolbarCollapsed = true
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
@@ -108,7 +118,7 @@ class StopDetailsScreen
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? =
-            // Inflate the layout for this fragment
+    // Inflate the layout for this fragment
             inflater.inflate(R.layout.screen_tour_stop_detail, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -234,6 +244,8 @@ class StopDetailsScreen
             adapter.expand(it)
         }
 
+        val stopNoteMenu = this.activity.inflateMenu(R.menu.menu_delivery_stop_add_information)
+
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_deliver_continue,
@@ -254,6 +266,13 @@ class StopDetailsScreen
                         iconRes = android.R.drawable.ic_menu_mylocation,
                         iconTintRes = android.R.color.black,
                         alignEnd = false
+                ),
+                ActionItem(
+                        id = R.id.action_stop_add_information,
+                        colorRes = R.color.colorGrey,
+                        iconRes = R.drawable.ic_comment_alert,
+                        alignEnd = false,
+                        menu = stopNoteMenu
                 )
         )
     }
@@ -324,6 +343,109 @@ class StopDetailsScreen
                             dialogBuilder.cancelable(true)
                             dialogBuilder.content(stop.address.phone)
                             dialogBuilder.build().show()
+                        }
+
+                        R.id.action_report_delay -> {
+                            val dialog = MaterialDialog.Builder(context)
+                                    .title(R.string.report_delay)
+                                    .iconRes(R.drawable.ic_appointment_at_risk)
+                                    .cancelable(false)
+                                    .customView(R.layout.dialog_delay_picker, false)
+                                    .positiveText(R.string.proceed)
+                                    .onNeutral { dialog, which ->
+
+                                    }
+                                    .onPositive { _, _ ->
+
+                                    }
+                                    .negativeText(android.R.string.cancel)
+                                    .build()
+
+                            dialog.customView!!.also {
+                                val textView = it.findViewById<TextView>(R.id.uxDelayDisplay)
+
+                                textView.text = "$delayMinutes Min."
+
+                                it.findViewById<Spinner>(R.id.uxDelayReasonList).also {
+                                    val reasons = DelayedAppointmentReason.values().map {
+                                        it.mobile
+                                    }
+                                    val adapter = object : ArrayAdapter<String>(this.context, android.R.layout.simple_spinner_item, reasons.map { it.textOrName(this.context) }.toMutableList().also { it.add(0, getString(R.string.choose_item)) }) {
+                                        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View? {
+
+                                            var v: View? = null
+
+                                            if (position == 0) {
+                                                val tv = TextView(context)
+                                                tv.height = 0
+                                                tv.visibility = View.GONE
+                                                v = tv
+                                            } else {
+
+                                                v = super.getDropDownView(position, null, parent)
+                                            }
+
+                                            parent.isVerticalScrollBarEnabled = false
+                                            return v
+                                        }
+                                    }
+
+                                    it.adapter = adapter.also {
+                                        it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                                    }
+                                }
+
+                                it.findViewById<Button>(R.id.uxMinusFifteen).also {
+                                    it.setOnClickListener {
+                                        var delayMin = this.stop.delayInMinutes ?: 0
+
+                                        if (delayMin - 15 < 0) {
+                                            delayMin = 0
+                                        } else {
+                                            delayMin -= 15
+                                        }
+                                        textView.text = "$delayMin Min."
+
+                                        this.stop.delayInMinutes = delayMin
+                                    }
+                                }
+
+                                it.findViewById<Button>(R.id.uxPlusFifteen).also {
+                                    it.setOnClickListener {
+                                        var delayMin = this.stop.delayInMinutes ?: 0
+
+                                        delayMin += 15
+                                        textView.text = "$delayMin Min."
+
+                                        this.stop.delayInMinutes = delayMin
+                                    }
+                                }
+
+                                it.findViewById<Spinner>(R.id.uxDelayReasonList).also {
+                                    it.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                                        override fun onNothingSelected(p0: AdapterView<*>?) {
+                                            dialog.getActionButton(DialogAction.POSITIVE).isEnabled = false
+                                        }
+
+                                        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                                            dialog.getActionButton(DialogAction.POSITIVE).isEnabled = p2 != 0
+                                        }
+
+                                    }
+                                }
+                            }
+
+                            dialog.show()
+
+                            //dialog.getActionButton(DialogAction.POSITIVE).isEnabled = false
+                        }
+
+                        R.id.action_add_stop_note -> {
+                            MaterialDialog.Builder(this.context)
+                                    .title("Upps...")
+                                    .content("Hier entsteht eine neue Funktion für Sie. Noch müssen Sie sich allerdings ein wenig gedulden.")
+                                    .neutralText(R.string.dismiss)
+                                    .show()
                         }
                     }
                 }

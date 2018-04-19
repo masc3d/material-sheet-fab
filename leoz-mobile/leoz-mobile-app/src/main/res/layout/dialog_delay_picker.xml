@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dialog_delay_picker"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/deku_background_selector"
+    android:orientation="vertical">
+
+    <LinearLayout
+        style="@style/AppTheme.Layout.Content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_marginBottom="@dimen/medium_margin"
+            android:textAlignment="center">
+
+            <TextView
+                android:id="@+id/uxDelayDisplay"
+                android:textAlignment="center"
+                style="@style/medium_bold"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="+ 30 Min." />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/uxMinusFifteen"
+                    android:layout_weight="1"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="- 15m"
+                    tools:ignore="HardcodedText" />
+
+                <Button
+                    android:id="@+id/uxPlusFifteen"
+                    android:layout_weight="1"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="+ 15m"
+                    tools:ignore="HardcodedText" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:visibility="visible"
+            android:text="@string/reason"/>
+
+        <Spinner
+            android:id="@+id/uxDelayReasonList"
+            style="@style/medium_light"
+            android:layout_marginTop="@dimen/medium_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </Spinner>
+
+    </LinearLayout>
+
+</LinearLayout>

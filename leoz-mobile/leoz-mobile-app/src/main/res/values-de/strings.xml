@@ -131,7 +131,6 @@
 
     <string name="given_cash">Erhaltenes Geld</string>
     <string name="given_cash_eg_15_00">Erhaltenes Geld (z.B. 15,00)</string>
-
     <string name="gps_active">GPS aktiv</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -335,4 +334,13 @@
     <string name="yes_start_tour">Ja, Tour starten</string>
     <string name="data_protection">Datenschutz</string>
     <string name="data_protection_policy">Datenschutzerklärung</string>
+    <string name="report_delay">Verspätung melden</string>
+    <string name="attach_note">Notiz anheften</string>
+    <string name="reason">Grund</string>
+    <string name="delay_reason_other">Sonstiges</string>
+    <string name="delay_reason_vehicle_breakdown">Fahrzeugpanne</string>
+    <string name="delay_reason_traffic_jam">Stau</string>
+    <string name="delay_reason_car_accident">Autounfall</string>
+    <string name="delay_reason_bad_weather">Schlechtes Wetter</string>
+    <string name="choose_item">Element auswählen</string>
 </resources>
