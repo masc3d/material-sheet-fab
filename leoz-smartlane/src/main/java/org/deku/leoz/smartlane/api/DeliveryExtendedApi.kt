@@ -80,6 +80,9 @@ fun DeliveryExtendedApi.delete(ids: List<Int>) {
     }
 }
 
+/**
+ * Remove unreferenced deliveries (which have no route assigned)
+ */
 fun DeliveryExtendedApi.deleteUnreferenced() {
     amendDeleteErrorResponse {
         this.deleteDelivery(q = FlaskFilter(

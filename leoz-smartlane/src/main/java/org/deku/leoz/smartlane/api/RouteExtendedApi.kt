@@ -1,6 +1,7 @@
 package org.deku.leoz.smartlane.api
 
 import com.fasterxml.jackson.databind.JsonNode
+import io.reactivex.Completable
 import io.reactivex.Observable
 import org.deku.leoz.smartlane.SmartlaneApi
 import org.deku.leoz.smartlane.model.Route
@@ -139,13 +140,17 @@ fun RouteApi.getRoute(q: String): Observable<Route> {
  * @param customId Custom id
  */
 fun RouteApi.getRouteByCustomId(vararg customId: String): Observable<Route> {
-    return this.getRoute(
-            q = FlaskFilter(FlaskPredicate(
-                    name = "custom_id",
-                    op = FlaskOperator.IN,
-                    value = customId.toList()
-            )).toJson()
-    )
+    return Observable.fromIterable(customId.toList())
+            .buffer(10)
+            .concatMap {
+                this.getRoute(
+                        q = FlaskFilter(FlaskPredicate(
+                                name = "custom_id",
+                                op = FlaskOperator.IN,
+                                value = it
+                        )).toJson()
+                )
+            }
 }
 
 /**
@@ -172,16 +177,23 @@ fun RouteApi.getRouteByCustomIdSubstring(vararg customId: String): Observable<Ro
 /**
  * Delete routes by id
  */
-fun RouteExtendedApi.delete(ids: List<Int>) {
-    amendDeleteErrorResponse {
-        this.deleteRoute(q = FlaskFilter(
-                expression = FlaskPredicate(
-                        name = "id",
-                        op = FlaskOperator.IN,
-                        value = ids
-                )).toJson()
-        )
-    }
+fun RouteExtendedApi.delete(ids: List<Int>): Completable {
+    return Observable.fromIterable(ids)
+            .buffer(10)
+            .concatMap {
+                Observable.fromCallable {
+                    amendDeleteErrorResponse {
+                        this.deleteRoute(q = FlaskFilter(
+                                expression = FlaskPredicate(
+                                        name = "id",
+                                        op = FlaskOperator.IN,
+                                        value = it
+                                )).toJson()
+                        )
+                    }
+                }
+            }
+            .ignoreElements()
 }
 
 /**
