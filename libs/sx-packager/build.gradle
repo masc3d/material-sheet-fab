@@ -57,6 +57,9 @@ dependencies {
             // JSR-310 / java.time drop-in replacement
             "org.threeten:threetenbp:1.3.6",
 
+            // TODO: workaround for kotlin compiler not seeing jdk9 modules in non-jigsaw projects
+            "javax.xml.bind:jaxb-api:$v_jaxb",
+
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$v_kotlin",

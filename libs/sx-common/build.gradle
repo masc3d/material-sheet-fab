@@ -59,9 +59,6 @@ dependencies {
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
-            // TODO: workaround for kotlin compiler not seeing jdk9 modules in non-jigsaw projects
-            "javax.xml.bind:jaxb-api:$v_jaxb",
-
             // Logging
             "org.slf4j:slf4j-api:$v_slf4j",
             "org.slf4j:jcl-over-slf4j:$v_slf4j",
