@@ -28,6 +28,7 @@ repositories {
     jcenter()
     google()
 }
+
 android {
     compileSdkVersion 27
     buildToolsVersion v_android_buildtools
@@ -63,6 +64,10 @@ android {
             minifyEnabled false
         }
     }
+}
+
+kapt {
+    useBuildCache = true
 }
 
 dependencies {
