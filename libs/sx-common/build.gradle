@@ -169,6 +169,11 @@ configurations {
     testArtifacts
 }
 
+// TODO: kotlin compiler won't see jdk9 modules, the following seems to work for java compiler only
+compileJava {
+    options.compilerArgs += ["--add-modules", "java.xml.bind"]
+}
+
 task testJar(type: Jar) {
     classifier "test"
     from sourceSets.test.output
