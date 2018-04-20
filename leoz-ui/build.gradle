@@ -4,7 +4,7 @@ apply plugin: 'distribution'
 apply plugin: 'sx-packager'
 
 sourceCompatibility = 1.8
-version = '0.23-SNAPSHOT'
+version = '0.24-SNAPSHOT'
 mainClassName = "org.deku.leoz.ui.Application"
 
 buildscript {
