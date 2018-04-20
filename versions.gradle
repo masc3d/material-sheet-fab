@@ -1,7 +1,7 @@
 buildscript {
     ext {
         // Required JVM/JDK version. Do not include the '-bxx' suffix of the version, as it may differ across platforms
-        v_jvm = '25.162'
+        v_jvm = '25.172'
 
         v_activemq = '5.15.3'
         v_android_gradle = '3.1.1'
