@@ -11,15 +11,6 @@ import java.lang.management.ManagementFactory
 apply from: '../versions.gradle'
 apply from: '../common.gradle'
 
-def assertJvmVersion(String vmVersion) {
-    def jvm = ManagementFactory.getRuntimeMXBean()
-    println("JVM version [${jvm.specVersion}] [${jvm.vmVersion}]")
-    if (!jvm.vmVersion.startsWith(vmVersion))
-        throw new IllegalStateException("JVM/JDK version is [${jvm.vmVersion}], should start with [${vmVersion}]")
-}
-
-assertJvmVersion(v_jvm)
-
 buildscript {
     ext {
         v_android_gradle = '3.1.1'
