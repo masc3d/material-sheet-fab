@@ -13,6 +13,7 @@
 .idea/dataSources
 .idea/inspectionProfile
 .idea/httpRequests
+leoz-build/.idea/misc.xml
 build
 buildSrc/build
 buildSrc/src/import

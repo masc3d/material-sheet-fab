@@ -61,6 +61,7 @@ class BuildNativeBundleTask extends Task {
             this.packageDescription = this.extension.title
 
         def packagerPlatformDir = this.getPackagerPlatformDir()
+        def packagerPlatformBundlesDir = this.getPackagerPlatformBundlesDir()
 
         def mainJar = this.getMainJar()
         def mainClassName = this.getMainClassName();
@@ -71,7 +72,8 @@ class BuildNativeBundleTask extends Task {
         // JDK/JRE
         def jvm = org.gradle.internal.jvm.Jvm.current()
         def jdk_home = jvm.javaHome
-        def jre_home = jvm.jre.homeDir
+        // With jdk9, jre won't be available, thus reverting to jdk home
+        def jre_home = jvm.jre?.homeDir ?: jdk_home
         println "JDK home [${jdk_home}]"
         println "JRE home [${jre_home}]"
 
@@ -100,7 +102,7 @@ class BuildNativeBundleTask extends Task {
                     "-title", this.extension.title,
                     "-description", this.packageDescription,
                     "-name", this.packageName,
-                    "-outdir", packagerPlatformDir,
+                    "-outdir", packagerPlatformBundlesDir,
                     "-outfile", this.extension.bundleName,
                     "-srcdir", packagerLibsDir,
                     "-appclass", mainClassName,
@@ -143,10 +145,9 @@ class ReleaseNativeBundleTask extends ReleaseTask {
 
         def releasePlatformPath = this.getReleasePlatformPath()
 
-        def packagerPlatformDir = this.getPackagerPlatformDir()
+        def packagerPlatformBundlesDir = this.getPackagerPlatformBundlesDir()
 
-        def packagerBundlePath = Paths.get(packagerPlatformDir.toURI())
-                .resolve('bundles')
+        def packagerBundlePath = Paths.get(packagerPlatformBundlesDir.toURI())
                 .resolve(SystemUtils.IS_OS_MAC ? "" : this.extension.bundleName)
                 .toFile()
 

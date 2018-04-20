@@ -46,7 +46,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     }
 }
 
-version = '0.210-SNAPSHOT'
+version = '0.210.1-JDK10-SNAPSHOT'
 mainClassName = "org.deku.leoz.central.Main"
 
 // Database constants
@@ -306,6 +306,12 @@ tasks.generateMainJooqSchemaSource {
     dependsOn tasks.flywayMigrate
     dependsOn tasks.flywayValidate
     dependsOn tasks.flywayCopy
+}
+
+tasks.generateMainJooqSchemaSource.with {
+    javaExecSpec = { JavaExecSpec s ->
+        s.jvmArgs '--add-modules', 'java.xml.bind'
+    }
 }
 
 clean {

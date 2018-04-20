@@ -145,15 +145,6 @@ subprojects {
     // Plugin for showing code statistics (Sourcefiles, LOC) `gradlew stats`
     apply plugin: 'org.kordamp.gradle.stats'
 
-    // Set boot classpath for all subprojects (eliminates warning in conjunction with setting sourceCompatibility)
-    tasks.withType(JavaCompile) {
-        options.bootstrapClasspath = files(
-                ManagementFactory.getRuntimeMXBean().bootClassPath
-                        .split(SystemUtils.IS_OS_WINDOWS ? ";" : ":")
-                        .collect { new File(it) }
-        )
-    }
-
     ext {
         // Unified classes dir
         classesDir = new File(buildDir, "classes/main")
