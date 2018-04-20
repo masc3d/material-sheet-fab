@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { distinctUntilChanged } from 'rxjs/operators';
 
-import { User } from './user.model';
+import { User } from '../../core/models/user.model';
 import { environment } from '../../../environments/environment';
 import { MsgService } from '../../shared/msg/msg.service';
 import { InetConnectionService } from 'app/core/inet-connection.service';

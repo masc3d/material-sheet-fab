@@ -7,7 +7,6 @@ import 'rxjs/add/observable/timer';
 
 import { SelectItem } from 'primeng/api';
 
-import { Driver } from '../driver.model';
 import { TourService } from '../tour.service';
 import { DriverService } from '../driver.service';
 import { RoleGuard } from '../../../core/auth/role.guard';
@@ -18,9 +17,10 @@ import { MsgService } from '../../../shared/msg/msg.service';
 import { PermissionCheck } from '../../../core/auth/permission-check';
 import { AuthenticationService } from '../../../core/auth/authentication.service';
 import { Station } from '../../../core/auth/station.model';
+import { User } from '../../../core/models/user.model';
 
 interface CallbackArguments {
-  driver: Driver;
+  driver: User;
   tourService: TourService;
   interval: string;
 }
@@ -126,7 +126,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
 
   maxDateValue: Date;
   latestRefresh: Date;
-  drivers: Driver[];
+  drivers: User[];
   isPermitted: boolean;
   filterName: string;
   tableIsVisible: boolean;
@@ -137,7 +137,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
 
   private refreshTimer$: Observable<number>;
   private subscription: Subscription;
-  private periodicallyUsedDriver: Driver;
+  private periodicallyUsedDriver: User;
   private periodicallyUsedCallback: Function;
   private periodicallyUsedFilter: string;
   displayedMapmode: string;
@@ -212,7 +212,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
         .pipe(
           takeUntil( this.ngUnsubscribe )
         )
-        .subscribe( ( currentDriver: Driver ) => {
+        .subscribe( ( currentDriver: User ) => {
           // empty Driver object could be returned
           if (currentDriver.role) {
             this.showPositionPeriodically( currentDriver );
@@ -341,7 +341,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.showPeriodically();
   }
 
-  showPositionPeriodically( driver: Driver ) {
+  showPositionPeriodically( driver: User ) {
     this.toggleVisibility();
     this.periodicallyUsedFilter = null;
     this.periodicallyUsedDriver = driver;
@@ -351,7 +351,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.selectedLocationFlag = 'position';
   }
 
-  showRoutePeriodically( driver: Driver ) {
+  showRoutePeriodically( driver: User ) {
     this.toggleVisibility();
     this.periodicallyUsedFilter = null;
     this.periodicallyUsedDriver = driver;
@@ -373,19 +373,19 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     args.tourService.changeActiveRoute( args.driver, this.selectedInterval * 60, this.tourDate );
   }
 
-  private filterDrivers( drivers: Driver[], filterName: string ): Driver[] {
+  private filterDrivers( drivers: User[], filterName: string ): User[] {
     if (!drivers) {
       return [];
     }
-    if (this.roleGuard.userRole === Driver.RoleEnum.DRIVER) {
+    if (this.roleGuard.userRole === User.RoleEnum.DRIVER) {
       const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
-      return drivers.filter( ( driver: Driver ) => driver.email === currUser.user.email );
+      return drivers.filter( ( driver: User ) => driver.email === currUser.user.email );
       // return drivers.filter( ( driver: Driver ) => driver.email === 'driver@deku.org' );
     } else {
       let filtered = filterName === 'driverfilter'
-        ? drivers.filter( ( driver: Driver ) => driver.role === Driver.RoleEnum.DRIVER )
-        : drivers.filter( ( driver: Driver ) => PermissionCheck.isAllowedRole( this.roleGuard.userRole, driver.role ) );
-      filtered = filtered.filter( ( driver: Driver ) => driver.active );
+        ? drivers.filter( ( driver: User ) => driver.role === User.RoleEnum.DRIVER )
+        : drivers.filter( ( driver: User ) => PermissionCheck.isAllowedRole( this.roleGuard.userRole, driver.role ) );
+      filtered = filtered.filter( ( driver: User ) => driver.active );
       return filtered;
     }
   }

@@ -1,4 +1,4 @@
-import { User } from '../../dashboard/user/user.model';
+import { User } from '../models/user.model';
 
 export class PermissionCheck {
 

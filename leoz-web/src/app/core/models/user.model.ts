@@ -1,5 +1,5 @@
 export interface User {
-
+  id?: number; // only user for drivers in tracing
   active: boolean;
   alias: string;
   debitorId: number;
