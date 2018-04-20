@@ -7,7 +7,7 @@ export class MockHttpInterceptor implements HttpInterceptor {
   intercept( req: HttpRequest<any>, next: HttpHandler ): Observable<HttpEvent<any>> {
     const url: string = req.url;
 
-    if (url.endsWith( '/internal/v1/loadinglist/report/header' )) {
+    if (url.endsWith( '/internal/v1/loadinglist/report/header' ) || url.endsWith( '/internal/v1/bagscan/report/header' )) {
       return new Observable( resp => {
         resp.next( new HttpResponse( {
           status: 200,
