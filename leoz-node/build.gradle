@@ -138,7 +138,7 @@ dependencies {
 
             //region TODO: workaround for kotlin compiler not seeing jdk9 modules in non-jigsaw projects
             "org.glassfish.main:javax.jws:4.0-b33",
-            "javax.xml.ws:jaxws-api:2.3.0",
+            "javax.xml.ws:jaxws-api:$v_jaxb",
             //endregion
 
             // spring
