@@ -830,6 +830,7 @@ class SmartlaneBridge {
                 }
             }
 
+            it.startTime = options.startTime
             it.vehcapacities = vehicles.map { Math.ceil(it.capacity).toInt() }
         }
     }

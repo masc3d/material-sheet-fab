@@ -310,6 +310,13 @@ interface TourServiceV1 {
                             "the station address this tour refers to.")
             var start: Address? = null,
 
+            @ApiModelProperty(position = 15,
+                    required = false,
+                    value = "Start time",
+                    notes = "Optinoal (fixed) route start time. When this parameter is omitted " +
+                            "the start time will be automatically determined.")
+            var startTime: Date? = null,
+
             @ApiModelProperty(position = 20,
                     required = false,
                     value = "Appointment related options")
