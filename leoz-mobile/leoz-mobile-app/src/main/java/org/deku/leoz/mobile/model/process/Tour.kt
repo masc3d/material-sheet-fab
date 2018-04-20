@@ -334,6 +334,8 @@ class Tour : CompositeDisposableSupplier {
                                         tasks = stop.tasks.map {
                                             TourServiceV1.Task(
                                                     orderId = it.order.id,
+                                                    appointmentStart = it.appointmentStart,
+                                                    appointmentEnd = it.appointmentEnd,
                                                     taskType = when (it.type) {
                                                         OrderTask.TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
                                                         OrderTask.TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
