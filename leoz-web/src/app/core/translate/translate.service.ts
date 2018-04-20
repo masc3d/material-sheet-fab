@@ -5,7 +5,7 @@ import { DATEFORMATS } from './dateformats';
 import { Translation } from './translation';
 import { environment } from '../../../environments/environment';
 import { CALENDAR_LOCALES } from './calendar-locales';
-import { User } from '../../dashboard/user/user.model';
+import { User } from '../models/user.model';
 
 @Injectable()
 export class TranslateService {

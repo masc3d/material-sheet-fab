@@ -7,7 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Message } from 'primeng/components/common/api';
 import { SelectItem } from 'primeng/api';
 
-import { User } from '../user.model';
+import { User } from '../../../core/models/user.model';
 import { UserService } from '../user.service';
 import { RoleGuard } from '../../../core/auth/role.guard';
 import { MsgService } from '../../../shared/msg/msg.service';

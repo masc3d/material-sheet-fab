@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { SortEvent } from 'primeng/api';
 
 import { UserService } from '../user.service';
-import { User } from '../user.model';
+import { User } from '../../../core/models/user.model';
 import { MsgService } from '../../../shared/msg/msg.service';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { User } from '../../dashboard/user/user.model';
+import { User } from '../models/user.model';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -17,12 +17,7 @@ export class RoleGuard implements CanActivate {
       'tour',
       'export',
       'importscan',
-      'deliverydispo',
-      'deliveryscan',
-      'tourzipmapping',
       'touroptimizing',
-      'ipointscan',
-      'pickupdispo',
       'stateofshipments',
       'order'],
     'POWERUSER': [
@@ -32,12 +27,7 @@ export class RoleGuard implements CanActivate {
       'tour',
       'export',
       'importscan',
-      'deliverydispo',
-      'deliveryscan',
-      'tourzipmapping',
       'touroptimizing',
-      'ipointscan',
-      'pickupdispo',
       'stateofshipments',
       'order' ],
   };

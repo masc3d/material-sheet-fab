@@ -7,15 +7,14 @@ import { distinctUntilChanged } from 'rxjs/operators';
 import * as moment from 'moment';
 
 import { environment } from '../../../environments/environment';
-import { Position } from './position.model';
+import { Position } from '../../core/models/position.model';
 import { MsgService } from '../../shared/msg/msg.service';
-import { Driver } from './driver.model';
-import { MarkerModel } from './tour-map/marker.model';
+import { MarkerModel } from '../../core/models/marker.model';
 import { TranslateService } from '../../core/translate/translate.service';
 import { DriverService } from './driver.service';
-import RoleEnum = Driver.RoleEnum;
 import { InetConnectionService } from '../../core/inet-connection.service';
 import { Station } from '../../core/auth/station.model';
+import { User } from '../../core/models/user.model';
 
 @Injectable()
 export class TourService {
@@ -45,7 +44,7 @@ export class TourService {
   private locationUrl = `${environment.apiUrl}/internal/v2/location/recent`;
   private locationFromToUrl = `${environment.apiUrl}/internal/v2/location`;
 
-  private drivers: Driver[];
+  private drivers: User[];
   private duration: number;
   private selectedDate: Date;
 
@@ -54,7 +53,7 @@ export class TourService {
                private translate: TranslateService,
                private driverService: DriverService,
                private ics: InetConnectionService ) {
-    driverService.drivers$.subscribe( ( drivers: Driver[] ) => this.drivers = drivers );
+    driverService.drivers$.subscribe( ( drivers: User[] ) => this.drivers = drivers );
     this.duration = 0;
     this.selectedDate = null;
   }
@@ -145,7 +144,7 @@ export class TourService {
     this.activeRouteSubject.next( <Position[]> [] );
   }
 
-  changeActiveMarker( selectedDriver: Driver, duration: number, selectedDate: Date ) {
+  changeActiveMarker( selectedDriver: User, duration: number, selectedDate: Date ) {
     this.duration = duration;
     this.selectedDate = selectedDate;
     this.resetDisplay();
@@ -173,7 +172,7 @@ export class TourService {
       } );
   }
 
-  changeActiveRoute( selectedDriver: Driver, duration: number, selectedDate: Date ) {
+  changeActiveRoute( selectedDriver: User, duration: number, selectedDate: Date ) {
     this.duration = duration;
     this.selectedDate = selectedDate;
     this.resetDisplay();
@@ -223,13 +222,13 @@ export class TourService {
           if (allLocations && allLocations.length > 0) {
             allLocations.forEach( ( userLocation: any ) => {
               if (userLocation.gpsDataPoints && userLocation.gpsDataPoints.length > 0) {
-                const filtered = this.drivers.filter( ( driver: Driver ) => driver.id === userLocation.userId );
+                const filtered = this.drivers.filter( ( driver: User ) => driver.id === userLocation.userId );
                 if (filtered.length > 0) {
                   const driver = filtered[ 0 ];
                   if (driver.active) {
                     const position = <Position> userLocation.gpsDataPoints[ userLocation.gpsDataPoints.length - 1 ];
                     if (filter === 'allusers'
-                      || (filter === 'alldrivers' && driver.role === RoleEnum.DRIVER)) {
+                      || (filter === 'alldrivers' && driver.role === User.RoleEnum.DRIVER)) {
                       allMarkers.push( <MarkerModel> { position: position, driver: driver } )
                     }
                   }

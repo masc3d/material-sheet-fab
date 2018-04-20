@@ -47,41 +47,6 @@ export const routes = [
         loadChildren: 'app/dashboard/importscan/importscan.module#ImportscanModule'
       },
       {
-        path: 'importscancheck',
-        data: { preload: true },
-        canActivate: [ AuthenticationGuard,
-          RoleGuard ],
-        loadChildren: 'app/dashboard/importscan/importscan.module#ImportscanModule'
-      },
-      {
-        path: 'deliveryscan',
-        data: { preload: true },
-        canActivate: [ AuthenticationGuard,
-          RoleGuard ],
-        loadChildren: 'app/dashboard/deliveryscan/deliveryscan.module#DeliveryscanModule'
-      },
-      {
-        path: 'ipointscan',
-        data: { preload: true },
-        canActivate: [ AuthenticationGuard,
-          RoleGuard ],
-        loadChildren: 'app/dashboard/ipointscan/ipointscan.module#IpointscanModule'
-      },
-      {
-        path: 'deliverydispo',
-        data: { preload: true },
-        canActivate: [ AuthenticationGuard,
-          RoleGuard ],
-        loadChildren: 'app/dashboard/deliverydispo/deliverydispo.module#DeliverydispoModule'
-      },
-      {
-        path: 'tourzipmapping',
-        data: { preload: true },
-        canActivate: [ AuthenticationGuard,
-          RoleGuard ],
-        loadChildren: 'app/dashboard/tourzipmapping/tourzipmapping.module#TourzipmappingModule'
-      },
-      {
         path: 'touroptimizing',
         data: { preload: true },
         canActivate: [ AuthenticationGuard,
@@ -94,13 +59,6 @@ export const routes = [
         canActivate: [ AuthenticationGuard,
           RoleGuard ],
         loadChildren: 'app/dashboard/order/order.module#OrderModule'
-      },
-      {
-        path: 'pickupdispo',
-        data: { preload: true },
-        canActivate: [ AuthenticationGuard,
-          RoleGuard ],
-        loadChildren: 'app/dashboard/pickupdispo/pickupdispo.module#PickupdispoModule'
       },
       {
         path: 'printers',

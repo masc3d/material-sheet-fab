@@ -8,7 +8,7 @@ import { distinctUntilChanged, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { RoleGuard } from './role.guard';
 import { MsgService } from '../../shared/msg/msg.service';
-import { User } from '../../dashboard/user/user.model';
+import { User } from '../models/user.model';
 import { Station } from './station.model';
 
 @Injectable()

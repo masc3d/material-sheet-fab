@@ -8,11 +8,11 @@ export const environment = {
   version: '20171221', // on change, always adapt assets/version.json
   // --build-optimizer false
   // testing system      apiUrl for leoz.it-cobra.es
-  apiUrl: 'https://leoz-t1.derkurier.de:13000/rs/api',
+  // apiUrl: 'https://leoz-t1.derkurier.de:13000/rs/api',
   // local system        apiUrl
   // apiUrl: 'http://localhost:13000/rs/api',
   // testing system      apiUrl for command-demo.derkurier.de ==> (leoz-demo.derkurier.de:13000)
-  // apiUrl: 'https://leoz-demo.derkurier.de:13000/rs/api',
+  apiUrl: 'https://leoz-demo.derkurier.de:13000/rs/api',
   // live system         apiUrl for command.derkurier.de      ==> (leoz.derkurier.de:13000)
   // apiUrl: 'https://leoz.derkurier.de:13000/rs/api',
   defMenu: 'leo-old',

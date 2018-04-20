@@ -5,8 +5,8 @@ import { MapComponent } from '@yaga/leaflet-ng2';
 import * as L from 'leaflet';
 
 import { TourService } from '../tour.service';
-import { Position } from '../position.model';
-import { MarkerModel } from './marker.model';
+import { Position } from '../../../core/models/position.model';
+import { MarkerModel } from '../../../core/models/marker.model';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { DateMomentjsPipe } from '../../../core/translate/date-momentjs.pipe';
