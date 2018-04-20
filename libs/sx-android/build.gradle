@@ -89,6 +89,10 @@ android {
     }
 }
 
+kapt {
+    useBuildCache = true
+}
+
 dependencies {
     implementation(
             project(":sx-common"),

@@ -151,6 +151,10 @@ android {
     }
 }
 
+kapt {
+    useBuildCache = true
+}
+
 dexcount {
     format = "list"
     includeClasses = false
