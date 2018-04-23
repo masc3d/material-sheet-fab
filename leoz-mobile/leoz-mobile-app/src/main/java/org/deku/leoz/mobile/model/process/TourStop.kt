@@ -582,16 +582,18 @@ class TourStop(
                         .filter { it.parcels.any { it.state == Parcel.State.LOADED  } }
                         .map { it.deliveryTask }
                         .also { tasks ->
-                            stop.tasks.removeAll(tasks)
-                            update(stop)
+                            if (tasks.count() > 0) {
+                                stop.tasks.removeAll(tasks)
+                                update(stop)
 
-                            // Create new stop
-                            Stop.create(
-                                    state = Stop.State.CLOSED,
-                                    position = 0.0,
-                                    tasks = tasks
-                            ).also {
-                                insert(it)
+                                // Create new stop
+                                Stop.create(
+                                        state = Stop.State.CLOSED,
+                                        position = 0.0,
+                                        tasks = tasks
+                                ).also {
+                                    insert(it)
+                                }
                             }
                         }
             }
