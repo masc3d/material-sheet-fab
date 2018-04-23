@@ -85,7 +85,6 @@ class TourService : MqHandler<Any> {
                     this.mqttEndpoints.central.main.channel().send(
                             TourServiceV1.TourOptimizationRequest(
                                     requestUid = requestUid,
-                                    nodeUid = identity.uid.value,
                                     options = options,
                                     startStationNo = startStationNo
                             ).also {

@@ -5,6 +5,7 @@ import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.TourRouteMeta
 import org.deku.leoz.model.TourStopRouteMeta
+import org.deku.leoz.service.entity.Message
 import org.deku.leoz.time.ShortDate
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
@@ -391,7 +392,7 @@ interface TourServiceV1 {
             var tour: Tour? = null,
             /** Update timestamp */
             var timestamp: Date = Date()
-    )
+    ) : Message()
 
     /**
      * Tour optimization request (for mq)
@@ -400,14 +401,12 @@ interface TourServiceV1 {
     data class TourOptimizationRequest(
             /** Unique uid for this request. Will be passed back on response */
             var requestUid: String? = null,
-            /** Node uid requesting optimization */
-            var nodeUid: String? = null,
             /** Tour optimization options */
             var options: TourOptimizationOptions = TourOptimizationOptions(),
 
             /** Override start location with specific station address (for testing) */
             var startStationNo: Int? = null
-    )
+    ) : Message()
 
     /**
      * Tour optimization result (for mq)
