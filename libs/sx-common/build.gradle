@@ -81,7 +81,7 @@ dependencies {
 
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:2.1",
-            "org.zalando:problem:0.20.2",
+            "org.zalando:problem:0.20.3",
 
             // JNA
             "net.java.dev.jna:jna:$v_jna",
