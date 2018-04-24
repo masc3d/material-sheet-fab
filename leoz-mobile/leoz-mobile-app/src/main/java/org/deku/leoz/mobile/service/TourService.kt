@@ -88,6 +88,7 @@ class TourService : MqHandler<Any> {
                                     options = options,
                                     startStationNo = startStationNo
                             ).also {
+                                it.nodeUid = identity.uid.value
                                 log.trace { "Sending optimization request [${it}]" }
                             }
                     )
