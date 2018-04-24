@@ -193,21 +193,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <!-- Address layout -->
-                    <LinearLayout
+                    <android.support.v7.widget.GridLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="top"
-                        android:orientation="horizontal"
-                        >
+                        app:columnCount="2"
+                        app:rowCount="2">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:divider="@drawable/divider_vertical_small"
                             android:orientation="vertical"
                             android:showDividers="middle"
+                            app:layout_column="0"
+                            app:layout_columnWeight="1"
+                            app:layout_row="0"
+                            app:layout_rowSpan="2"
                             >
 
                             <TextView
@@ -274,12 +275,15 @@
 
                         <LinearLayout
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:layout_weight="0"
                             android:divider="@drawable/divider"
                             android:orientation="vertical"
                             android:showDividers="middle"
+                            app:layout_column="1"
+                            app:layout_columnWeight="1"
+                            app:layout_row="0"
+                            app:layout_rowWeight="1"
                             >
 
                             <LinearLayout
@@ -318,7 +322,7 @@
                                 android:layout_gravity="end"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal"
-                                android:visibility="@{stop.hasEta ? View.VISIBLE : View.GONE}"
+                                android:visibility="@{safeUnbox(stop.hasEta) ? View.VISIBLE : View.GONE}"
                                 >
 
                                 <TextView
@@ -327,8 +331,8 @@
                                     android:layout_marginEnd="@dimen/margin"
                                     android:gravity="top"
                                     android:text="@{stop.etaText, default = `59:59`}"
-                                    android:textColor="@color/colorDarkGrey"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                    android:textColor="@color/colorDarkGrey"
                                     />
 
                                 <ImageView
@@ -342,52 +346,56 @@
 
                             </LinearLayout>
 
-                            <!-- Right bottom area -->
+                        </LinearLayout>
+
+                        <!-- Right bottom area -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="bottom|end"
+                            android:orientation="vertical"
+                            app:layout_column="1"
+                            app:layout_columnWeight="1"
+                            app:layout_row="1"
+                            app:layout_rowWeight="0"
+                            >
+
+                            <!-- Status bar -->
                             <LinearLayout
                                 android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="bottom|end"
-                                android:gravity="bottom|end"
-                                android:orientation="vertical"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:orientation="horizontal"
+                                android:visibility="@{safeUnbox(stop.isStatusBarVisible) ? View.VISIBLE : View.GONE}"
                                 >
 
-                                <!-- Status bar -->
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                <ImageView
+                                    android:layout_width="@dimen/icon_size_small"
+                                    android:layout_height="@dimen/icon_size_small"
                                     android:layout_gravity="end"
-                                    android:orientation="horizontal"
-                                    android:visibility="@{safeUnbox(stop.isStatusBarVisible) ? View.VISIBLE : View.GONE}"
-                                    >
-
-                                    <ImageView
-                                        android:layout_width="@dimen/icon_size_small"
-                                        android:layout_height="@dimen/icon_size_small"
-                                        android:layout_gravity="end"
-                                        android:contentDescription="TODO"
-                                        android:src="@drawable/ic_phone"
-                                        android:tint="@color/colorGrey"
-                                        android:visibility="@{stop.address.hasValidPhoneNumber ? View.VISIBLE : View.GONE}"/>
-
-                                </LinearLayout>
-
-                                <sx.android.view.BadgeTextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="end"
-                                    android:layout_marginEnd="-4dp"
-                                    android:alpha="0.9"
-                                    android:background="@{safeUnbox(stop.tagColor)}"
-                                    android:text="@{stop.tagText, default = `Stop state`}"
-                                    android:textAllCaps="true"
-                                    android:visibility="@{safeUnbox(stop.isStateVisible) ? View.VISIBLE : View.GONE}"
-                                    />
+                                    android:contentDescription="TODO"
+                                    android:src="@drawable/ic_phone"
+                                    android:tint="@color/colorGrey"
+                                    android:visibility="@{stop.address.hasValidPhoneNumber ? View.VISIBLE : View.GONE}"/>
 
                             </LinearLayout>
 
+                            <sx.android.view.BadgeTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:layout_marginEnd="-4dp"
+                                android:alpha="0.9"
+                                android:background="@{safeUnbox(stop.tagColor)}"
+                                android:text="@{stop.tagText, default = `Stop state`}"
+                                android:textAllCaps="true"
+                                android:visibility="@{safeUnbox(stop.isStateVisible) ? View.VISIBLE : View.GONE}"
+                                />
+
                         </LinearLayout>
 
-                    </LinearLayout>
+
+                    </android.support.v7.widget.GridLayout>
 
                 </FrameLayout>
 

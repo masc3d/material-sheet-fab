@@ -197,6 +197,7 @@ dependencies {
             "com.android.support:design:$v_android_support",
             "com.android.support:cardview-v7:$v_android_support",
             "com.android.support:recyclerview-v7:$v_android_support",
+            "com.android.support:gridlayout-v7:$v_android_support",
             "com.android.support:multidex:$v_multidex",
             "com.android.support:multidex-instrumentation:$v_multidex",
             "android.arch.lifecycle:runtime:1.1.0",
