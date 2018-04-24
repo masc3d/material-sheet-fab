@@ -106,3 +106,5 @@
 -dontwarn sx.LazyInstance
 -dontwarn sx.Process**
 
+# masc20180424. workaround for proguard complaining about missing databinding resource (since 3.1.2)
+-dontwarn org.deku.leoz.mobile.data.BR
