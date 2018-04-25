@@ -188,7 +188,7 @@ dependencies {
             project(':sx-mq'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
-            "com.jakewharton.threetenabp:threetenabp:1.0.5",
+            "com.jakewharton.threetenabp:threetenabp:1.1.0",
 
             // Android
             "com.android.support:support-annotations:$v_android_support",

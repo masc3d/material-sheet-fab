@@ -8,7 +8,7 @@ buildscript {
         v_android_gradle = '3.1.2'
         v_android_buildtools = '27.0.3'
         v_android_support = '27.1.1'
-        v_android_test = '1.0.1'
+        v_android_test = '1.0.2'
         v_android_gms = '11.8.0'
         v_anko = '0.10.4'
         v_javamail = '1.6.0'
@@ -99,7 +99,7 @@ dependencies {
 
             fileTree(dir: 'libs', include: ['*.jar']),
 
-            "com.jakewharton.threetenabp:threetenabp:1.0.5",
+            "com.jakewharton.threetenabp:threetenabp:1.1.0",
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
