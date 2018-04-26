@@ -21,6 +21,18 @@ open class NtpTime(
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    /**
+     * Dedicated scheduler for true time.
+     *
+     * True time has a bad habit of posting concurrent requests with lengthy timeouts
+     * which may easily drain shared thread pools (eg. io, computation), adversely affecting
+     * other consumers.
+     *
+     * REMARK: it's possible that subscribing the outer observable on a dedicated scheduler
+     * is not sufficient as true time statically subscribes to io scheduler internally
+     */
+    private val scheduler = Schedulers.single()
+
     init {
         TrueTimeRx.build()
                 .withSharedPreferences(this.context)
@@ -28,7 +40,7 @@ open class NtpTime(
                 .withRetryCount(this.maxRetryCount)
                 .initializeRx(this.ntpHost)
                 .ignoreElements()
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(this.scheduler)
                 .subscribeBy(
                         onComplete = {
                             log.trace("TrueTime initialization [${this.ntpHost}] succeeded")
