@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.zalando.problem.Status
 import sx.Stopwatch
+import sx.log.slf4j.trace
 import sx.log.slf4j.warn
 import sx.mq.MqChannel
 import sx.mq.MqHandler
@@ -154,14 +155,20 @@ class DeliveryListService
 
             }
 
-            this.tourService.delete(
-                    customIds = tours.mapNotNull { it.customId }
-                            // TODO: removal of tours with deprecated custom id. remove in next update.
-                            .plus(dlRecords.map { it.id.toLong().toString() })
-                            .distinct()
-            )
+            Stopwatch.createStarted(this,
+                    "Deleting delivery list(s) [${tours.mapNotNull { it.customId }.joinToString(", ")}]", {
+                this.tourService.delete(
+                        customIds = tours.mapNotNull { it.customId }
+                                // TODO: removal of tours with deprecated custom id. remove in next update.
+                                .plus(dlRecords.map { it.id.toLong().toString() })
+                                .distinct()
+                )
+            })
 
-            this.tourService.put(tours)
+            Stopwatch.createStarted(this,
+                    "Storing delivery list(s) [${tours.map { it.customId }.joinToString(", ")}]", {
+                this.tourService.put(tours)
+            })
 
             tours
         })
