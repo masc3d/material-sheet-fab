@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.zalando.problem.Status
 import sx.Stopwatch
+import sx.log.slf4j.trace
+import sx.log.slf4j.warn
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.rs.RestProblem
@@ -86,12 +88,11 @@ class DeliveryListService
             return listOf()
 
         val tours = Stopwatch.createStarted(this,
-                "Converting delivery list(s) to tour(s) [${dlRecords.map { it.id.toLong() }.joinToString(", ")}]", {
+                "Converting ${dlRecords.count()} delivery list(s) to tour(s) [${dlRecords.map { it.id.toLong() }.joinToString(", ")}]", {
 
             val dlDetailRecordsByDlId = deliveryListRepository
                     .findDetailsByIds(deliverylistIds)
                     .groupBy { it.id }
-
 
             val ordersById = this.orderService.get(ids =
             dlDetailRecordsByDlId
@@ -100,13 +101,20 @@ class DeliveryListService
             )
                     .associateBy { it.id }
 
-            val tours = dlRecords.map { dlRecord ->
+            val tours = dlRecords.mapNotNull { dlRecord ->
                 val dlDetailRecords = dlDetailRecordsByDlId.get(dlRecord.id)
                         ?.sortedBy { it.orderPosition }
                         ?: listOf()
 
                 val orderIds = dlDetailRecords
                         .map { it.orderId.toLong() }
+
+                val validOrderIds = orderIds.mapNotNull { ordersById.get(it) }
+
+                if (validOrderIds.count() < orderIds.count()) {
+                    log.warn { "Skipping delivery list [${dlRecord.id.toLong()}], missing orders [${orderIds.subtract(validOrderIds).joinToString(", ")}]" }
+                    return@mapNotNull null
+                }
 
                 TourServiceV1.Tour(
                         stationNo = dlRecord.deliveryStation.toLong(),
@@ -147,14 +155,20 @@ class DeliveryListService
 
             }
 
-            this.tourService.delete(
-                    customIds = tours.mapNotNull { it.customId }
-                            // TODO: removal of tours with deprecated custom id. remove in next update.
-                            .plus(dlRecords.map { it.id.toLong().toString() })
-                            .distinct()
-            )
+            Stopwatch.createStarted(this,
+                    "Deleting delivery list(s) [${tours.mapNotNull { it.customId }.joinToString(", ")}]", {
+                this.tourService.delete(
+                        customIds = tours.mapNotNull { it.customId }
+                                // TODO: removal of tours with deprecated custom id. remove in next update.
+                                .plus(dlRecords.map { it.id.toLong().toString() })
+                                .distinct()
+                )
+            })
 
-            this.tourService.put(tours)
+            Stopwatch.createStarted(this,
+                    "Storing delivery list(s) [${tours.map { it.customId }.joinToString(", ")}]", {
+                this.tourService.put(tours)
+            })
 
             tours
         })

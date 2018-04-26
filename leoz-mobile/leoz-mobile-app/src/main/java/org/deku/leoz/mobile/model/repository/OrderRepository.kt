@@ -37,7 +37,7 @@ class OrderRepository(
      * Determine if repository has outdated orders
      */
     fun hasOutdatedOrders(): Single<Boolean> {
-        val MAX_AGE_HOURS = 20
+        val MAX_AGE_HOURS = 12
 
         return store.select(OrderEntity.CREATION_TIME.min())
                 .get()

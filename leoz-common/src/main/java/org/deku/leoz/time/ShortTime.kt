@@ -2,7 +2,10 @@ package org.deku.leoz.time
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
-import java.text.SimpleDateFormat
+import org.threeten.bp.LocalTime
+import org.threeten.bp.format.DateTimeFormatter
+import sx.time.threeten.toDate
+import sx.time.toLocalDateTime
 import java.util.*
 
 /**
@@ -12,15 +15,13 @@ import java.util.*
 @JsonSerialize(using = ToStringSerializer::class)
 class ShortTime {
     companion object {
-        val format by lazy {
-            SimpleDateFormat("HH:mm")
-        }
+        val format by lazy { DateTimeFormatter.ofPattern("HH:mm") }
     }
 
     val localTime: Date
 
     constructor(localTime: String) {
-        this.localTime = format.parse(localTime)
+        this.localTime = LocalTime.parse(localTime, format).toDate()
     }
 
     @JvmOverloads constructor(localTime: Date = Date()) {
@@ -28,7 +29,7 @@ class ShortTime {
     }
 
     override fun toString(): String {
-        return format.format(this.localTime)
+        return format.format(this.localTime.toLocalDateTime())
     }
 }
 

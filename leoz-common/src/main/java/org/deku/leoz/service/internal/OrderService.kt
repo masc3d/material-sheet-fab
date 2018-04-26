@@ -29,6 +29,11 @@ interface OrderService {
         const val CUSTOMERSREFERENCE = "customer-reference"
     }
 
+    enum class Type {
+        PICKUP,
+        DELIVERY
+    }
+
     /**
      * Get order by id
      * @param id Order id

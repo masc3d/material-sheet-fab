@@ -25,7 +25,6 @@ dependencies {
 
             // Common
             "org.apache.commons:commons-lang3:$v_commons_lang",
-//            "org.reflections:reflections:0.9.10",
             "net.java.dev.jna:jna-platform:$v_jna",
 
             // Logging

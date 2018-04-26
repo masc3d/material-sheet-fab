@@ -28,16 +28,20 @@ buildscript {
         // Flyway
         classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
         classpath "com.h2database:h2:$v_h2"
+
         // Roaster
         classpath "org.jboss.forge.roaster:roaster-api:$v_roaster"
         classpath "org.jboss.forge.roaster:roaster-jdt:$v_roaster"
         classpath "org.apache.commons:commons-lang3:$v_commons_lang"
+
         // QueryDSL SQL codegen
         classpath "com.querydsl:querydsl-sql-codegen:$v_querydsl"
+
         // JOOQ
         classpath "org.jooq:jooq:$v_jooq"
         classpath "org.jooq:jooq-meta:$v_jooq"
         classpath "org.jooq:jooq-codegen:$v_jooq"
+
         // WSDL2Java
         classpath 'no.nils:wsdl2java:0.10'
         classpath "com.sun.xml.bind:jaxb-xjc:$v_jaxb"

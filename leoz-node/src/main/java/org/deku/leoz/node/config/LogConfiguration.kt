@@ -39,13 +39,13 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
             // Error thrown by resteasy-4.0 (beta) when SSE connection breaks (trivial)
             IgnoreFilterCondition(
                     level = Level.ERROR,
-                    name = "org.apache.activemq.broker.TransportConnector",
+                    name = "org.jboss.resteasy.resteasy_jaxrs.i18n",
                     message = "RESTEASY002030: Failed to write event org.jboss.resteasy.plugins.providers.sse"
             ),
             // Error thrown by activemq on remote node connection / quality issues (trivial)
             IgnoreFilterCondition(
                     level = Level.ERROR,
-                    name = "org.jboss.resteasy.resteasy_jaxrs.i18n",
+                    name = "org.apache.activemq.broker.TransportConnector",
                     message = "Could not accept connection  : {}"
             )
     )

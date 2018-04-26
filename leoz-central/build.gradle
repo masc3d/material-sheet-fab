@@ -22,6 +22,7 @@ buildscript {
         classpath "org.jooq:jooq:$v_jooq"
         classpath "org.jooq:jooq-meta:$v_jooq"
         classpath "org.jooq:jooq-codegen:$v_jooq"
+
         // Flyway
         classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
         classpath "mysql:mysql-connector-java:$v_mysql"
@@ -46,7 +47,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     }
 }
 
-version = '0.212-SNAPSHOT'
+version = '0.214-SNAPSHOT'
 mainClassName = "org.deku.leoz.central.Main"
 
 // Database constants
