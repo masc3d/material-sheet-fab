@@ -18,6 +18,7 @@ import sx.android.ApplicationStateMonitor
 import sx.android.IdleTimer
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.Timer
+import sx.log.slf4j.info
 import java.util.concurrent.ScheduledExecutorService
 
 /**
@@ -56,7 +57,7 @@ class ApplicationConfiguration {
                                 val login = instance<Login>()
 
                                 login.authenticatedUser?.also {
-                                    log.trace("Auto logging off user [$it]")
+                                    log.info { "Auto logout of user [$it]" }
                                     login.logout()
                                 }
                             }
