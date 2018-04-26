@@ -231,6 +231,9 @@ class Bundle : Serializable {
                 os.close()
             }
 
+            // Set bundle path modification time
+            nPath.toFile().setLastModified(Date().time)
+
             return bundle
         }
 
