@@ -14,10 +14,12 @@ import org.deku.leoz.service.entity.ServiceErrorCode
 import org.deku.leoz.time.ShortDate
 import org.deku.leoz.time.ShortTime
 import org.deku.leoz.service.pub.RoutingService.*
+import org.deku.leoz.time.toShortTime
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import sx.time.toDate
 import sx.time.toLocalDate
+import sx.time.toTimestamp
 import java.sql.Timestamp
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -334,23 +336,6 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
             participant.sundayDeliveryUntil = rRoute.ltodholiday.toShortTime()
 
         return participant
-    }
-
-    // Extensions for local date
-    fun LocalDate.toTimestamp(): Timestamp {
-        return Timestamp.from(
-                this.atStartOfDay(ZoneId.systemDefault())
-                        .toInstant())
-    }
-
-    // Extensions for java.sql.Time
-    fun java.sql.Time.toShortTime(): ShortTime {
-        return ShortTime(this.toString())
-    }
-
-    // Extensions for java.Date
-    fun Date.toShortTime(): ShortTime {
-        return ShortTime(this)
     }
 
     /**
