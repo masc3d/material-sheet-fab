@@ -302,7 +302,6 @@ jooq {
 // JOOQ generation depends on schema migration
 tasks.generateMainJooqSchemaSource {
     inputs.dir FLYWAY_PROJECT_MIGRATION_DIR
-    outputs.dir JOOQ_GENERATED_DIR
 
     dependsOn tasks.flywayMigrate
     dependsOn tasks.flywayValidate
