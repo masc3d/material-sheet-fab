@@ -18,7 +18,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     }
 }
 
-version '0.46-RELEASE'
+version '0.47-RELEASE'
 mainClassName = "org.deku.leoz.boot.Application"
 
 //region Prototype test setup
