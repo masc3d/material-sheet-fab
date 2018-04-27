@@ -35,7 +35,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
     }
 
     /** List of static ignore conditions */
-    private val ignoreConditions = listOf(
+    private val ignoreConditions = listOf<IgnoreFilterCondition>(
             // Error thrown by resteasy-4.0 (beta) when SSE connection breaks (trivial)
             IgnoreFilterCondition(
                     level = Level.ERROR,
@@ -46,7 +46,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
             IgnoreFilterCondition(
                     level = Level.ERROR,
                     name = "org.apache.activemq.broker.TransportConnector",
-                    message = "Could not accept connection  : {}"
+                    message = "Could not accept connection"
             )
     )
 
