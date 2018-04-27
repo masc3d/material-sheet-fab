@@ -122,7 +122,6 @@ class OrderService
     }
 
 
-
     /**
      * Order record conversion extension
      */
@@ -137,15 +136,15 @@ class OrderService
             o.orderClassification = OrderClassification.PICKUP_DELIVERY
         else
             o.orderClassification = OrderClassification.DELIVERY
-        o.pickupStation = r.pickupStation.toInt()
+        o.pickupStation = r.pickupStation?.toInt() ?: 0
         o.pickupAddress.line1 = r.pickupAddressLine1
         o.pickupAddress.line2 = r.pickupAddressLine2
         o.pickupAddress.line3 = r.pickupAddressLine3
         o.pickupAddress.phoneNumber = r.pickupAddressPhonenumber
         o.pickupAddress.street = r.pickupAddressStreet
         o.pickupAddress.streetNo = r.pickupAddressStreetNo
-        o.pickupAddress.countryCode = r.pickupAddressCountryCode
-        o.pickupAddress.zipCode = r.pickupAddressZipCode
+        o.pickupAddress.countryCode = r.pickupAddressCountryCode ?: ""
+        o.pickupAddress.zipCode = r.pickupAddressZipCode ?: ""
         o.pickupAddress.city = r.pickupAddressCity
         if (r.pickupInformation1 != null) {
             o.pickupNotice = r.pickupInformation1
@@ -164,20 +163,20 @@ class OrderService
 
         o.pickupAppointment.dateStart = r.appointmentPickupStart
         o.pickupAppointment.dateEnd = r.appointmentPickupEnd
-        o.pickupAppointment.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
-        o.pickupAppointment.dateStart = r.appointmentPickupStart
-        o.pickupAppointment.dateEnd = r.appointmentPickupEnd
-        o.pickupAppointment.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
+        o.pickupAppointment.notBeforeStart = r.appointmentPickupNotBeforeStart ?: 0 == 1
+//        o.pickupAppointment.dateStart = r.appointmentPickupStart
+//        o.pickupAppointment.dateEnd = r.appointmentPickupEnd
+//        o.pickupAppointment.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
 
-        o.deliveryStation = r.deliveryStation.toInt()
+        o.deliveryStation = r.deliveryStation?.toInt() ?: 0
         o.deliveryAddress.line1 = r.deliveryAddressLine1
         o.deliveryAddress.line2 = r.deliveryAddressLine2
         o.deliveryAddress.line3 = r.deliveryAddressLine3
         o.deliveryAddress.phoneNumber = r.deliveryAddressPhonenumber
         o.deliveryAddress.street = r.deliveryAddressStreet
         o.deliveryAddress.streetNo = r.deliveryAddressStreetNo
-        o.deliveryAddress.countryCode = r.deliveryAddressCountryCode
-        o.deliveryAddress.zipCode = r.deliveryAddressZipCode
+        o.deliveryAddress.countryCode = r.deliveryAddressCountryCode ?: ""
+        o.deliveryAddress.zipCode = r.deliveryAddressZipCode ?: ""
         o.deliveryAddress.city = r.deliveryAddressCity
 
         val ds: MutableList<ParcelService> = arrayListOf()
@@ -202,10 +201,10 @@ class OrderService
 
         o.deliveryAppointment.dateStart = r.appointmentDeliveryStart
         o.deliveryAppointment.dateEnd = r.appointmentDeliveryEnd
-        o.deliveryAppointment.notBeforeStart = r.appointmentDeliveryNotBeforeStart == 1
+        o.deliveryAppointment.notBeforeStart = r.appointmentDeliveryNotBeforeStart ?: 0 == 1
         o.deliveryAppointment.dateStart = r.appointmentDeliveryStart
         o.deliveryAppointment.dateEnd = r.appointmentDeliveryEnd
-        o.deliveryAppointment.notBeforeStart = r.appointmentDeliveryNotBeforeStart == 1
+        o.deliveryAppointment.notBeforeStart = r.appointmentDeliveryNotBeforeStart ?: 0 == 1
 
         return o
     }
@@ -220,13 +219,15 @@ class OrderService
         p.number = toUnitNo(r.scanId)
         p.parcelType = ParcelType.valueMap.getValue(r.parcelType)
         p.lastDeliveryListId = r.lastDeliveryListId?.toInt()
-        if (DekuUnitNumber.parse(
-                        toUnitNo(r.scanId)).value.type == UnitNumber.Type.Bag
-                //todo take list of alowed deliveryStations from sys_prperties
-                && r.deliveryStation == 956) {
-            p.isDelivered = false
-        } else {
-            p.isDelivered = r.deliveredStatus.toInt() == 4
+        if (r.deliveryStation != null) {
+            if (DekuUnitNumber.parse(
+                            toUnitNo(r.scanId)).value.type == UnitNumber.Type.Bag
+                    //todo take list of alowed deliveryStations from sys_prperties
+                    && r.deliveryStation == 956) {
+                p.isDelivered = false
+            } else {
+                p.isDelivered = r.deliveredStatus.toInt() == 4
+            }
         }
         p.isMissing = r.deliveredStatus.toInt() == 8 && r.lastDeliveredEventReason.toInt() == 30
         p.isDamaged = r.isDamaged.toInt() == -1  // is set form leo statusExport 1
