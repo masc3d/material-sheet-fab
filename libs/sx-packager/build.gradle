@@ -3,6 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
+        v_jna = '4.5.1'
         v_kotlin = '1.2.40'
     }
 
@@ -63,6 +64,10 @@ dependencies {
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$v_kotlin",
+
+            // JNA
+            "net.java.dev.jna:jna:$v_jna",
+            "net.java.dev.jna:jna-platform:$v_jna",
 
             // logging
             "org.apache.commons:commons-lang3:3.7",

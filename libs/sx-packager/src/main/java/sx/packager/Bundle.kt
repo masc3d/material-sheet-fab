@@ -1,9 +1,13 @@
 package sx.packager
 
 import com.google.common.hash.Hashing
+import com.sun.jna.platform.win32.Kernel32
+import com.sun.jna.platform.win32.WinBase
+import com.sun.jna.platform.win32.WinDef
 import org.apache.commons.lang3.SystemUtils
 import org.slf4j.LoggerFactory
 import sx.ProcessExecutor
+import sx.log.slf4j.trace
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import java.io.*
@@ -12,16 +16,14 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 import java.util.function.BiPredicate
-import java.util.jar.JarFile
 import java.util.regex.Pattern
-import java.util.stream.Collectors
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Marshaller
 import javax.xml.bind.annotation.XmlAttribute
 import javax.xml.bind.annotation.XmlElement
 import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
-import kotlin.streams.*
+import kotlin.streams.toList
 
 /**
  * Represents a local/physical leoz bundle including a manifest containing metadata
@@ -128,8 +130,7 @@ class Bundle : Serializable {
 
     /** Bumdle configuration file */
     val configFile: File by lazy(LazyThreadSafetyMode.NONE, {
-        val nioConfigFile = Files.find(this.jarPath.toPath(), 1, BiPredicate {
-            p, a ->
+        val nioConfigFile = Files.find(this.jarPath.toPath(), 1, BiPredicate { p, a ->
             a.isRegularFile && p.fileName.toString().endsWith(".cfg")
         }
         ).findFirst()
@@ -191,7 +192,8 @@ class Bundle : Serializable {
          * @param bundleNme Name of the bundle to create
          * @param version Version of the bundle
          */
-        @JvmStatic fun create(bundlePath: File, bundleName: String, platformId: PlatformId, version: Version): Bundle {
+        @JvmStatic
+        fun create(bundlePath: File, bundleName: String, platformId: PlatformId, version: Version): Bundle {
             val fileEntries = ArrayList<FileEntry>()
 
             // Remove existing manifest
@@ -241,7 +243,8 @@ class Bundle : Serializable {
          * Load bundle from manifest/path
          * @param bundlePath Bundle path
          */
-        @JvmStatic fun load(bundlePath: File): Bundle {
+        @JvmStatic
+        fun load(bundlePath: File): Bundle {
             if (!bundlePath.exists())
                 throw IllegalArgumentException("Path [${bundlePath}] does not exist")
 
@@ -285,7 +288,8 @@ class Bundle : Serializable {
          * @param c Class contained in one of the native bzndle jars
          * @throws IllegalStateException If not running from jar
          */
-        @JvmStatic fun load(c: Class<*>): Bundle {
+        @JvmStatic
+        fun load(c: Class<*>): Bundle {
             val jarFile = File(c.protectionDomain.codeSource.location.toURI())
 
             if (!jarFile.toString().toLowerCase().endsWith(".jar"))
@@ -359,7 +363,8 @@ class Bundle : Serializable {
              * Parse version string
              * @param version Version string
              */
-            @JvmStatic fun parse(version: String): Version {
+            @JvmStatic
+            fun parse(version: String): Version {
                 // Determine end of numeric components
                 var end = version.indexOfFirst({ c -> !c.isDigit() && c != '.' })
 
@@ -387,7 +392,7 @@ class Bundle : Serializable {
             fun tryParse(version: String): Version? {
                 return try {
                     this.parse(version)
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                     null
                 }
             }
@@ -570,7 +575,9 @@ class Bundle : Serializable {
         log.info("Invoking bundle process interface [${command}]")
 
         val pb = ProcessBuilder(command)
+
         if (wait) {
+            // Use process executor for synchronous execution
             val pe = ProcessExecutor(pb, errorHandler = ProcessExecutor.DefaultTextStreamHandler(
                     trim = true,
                     omitEmptyLines = true,
@@ -578,11 +585,44 @@ class Bundle : Serializable {
             pe.start()
             try {
                 pe.waitFor()
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 if (error.isNotEmpty()) log.error(error.toString())
                 throw e
             }
         } else {
+            // Detached process.
+            // Simple invoke process builder on start.
+            when {
+                SystemUtils.IS_OS_WINDOWS -> {
+                    // masc20180427. As of JDK9/10
+                    // process builder seems to pass `bInheritHandles = TRUE` to `CreateProcess`
+                    // which will cause file locking issues (eg. when invoking leoz-boot to install / replace bundle)
+
+                    val startupinfo = WinBase.STARTUPINFO()
+                    val processinfo = WinBase.PROCESS_INFORMATION()
+
+                    val cmdline = "\"${this.executable.absolutePath}\" ${args.joinToString(" ")}"
+
+                    log.trace { "Native command line [${cmdline}]" }
+
+                    val success = Kernel32.INSTANCE.CreateProcessW(
+                            null,
+                            cmdline.toCharArray(),
+                            null,
+                            null,
+                            false,
+                            WinDef.DWORD(0),
+                            null,
+                            null,
+                            startupinfo,
+                            processinfo
+                    )
+
+                    if (!success)
+                        throw IllegalStateException("Failed to spawn native process [${this.executable.absolutePath}] cmdline [${cmdline}]")
+                }
+                else -> pb.start()
+            }
             pb.start()
         }
     }
