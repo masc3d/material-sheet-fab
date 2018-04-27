@@ -55,26 +55,35 @@ class Application {
 
                 val settings = Kodein.global.instance<Settings>()
 
-                // Parse leoz-boot command line
+                // Parse leoz-boot command line.
                 val jc = JCommander(settings)
                 jc.programName = BundleType.LEOZ_BOOT.value
                 jc.setAcceptUnknownOptions(true)
 
+                if (args.count() == 0) {
+                    jc.usage()
+                    System.exit(-1)
+                    return
+                }
+
                 try {
                     jc.parse(*args)
-                }
-                catch(e: ParameterException) {
+                } catch (e: ParameterException) {
                     log.error(e.message)
                     jc.usage()
                     System.exit(-1)
                     return
                 }
 
-                if (jc.unknownOptions.size > 0) {
+                if (jc.unknownOptions.size > 1) {
                     jc.usage()
                     System.exit(-1)
                     return
                 }
+
+                val bundle = jc.unknownOptions.getOrNull(0)
+                if (bundle != null && settings.bundle.isEmpty())
+                    settings.bundle = bundle
 
                 log.info("Settings [${settings}]")
 
@@ -97,8 +106,7 @@ class Application {
                     javafx.application.Application.launch(org.deku.leoz.boot.fx.Application::class.java)
                 }
 
-            }
-            catch (e: Exception) {
+            } catch (e: Throwable) {
                 log.error(e.message, e)
                 System.exit(-1)
             }
