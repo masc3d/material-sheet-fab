@@ -26,7 +26,7 @@
             >
 
             <EditText
-                android:id="@+id/uxNeighboursName"
+                android:id="@+id/uxName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -36,7 +36,7 @@
                 android:maxLines="1"
                 android:completionThreshold="1"
                 android:imeOptions="actionNext"
-                android:nextFocusRight="@+id/uxNeighboursStreet"
+                android:nextFocusRight="@+id/uxStreet"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
         </android.support.design.widget.TextInputLayout>
@@ -45,7 +45,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/uxStreetContainer">
 
         <ImageView
             android:layout_width="@dimen/icon_size"
@@ -67,7 +68,7 @@
                 android:layout_height="wrap_content">
 
                 <AutoCompleteTextView
-                    android:id="@+id/uxNeighboursStreet"
+                    android:id="@+id/uxStreet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -77,7 +78,7 @@
                     android:completionThreshold="1"
                     android:imeOptions="actionNext"
                     android:hint="@string/street"
-                    android:nextFocusRight="@+id/uxNeighboursStreetNo"
+                    android:nextFocusRight="@+id/uxStreetNo"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
             </android.support.design.widget.TextInputLayout>
@@ -89,7 +90,7 @@
                 >
 
                 <EditText
-                    android:id="@+id/uxNeighboursStreetNo"
+                    android:id="@+id/uxStreetNo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -97,6 +98,7 @@
                     android:inputType="text|textNoSuggestions"
                     android:digits="-01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                     android:singleLine="true"
+                    android:imeOptions="actionDone"
                     android:maxLines="1"
                     android:hint="@string/number_short_no"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>

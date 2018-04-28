@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.FragmentManager
 import android.support.v7.widget.LinearLayoutManager
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,9 +15,6 @@ import android.widget.LinearLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
-import com.codetroopers.betterpickers.expirationpicker.ExpirationPicker
-import com.codetroopers.betterpickers.expirationpicker.ExpirationPickerBuilder
-import com.codetroopers.betterpickers.hmspicker.HmsPickerBuilder
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -31,7 +27,6 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_tour_stop_process.*
-import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
@@ -54,6 +49,7 @@ import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.extension.inflateMenu
 import org.deku.leoz.mobile.ui.core.view.ActionItem
+import org.deku.leoz.mobile.ui.core.with
 import org.deku.leoz.mobile.ui.process.TourScreen
 import org.deku.leoz.mobile.ui.process.tour.stop.*
 import org.deku.leoz.mobile.ui.vm.*
@@ -72,7 +68,6 @@ import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.materialdialogs.addAll
 import sx.format.format
-import sx.time.TimeSpan
 import java.util.concurrent.TimeUnit
 
 /**
@@ -145,9 +140,6 @@ class StopProcessScreen :
 
     /** The current/most recently selected damaged parcel */
     private var currentDamagedParcel: ParcelEntity? = null
-
-    /** Current close stop variant */
-    private var currentCloseStopVariatn: EventDeliveredReason? = null
     //endregion
 
     /** Active merge dialog */
@@ -965,12 +957,11 @@ class StopProcessScreen :
                     this.currentDamagedParcel = parcel
 
                     /** Show camera screen */
-                    this.activity.showScreen(DamagedParcelCameraScreen().also {
-                        it.setTargetFragment(this, 0)
-                        it.parameters = DamagedParcelCameraScreen.Parameters(
-                                parcelId = parcel.id
-                        )
-                    })
+                    this.activity.showScreen(DamagedParcelCameraScreen().with(
+                            target = this,
+                            params = DamagedParcelCameraScreen.Parameters(
+                                    parcelId = parcel.id
+                            )))
                 }
             }
 
@@ -1008,8 +999,7 @@ class StopProcessScreen :
         log.user { "Closes stop [${variant}]" }
 
         this.tourStop.resetCloseStopState()
-
-        this.currentCloseStopVariatn = variant
+        this.tourStop.deliveredReason = variant
 
         // Show notification dialogs
         val dialogs: List<MaterialDialog> = this.tourStop.services
@@ -1029,23 +1019,14 @@ class StopProcessScreen :
                 }
 
                 if (this.tourStop.cashAmountToCollect > 0) {
-                    this.activity.showScreen(CashScreen().also {
-                        it.setTargetFragment(this, 0)
-                    })
+                    this.activity.showScreen(CashScreen().with(target = this))
                 } else {
-                    this.activity.showScreen(RecipientScreen().also {
-                        it.setTargetFragment(this, 0)
-                        it.parameters = RecipientScreen.Parameters(
-                                stopId = this.stop.id
-                        )
-                    })
+                    this.activity.showScreen(RecipientScreen().with(target = this))
                 }
             }
 
             EventDeliveredReason.POSTBOX -> {
-                this.activity.showScreen(PostboxCameraScreen().also {
-                    it.setTargetFragment(this, 0)
-                })
+                this.activity.showScreen(PostboxCameraScreen().with(target = this))
             }
 
             EventDeliveredReason.NORMAL -> {
@@ -1059,24 +1040,12 @@ class StopProcessScreen :
                         when {
                             this.tourStop.cashAmountToCollect > 0 -> {
                                 //Requires CashScreen to be shown
-                                this.activity.showScreen(CashScreen().also {
-                                    it.setTargetFragment(this, 0)
-                                })
+                                this.activity.showScreen(CashScreen().with(target = this))
                             }
                             else -> {
-                                MaterialDialog.Builder(context)
-                                        .title(R.string.recipient)
-                                        .cancelable(true)
-                                        .content(R.string.recipient_dialog_content)
-                                        .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME or InputType.TYPE_TEXT_FLAG_CAP_WORDS)
-                                        .input("Max Mustermann", null, false, { _, charSequence ->
-                                            this.tourStop.recipientName = charSequence.toString()
-
-                                            this.activity.showScreen(SignatureScreen().also {
-                                                it.setTargetFragment(this, 0)
-                                            })
-                                        })
-                                        .build().show()
+                                this.activity.showScreen(RecipientScreen().with(
+                                        target = this
+                                ))
                             }
                         }
                     }
@@ -1148,42 +1117,21 @@ class StopProcessScreen :
         this.finalizeStop()
     }
 
-    override fun onRecipientScreenComplete(neighbourName: String) {
-        this.tourStop.recipientName = neighbourName
+    override fun onRecipientScreenComplete(recipientName: String) {
+        this.tourStop.recipientName = recipientName
         this.tourStop.deliveredReason = EventDeliveredReason.NEIGHBOR
 
         this.activity.showScreen(
-                SignatureScreen().also {
-                    it.setTargetFragment(this, 0)
-                }
+                SignatureScreen().with(target = this)
         )
     }
 
     override fun onCashScreenContinue() {
-        when (this.currentCloseStopVariatn) {
-            EventDeliveredReason.NORMAL -> {
-                MaterialDialog.Builder(context)
-                        .title(R.string.recipient)
-                        .cancelable(true)
-                        .content(R.string.recipient_dialog_content)
-                        .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
-                        .input("Max Mustermann", null, false, { _, charSequence ->
-                            this.tourStop.recipientName = charSequence.toString()
-
-                            this.activity.showScreen(SignatureScreen().also {
-                                it.setTargetFragment(this, 0)
-                            })
-                        })
-                        .build().show()
-            }
-
-            EventDeliveredReason.NEIGHBOR -> {
-                this.activity.showScreen(RecipientScreen().also {
-                    it.setTargetFragment(this, 0)
-                    it.parameters = RecipientScreen.Parameters(
-                            stopId = this.stop.id
-                    )
-                })
+        when (this.tourStop.deliveredReason) {
+            EventDeliveredReason.NORMAL, EventDeliveredReason.NEIGHBOR -> {
+                this.activity.showScreen(RecipientScreen().with(
+                        target = this
+                ))
             }
 
             else -> {

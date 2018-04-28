@@ -123,3 +123,15 @@ open class Fragment<P> : RxAppCompatDialogFragment() {
     override fun getContext(): Context =
             super.getContext() ?: throw IllegalStateException("Context not available")
 }
+
+/**
+ * Convenience extension for setting common fragment properties
+ */
+fun <P, T : Fragment<P>> T.with(
+        params: P? = null,
+        target: android.support.v4.app.Fragment? = null): T {
+    return this.also {
+        if (target != null) it.setTargetFragment(target, 0)
+        if (params != null) it.parameters = params
+    }
+}

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -14,48 +15,39 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
-import kotlinx.android.synthetic.main.screen_tour_stop_neighbour_delivery.*
-import org.deku.leoz.mobile.Database
+import kotlinx.android.synthetic.main.screen_tour_stop_recipient.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.address
-import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.model.process.Tour
+import org.deku.leoz.mobile.model.process.TourStop
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
+import org.deku.leoz.model.EventDeliveredReason
 import org.jetbrains.anko.inputMethodManager
-import org.parceler.Parcel
-import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.android.hideSoftInput
 import sx.android.showSoftInput
+import sx.rx.just
 
 /**
  * Neighbour delivery screen
  * Created by phpr on 10.07.2017.
  */
-class RecipientScreen : ScreenFragment<RecipientScreen.Parameters>() {
-
-    @Parcel(Parcel.Serialization.BEAN)
-    class Parameters @ParcelConstructor constructor(
-            var stopId: Int
-    )
+class RecipientScreen : ScreenFragment<Any>() {
 
     interface Listener {
-        fun onRecipientScreenComplete(neighbourName: String)
+        fun onRecipientScreenComplete(recipientName: String)
     }
 
     private val listener by listenerDelegate<Listener>()
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val db: Database by Kodein.global.lazy.instance()
-    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
-    private val stop: Stop by lazy {
-        stopRepository
-                .findById(this.parameters.stopId)
-                .blockingGet()
-                ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]")
+    private val tour: Tour by Kodein.global.lazy.instance()
+
+    private val tourStop: TourStop by lazy {
+        this.tour.activeStop ?: throw IllegalArgumentException("Active stop not set")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,22 +56,28 @@ class RecipientScreen : ScreenFragment<RecipientScreen.Parameters>() {
         this.retainInstance = true
 
         this.headerImage = Headers.delivery
-        this.title = getString(R.string.title_alternativedelivery)
+        this.title = when (this.tourStop.deliveredReason) {
+            EventDeliveredReason.NEIGHBOR -> getString(R.string.alternative_recipient)
+            else -> getString(R.string.recipient)
+        }
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            inflater.inflate(R.layout.screen_tour_stop_neighbour_delivery, container, false)
+            inflater.inflate(R.layout.screen_tour_stop_recipient, container, false)
+
+    private val requiresStreet: Boolean by lazy { this.tourStop.deliveredReason == EventDeliveredReason.NEIGHBOR }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.uxNeighboursName.requestFocus()
+        this.uxName.requestFocus()
         this.context.inputMethodManager.showSoftInput()
 
-        this.uxNeighboursStreet.setAdapter(
+        this.uxStreet.setAdapter(
                 ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line,
-                        arrayOf(stop.address.street)))
+                        arrayOf(tourStop.entity.address.street)))
 
         this.actionItems = listOf(
                 ActionItem(
@@ -90,24 +88,35 @@ class RecipientScreen : ScreenFragment<RecipientScreen.Parameters>() {
                         visible = false
                 )
         )
+
+        if (!this.requiresStreet) {
+            this.uxStreetContainer.visibility = View.GONE
+            this.uxName.imeOptions = EditorInfo.IME_ACTION_DONE
+            this.uxStreet.imeOptions = EditorInfo.IME_ACTION_NONE
+            this.uxStreetNo.imeOptions = EditorInfo.IME_ACTION_NONE
+        }
     }
 
     override fun onResume() {
         super.onResume()
 
         val ovNeighborName = RxTextView
-                .textChanges(this.uxNeighboursName)
+                .textChanges(this.uxName)
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
 
         val ovNeighborStreet = RxTextView
-                .textChanges(this.uxNeighboursStreet)
+                .textChanges(this.uxStreet)
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
 
         val ovNeighborStreetNo = RxTextView
-                .textChanges(this.uxNeighboursStreetNo)
+                .textChanges(this.uxStreetNo)
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
 
-        val ovLastEditorAction = RxTextView.editorActions(this.uxNeighboursStreetNo)
+        val ovLastEditorAction = when (this.requiresStreet) {
+            true -> RxTextView.editorActions(this.uxStreetNo)
+            else -> RxTextView.editorActions(this.uxName)
+        }
+                .filter { it == EditorInfo.IME_ACTION_DONE }
                 .map { Unit }
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
 
@@ -118,8 +127,9 @@ class RecipientScreen : ScreenFragment<RecipientScreen.Parameters>() {
         val ovFieldsFilled = Observable.combineLatest(
                 arrayOf(
                         ovNeighborName.map { it.length > 0 },
-                        ovNeighborStreet.map { it.length > 0 },
-                        ovNeighborStreetNo.map { it.length > 0 }),
+                        if (this.requiresStreet) ovNeighborStreet.map { it.length > 0 } else true.just(),
+                        if (this.requiresStreet) ovNeighborStreetNo.map { it.length > 0 } else true.just()
+                ),
                 { a: Array<Any> -> a.all { it == true } }
         )
                 .distinctUntilChanged()
@@ -147,7 +157,7 @@ class RecipientScreen : ScreenFragment<RecipientScreen.Parameters>() {
                 .subscribe {
                     this.context.inputMethodManager.hideSoftInput()
                     this.listener?.onRecipientScreenComplete(
-                            neighbourName = this.uxNeighboursName.text.toString()
+                            recipientName = this.uxName.text.toString()
                     )
                 }
     }

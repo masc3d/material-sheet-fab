@@ -9,6 +9,10 @@
 
     <string name="active_stop">Aktiver Stop</string>
 
+    <string name="alternative_recipient">Alternativ-Zustellung</string>
+
+    <string name="attach_note">Notiz anheften</string>
+
     <string name="authentication_failed">Authentifizierung fehlgeschglagen</string>
 
     <string name="authority">Behörde</string>
@@ -37,6 +41,8 @@
 
     <string name="check_for_updates">Nach Updates suchen</string>
 
+    <string name="choose_item">Element auswählen</string>
+
     <string name="clear">Leeren</string>
 
     <string name="close">Schließen</string>
@@ -49,6 +55,15 @@
     <string name="continue_without">Ohne fortfahren</string>
 
     <string name="damaged">Beschädigt</string>
+
+    <string name="data_protection">Datenschutz</string>
+    <string name="data_protection_policy">Datenschutzerklärung</string>
+
+    <string name="delay_reason_bad_weather">Schlechtes Wetter</string>
+    <string name="delay_reason_car_accident">Autounfall</string>
+    <string name="delay_reason_other">Sonstiges</string>
+    <string name="delay_reason_traffic_jam">Stau</string>
+    <string name="delay_reason_vehicle_breakdown">Fahrzeugpanne</string>
 
     <string name="delivered">Zugestellt</string>
 
@@ -97,10 +112,10 @@
     <string name="error_incorrect_password">Das Passwort ist falsch</string>
     <string name="error_invalid_barcode">Ungültiger barcode</string>
     <string name="error_invalid_credentials">Email/Passwort Kombination konnte nicht gefunden werden.</string>
-    <string name="error_invalid_tour">Ungültige Tour</string>
     <string name="error_invalid_email">Die eMail-Adresse ist falsch</string>
     <string name="error_invalid_parcel">Ungültiges Paket</string>
     <string name="error_invalid_password">Das Passwort ist zu kurz</string>
+    <string name="error_invalid_tour">Ungültige Tour</string>
     <string name="error_no_corresponding_order">Kein zugehöriger Auftrag gefunden</string>
     <string name="error_no_corresponding_stop">Kein zugehöriger Stop gefunden</string>
     <string name="error_unknown_parcel">Unbekanntes Paket</string>
@@ -131,6 +146,7 @@
 
     <string name="given_cash">Erhaltenes Geld</string>
     <string name="given_cash_eg_15_00">Erhaltenes Geld (z.B. 15,00)</string>
+
     <string name="gps_active">GPS aktiv</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -225,8 +241,12 @@
     <string name="question_remove_damaged_status">Beschädigt-Status entfernen?</string>
     <string name="question_remove_damaged_status_title">Paket wurde als beschädigt gekennzeichnet</string>
 
+    <string name="reason">Grund</string>
+
     <string name="recipient">Empfänger</string>
     <string name="recipient_dialog_content">Wer hat die Sendung(en) angenommen?</string>
+
+    <string name="report_delay">Verspätung melden</string>
 
     <string name="reset">Zurücksetzen</string>
 
@@ -280,7 +300,6 @@
     <string name="submit">Absenden</string>
 
     <string name="title_activity_delivery">Zustellung</string>
-    <string name="title_alternativedelivery">Alternativ-Zustellung</string>
     <string name="title_cash_collection">Nachnahme</string>
     <string name="title_closed_stop_list">Geschlossene Stops</string>
     <string name="title_confirm_call">Anruf bestätigen</string>
@@ -332,15 +351,4 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
-    <string name="data_protection">Datenschutz</string>
-    <string name="data_protection_policy">Datenschutzerklärung</string>
-    <string name="report_delay">Verspätung melden</string>
-    <string name="attach_note">Notiz anheften</string>
-    <string name="reason">Grund</string>
-    <string name="delay_reason_other">Sonstiges</string>
-    <string name="delay_reason_vehicle_breakdown">Fahrzeugpanne</string>
-    <string name="delay_reason_traffic_jam">Stau</string>
-    <string name="delay_reason_car_accident">Autounfall</string>
-    <string name="delay_reason_bad_weather">Schlechtes Wetter</string>
-    <string name="choose_item">Element auswählen</string>
 </resources>

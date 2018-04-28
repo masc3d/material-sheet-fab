@@ -9,9 +9,13 @@
 
     <string name="active_stop">Active stop</string>
 
+    <string name="alternative_recipient">Alternative Recipient</string>
+
     <string name="app_name" translatable="false">mobileX</string>
     <string name="app_name_long" translatable="false">mobileX</string>
     <string name="app_project_name" translatable="false">leoz-mobile</string>
+
+    <string name="attach_note">Attach a note</string>
 
     <string name="authentication_failed">Authentication failed</string>
 
@@ -41,6 +45,8 @@
 
     <string name="check_for_updates">Check for updates</string>
 
+    <string name="choose_item">Choose Item</string>
+
     <string name="clear">Clear</string>
 
     <string name="close">Close</string>
@@ -53,6 +59,15 @@
     <string name="continue_without">Continue without</string>
 
     <string name="damaged">Damaged</string>
+
+    <string name="data_protection">Data protecion</string>
+    <string name="data_protection_policy">Data protection policy</string>
+
+    <string name="delay_reason_bad_weather">Bad Weather</string>
+    <string name="delay_reason_car_accident">Car Accident</string>
+    <string name="delay_reason_other">Other</string>
+    <string name="delay_reason_traffic_jam">Traffic Jam</string>
+    <string name="delay_reason_vehicle_breakdown">Vehicle Breakdown</string>
 
     <string name="delivered">Delivered</string>
 
@@ -101,10 +116,10 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_invalid_barcode">Invalid barcode</string>
     <string name="error_invalid_credentials">Email/Password combination could not be found.</string>
-    <string name="error_invalid_tour">Invalid tour</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_parcel">Invalid parcel</string>
     <string name="error_invalid_password">This password is too short</string>
+    <string name="error_invalid_tour">Invalid tour</string>
     <string name="error_no_corresponding_order">No corresponding order</string>
     <string name="error_no_corresponding_stop">No corresponding stop</string>
     <string name="error_unknown_parcel">Unkonwn parcel</string>
@@ -136,6 +151,7 @@
 
     <string name="given_cash">Given cash</string>
     <string name="given_cash_eg_15_00">Given cash (eg. 15,00)</string>
+
     <string name="gps_active">GPS active</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -235,8 +251,12 @@
     <string name="question_remove_damaged_status">Remove damaged status?</string>
     <string name="question_remove_damaged_status_title">Parcel has been declared damaged</string>
 
+    <string name="reason">Reason</string>
+
     <string name="recipient">Recipient</string>
     <string name="recipient_dialog_content">Who accepted the shipment?</string>
+
+    <string name="report_delay">Report delay</string>
 
     <string name="reset">Reset</string>
 
@@ -293,7 +313,6 @@
     <string name="submit">Submit</string>
 
     <string name="title_activity_delivery">Delivery</string>
-    <string name="title_alternativedelivery">Alternative Recipient</string>
     <string name="title_cash_collection">Cash collection</string>
     <string name="title_closed_stop_list">Closed Stops</string>
     <string name="title_confirm_call">Confirm call</string>
@@ -345,15 +364,4 @@
     <string name="warehouse">Warehouse</string>
 
     <string name="yes_start_tour">Yes, start tour</string>
-    <string name="data_protection_policy">Data protection policy</string>
-    <string name="data_protection">Data protecion</string>
-    <string name="report_delay">Report delay</string>
-    <string name="attach_note">Attach a note</string>
-    <string name="delay_reason_bad_weather">Bad Weather</string>
-    <string name="delay_reason_car_accident">Car Accident</string>
-    <string name="delay_reason_traffic_jam">Traffic Jam</string>
-    <string name="delay_reason_vehicle_breakdown">Vehicle Breakdown</string>
-    <string name="delay_reason_other">Other</string>
-    <string name="reason">Reason</string>
-    <string name="choose_item">Choose Item</string>
 </resources>
