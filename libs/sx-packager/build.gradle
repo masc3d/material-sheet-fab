@@ -4,7 +4,7 @@ version '0.1'
 buildscript {
     ext {
         v_jna = '4.5.1'
-        v_kotlin = '1.2.40'
+        v_kotlin = '1.2.41'
     }
 
     repositories {
