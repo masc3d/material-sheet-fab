@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.service.internal.DiscoveryService
+import sx.JarManifest
+import sx.Process
+import sx.platform.JvmUtil
 import java.awt.GraphicsEnvironment
 
 /**
@@ -26,6 +29,10 @@ class Application {
         @JvmStatic
         fun main(args: Array<String>) {
             try {
+                val version = JarManifest(Application::class.java).implementationVersion
+
+                log.info("${BundleType.LEOZ_BOOT.value}-${version}, ${JvmUtil.shortInfoText} pid [${Process.currentProcess.pid}]")
+
                 // Leoz bundle process commandline interface support
                 val setup = Setup()
 
