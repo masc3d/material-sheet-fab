@@ -208,7 +208,7 @@ open class Application :
         }
         logConfiguration.initialize()
 
-        log.info("${this.name} [${version}] ${JvmUtil.shortInfoText} pid [${Process.currentProcess.pid}]")
+        log.info("${this.name}-${version}, ${JvmUtil.shortInfoText} pid [${Process.currentProcess.pid}]")
 
         // Log system information
         log.info { this.systemInformation }
