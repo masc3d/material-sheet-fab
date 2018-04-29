@@ -1,15 +1,9 @@
 package org.deku.leoz.node.data.repository
 
-import org.deku.leoz.node.data.jpa.QTadNodeGeoposition
-import org.deku.leoz.node.data.jpa.QTadNodeGeoposition.tadNodeGeoposition
 import org.deku.leoz.node.data.jpa.TadNodeGeoposition
 import org.deku.leoz.service.internal.LocationServiceV2
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
-import sx.persistence.querydsl.from
-import sx.time.toLocalDateTime
-import sx.time.toSqlDate
-import sx.time.toTimestamp
 import java.util.*
 import javax.inject.Inject
 import javax.persistence.EntityManager

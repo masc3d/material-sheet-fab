@@ -17,6 +17,7 @@ import org.deku.leoz.service.internal.entity.BagInitRequest
 import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
 import org.deku.leoz.service.pub.RoutingService
+import org.deku.leoz.time.workDate
 import org.jooq.DSLContext
 import org.jooq.types.UInteger
 import org.springframework.beans.factory.annotation.Qualifier

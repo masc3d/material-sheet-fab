@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
 import sx.time.threeten.toDate
-import sx.time.toLocalDateTime
+import sx.time.threeten.toLocalDateTime
 import java.util.*
 
 /**

@@ -10,6 +10,7 @@ import org.deku.leoz.model.maxWeightForParcelBag
 import org.deku.leoz.service.internal.ExportService
 import org.deku.leoz.service.internal.ImportService
 import org.deku.leoz.service.internal.entity.Address
+import org.deku.leoz.time.workDate
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.sum
 import org.jooq.types.UInteger
@@ -17,7 +18,6 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import sx.time.toSqlDate
 import sx.time.toTimestamp
-import sx.time.workDate
 import java.math.BigDecimal
 import java.time.LocalDate
 import javax.inject.Inject
