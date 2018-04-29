@@ -74,7 +74,7 @@ dependencies {
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
 
             // i18n additions, eg. ISO 3166-1 country codes
-            "com.neovisionaries:nv-i18n:1.22"
+            "com.neovisionaries:nv-i18n:1.23"
     )
 
     compileOnly(

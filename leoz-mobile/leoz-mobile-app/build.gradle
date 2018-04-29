@@ -19,7 +19,7 @@ buildscript {
 
     ext {
         v_android_gms = '11.8.0'
-        v_anko = '0.10.4'
+        v_anko = '0.10.5'
         v_javamail = '1.6.0'
         v_material_dialogs = '0.9.6.0'
         v_multidex = '1.0.3'
