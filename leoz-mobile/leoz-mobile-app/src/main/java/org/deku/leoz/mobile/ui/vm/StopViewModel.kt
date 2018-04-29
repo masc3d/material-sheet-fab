@@ -25,8 +25,9 @@ import sx.android.getColorCompat
 import sx.rx.ObservableRxProperty
 import sx.rx.just
 import sx.time.TimeSpan
+import sx.time.threeten.toInstantBp
+import sx.time.threeten.toLocalDateTime
 import sx.time.toCalendar
-import sx.time.toLocalDateTime
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -121,8 +122,8 @@ class StopViewModel(
 
         this.stop.etaProperty.map {
 
-            val eta = it.value?.toLocalDateTime() ?: return@map default
-            val appointmentTo = this.appointmentToDate?.toLocalDateTime() ?: return@map default
+            val eta = it.value?.toInstantBp() ?: return@map default
+            val appointmentTo = this.appointmentToDate?.toInstantBp() ?: return@map default
 
             val minutes = eta.until(appointmentTo, ChronoUnit.MINUTES)
 
