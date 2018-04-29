@@ -50,7 +50,12 @@ fun <T : Any> SseEventSink.push(
     subscription = Observable.merge(
             // Emit interval based (ping) event in order to detect remote disconnection
             Observable.interval(1, TimeUnit.MINUTES)
-                    .map { sse.newEventBuilder().id(uuid).build() }
+                    .map {
+                        sse.newEventBuilder()
+                                .id(uuid)
+                                .data("")
+                                .build()
+                    }
             ,
             events.map {
                 sse.newEventBuilder()
