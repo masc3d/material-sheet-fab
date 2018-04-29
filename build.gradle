@@ -10,7 +10,7 @@ buildscript {
         v_android_support = '27.1.1'
         v_android_test = '1.0.2'
         v_android_gms = '11.8.0'
-        v_anko = '0.10.4'
+        v_anko = '0.10.5'
         v_javamail = '1.6.0'
         v_junit = '4.12'
         v_kotlin = '1.2.41'
@@ -113,7 +113,7 @@ dependencies {
             "com.android.support:design:$v_android_support",
 
             // rx
-            "io.reactivex.rxjava2:rxjava:2.1.12",
+            "io.reactivex.rxjava2:rxjava:2.1.13",
             "io.reactivex.rxjava2:rxandroid:2.0.2",
             "io.reactivex:rxkotlin:2.0.0-RC1",
 
