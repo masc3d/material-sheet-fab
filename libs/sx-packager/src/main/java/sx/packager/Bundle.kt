@@ -623,7 +623,6 @@ class Bundle : Serializable {
                 }
                 else -> pb.start()
             }
-            pb.start()
         }
     }
 }
