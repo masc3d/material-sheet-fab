@@ -61,6 +61,7 @@ idea {
         excludeDirs += file('leoz-mobile')
         excludeDirs += file('leoz-web')
         excludeDirs += file('release')
+        excludeDirs += file('build-cache')
     }
 }
 
