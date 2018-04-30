@@ -38,6 +38,7 @@ open class NtpTime(
                 .withSharedPreferences(this.context)
                 .withLoggingEnabled(this.trueTimeInternalLoggingEnabled)
                 .withRetryCount(this.maxRetryCount)
+                .withConnectionTimeout(Duration.ofSeconds(10).toMillis().toInt())
                 .initializeRx(this.ntpHost)
                 .ignoreElements()
                 .subscribeOn(this.scheduler)
