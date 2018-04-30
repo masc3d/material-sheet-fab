@@ -168,7 +168,9 @@ subprojects {
         sourceSets.test.output.resourcesDir = testClassesDir
 
         // Copy kotlin classes to java classes output directory
-        kotlin.copyClassesToJavaOutput = true
+        // masc20180430. as of gradle-4.7, disabling unification of java/kotlin classes as it's not compatible with gradle build cache
+        // This implies that the project can only be run via gradle delegation, as IJ does not support multiple language outputs per module
+        kotlin.copyClassesToJavaOutput = false
 
         if (kotlin.copyClassesToJavaOutput) {
             // When using `copyClassesToJavaOutput` the (old) classesDirs has to be amended as well

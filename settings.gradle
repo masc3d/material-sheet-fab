@@ -46,3 +46,10 @@ project(':barbarywatchservice').projectDir = file('libs/barbarywatchservice')
 //project(':sx-android-honeywell').projectDir = file('libs/sx-android-honeywell')
 //project(':material-sheet-fab').projectDir = file('leoz-mobile/libs/material-sheet-fab/material-sheet-fab')
 //project(':camerakit').projectDir = file('leoz-mobile/libs/CameraKit-Android/camerakit')
+
+buildCache {
+    local(DirectoryBuildCache) {
+        directory = new File(rootDir, 'build-cache')
+        removeUnusedEntriesAfterDays = 30
+    }
+}

@@ -18,3 +18,10 @@ project(':leoz-common').projectDir = file('../leoz-common')
 
 // Libs
 project(':material-sheet-fab').projectDir = file('libs/material-sheet-fab/material-sheet-fab')
+
+buildCache {
+    local(DirectoryBuildCache) {
+        directory = new File(rootDir, 'build-cache')
+        removeUnusedEntriesAfterDays = 30
+    }
+}
