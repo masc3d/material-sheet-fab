@@ -40,20 +40,6 @@ def assertJvmVersion(String vmVersion) {
 
 assertJvmVersion(v_jvm)
 
-//region TODO: workaround for https://github.com/gradle/gradle/issues/3176, remove when resolved
-def buildOutputCacheProperties = project.rootDir.toPath()
-        .resolve('.gradle')
-        .resolve('buildOutputCleanup')
-        .resolve('cache.properties')
-        .toFile()
-
-if (!buildOutputCacheProperties.exists()) {
-    buildOutputCacheProperties.parentFile.mkdirs()
-    buildOutputCacheProperties.createNewFile()
-    buildOutputCacheProperties.write("gradle.version=${project.gradle.gradleVersion}")
-}
-//endregion
-
 idea {
     module {
         // Exclude dirs to prevent indexing
