@@ -4,7 +4,11 @@ import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 import sx.Stopwatch
+import sx.time.threeten.toDate
+import sx.time.threeten.toLocalDateTime
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
 import java.util.*
@@ -13,7 +17,7 @@ import java.util.*
  * Created by masc on 06/09/16.
  */
 abstract class SerializerTest(
-        private val serializer: Serializer
+        protected val serializer: Serializer
 ) {
     val log = LoggerFactory.getLogger(this.javaClass)
 
