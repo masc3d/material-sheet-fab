@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
+import sx.io.serialization.Serializable
 import sx.time.threeten.toDate
 import sx.time.threeten.toLocalDateTime
 import java.util.*
@@ -12,6 +13,7 @@ import java.util.*
  * LocalTime wrapper for rest operations, serializing to short time format (eg. "10:00")
  * Created by masc on 29.05.15.
  */
+@Serializable(0xb369ff1ce32685)
 @JsonSerialize(using = ToStringSerializer::class)
 class ShortTime {
     companion object {
