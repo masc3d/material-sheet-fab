@@ -1,5 +1,6 @@
 package org.deku.leoz.time
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import org.slf4j.LoggerFactory
@@ -17,8 +18,6 @@ import java.util.*
  */
 @JsonSerialize(using = ToStringSerializer::class)
 class ShortDate {
-    private val log = LoggerFactory.getLogger(this.javaClass)
-
     companion object {
         private val formatter by lazy { DateTimeFormatter.ofPattern("yyyy-MM-dd") }
     }
@@ -36,7 +35,5 @@ class ShortDate {
     override fun toString(): String = formatter.format(this.date.toLocalDateTime())
 }
 
-fun Date.toShortDate(): ShortDate {
-    return ShortDate(this)
-}
+fun Date.toShortDate(): ShortDate = ShortDate(this)
 
