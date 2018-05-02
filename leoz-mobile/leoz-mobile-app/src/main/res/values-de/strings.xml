@@ -252,6 +252,9 @@
 
     <string name="running">läuft</string>
 
+    <string name="salutation_mr">Herr</string>
+    <string name="salutation_ms">Frau</string>
+
     <string name="send_diagnostic_data">Diagnosedaten senden</string>
 
     <string name="service_cash_delivery">Nachnahme</string>

@@ -262,6 +262,9 @@
 
     <string name="running">running</string>
 
+    <string name="salutation_mr">Mr.</string>
+    <string name="salutation_ms">Ms.</string>
+
     <string name="send_diagnostic_data">Send diagnostic data</string>
 
     <string name="service_cash_delivery">Cash on delivery</string>
