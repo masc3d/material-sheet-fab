@@ -1001,23 +1001,8 @@ class StopProcessScreen :
         this.tourStop.resetCloseStopState()
         this.tourStop.deliveredReason = variant
 
-        // Show notification dialogs
-        val dialogs: List<MaterialDialog> = this.tourStop.services
-                .filter { it.mobile.ackMessage != null }
-                .map {
-                    MaterialDialog.Builder(context)
-                            .content(this.getString(it.mobile.ackMessage!!))
-                            .cancelable(false)
-                            .positiveText(R.string.ok)
-                            .build()
-                }
-
         when (variant) {
             EventDeliveredReason.NEIGHBOR -> {
-                dialogs.forEach {
-                    it.show()
-                }
-
                 if (this.tourStop.cashAmountToCollect > 0) {
                     this.activity.showScreen(CashScreen().with(target = this))
                 } else {
@@ -1032,11 +1017,6 @@ class StopProcessScreen :
             EventDeliveredReason.NORMAL -> {
                 when {
                     this.tourStop.isSignatureRequired -> {
-                        // TODO: this will certainly not work. must be reactive
-                        dialogs.forEach {
-                            it.show()
-                        }
-
                         when {
                             this.tourStop.cashAmountToCollect > 0 -> {
                                 //Requires CashScreen to be shown
