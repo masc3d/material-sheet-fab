@@ -17,6 +17,8 @@ import { Station } from '../../core/auth/station.model';
 import { SseService } from '../../core/sse.service';
 import { Vehicle } from '../../core/models/vehicle.model';
 import { TranslateService } from '../../core/translate/translate.service';
+import { SseTouroptimizationMsgModel } from '../../core/models/sse-touroptimization-msg.model';
+import { SseTourchangesMsgModel } from '../../core/models/sse-tourchanges-msg.model';
 
 
 @Injectable()
@@ -56,7 +58,7 @@ export class TouroptimizingService {
   initSSEtouroptimization( ngUnsubscribe: Subject<void> ) {
     const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
     const sseUrl = `${this.optimizeToursSSEUrl}?station-no=${activeStation.stationNo.toString()}`;
-    this.sse.observeMessages<{ id?: number, inProgress?: boolean, success?: boolean }>( sseUrl )
+    this.sse.observeMessages<SseTouroptimizationMsgModel>( sseUrl )
       .pipe(
         takeUntil( ngUnsubscribe )
       )
@@ -107,7 +109,7 @@ export class TouroptimizingService {
   initSSEtourChanges( ngUnsubscribe: Subject<void> ) {
     const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
     const sseUrl = `${this.sseTourchangesUrl}?station-no=${activeStation.stationNo.toString()}`;
-    this.sse.observeMessages<{ stationNo?: number, items?: Tour[], deleted?: number[] }>( sseUrl )
+    this.sse.observeMessages<SseTourchangesMsgModel>( sseUrl )
       .pipe(
         takeUntil( ngUnsubscribe )
       )
