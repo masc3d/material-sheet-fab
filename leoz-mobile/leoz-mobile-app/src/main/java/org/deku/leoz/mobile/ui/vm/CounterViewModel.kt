@@ -19,6 +19,7 @@ import sx.android.databinding.toField
  * Created by masc on 10.07.17.
  */
 class CounterViewModel(
+        val context: Context = Kodein.global.instance(),
         /** The drawable to display */
         @DrawableRes val iconRes: Int,
         /** Optional icon tint */
@@ -36,7 +37,6 @@ class CounterViewModel(
         /** Plural title (defaults to singular title) */
         @StringRes val titlePluralRes: Int = titleRes
 ) : BaseObservable() {
-    private val context: Context by Kodein.global.lazy.instance()
 
     val amountTextField by lazy {
         this.amount

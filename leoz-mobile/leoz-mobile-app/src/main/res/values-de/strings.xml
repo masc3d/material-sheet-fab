@@ -301,6 +301,7 @@
     <string name="street" tools:ignore="Typos">Strasse</string>
 
     <string name="submit">Absenden</string>
+    <string name="summary">Zusammenfassung</string>
 
     <string name="title_activity_delivery">Zustellung</string>
     <string name="title_cash_collection">Nachnahme</string>

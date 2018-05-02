@@ -22,20 +22,13 @@ import org.deku.leoz.mobile.databinding.ScreenTourStopSignatureBinding
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.TourStop
-import org.deku.leoz.mobile.model.process.toTourStop
-import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.resetLocale
 import org.deku.leoz.mobile.setLocale
 import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.CounterViewModel
-import org.deku.leoz.model.EventDeliveredReason
-import org.parceler.Parcel
-import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
-import sx.log.slf4j.trace
-import sx.text.toHexString
 
 /**
  * Signature screen
@@ -74,17 +67,18 @@ class SignatureScreen
      * Created by masc on 10.07.17.
      */
     class ViewModel(
+            val context: Context,
             val stop: TourStop,
             val recipient: String
     ) : BaseObservable() {
-
-        private val context: Context by Kodein.global.lazy.instance()
 
         val signatureText by lazy {
             context.getString(R.string.signature_signed_by_name, recipient)
         }
 
+        // masc20180503. context must be injected for temporary locale switch to work
         val deliveredCounter = CounterViewModel(
+                context = this.context,
                 iconRes = R.drawable.ic_package_variant_closed,
                 amount = this.stop.deliveredParcels.map { it.count() }.cast(Number::class.java),
                 titleRes = R.string.parcel,
@@ -92,6 +86,7 @@ class SignatureScreen
         )
 
         val orderCounter = CounterViewModel(
+                context = this.context,
                 iconRes = R.drawable.ic_order,
                 amount = this.stop.orders.map { it.count() }.cast(Number::class.java),
                 titleRes = R.string.order,
@@ -99,6 +94,7 @@ class SignatureScreen
         )
 
         val damagedCounter = CounterViewModel(
+                context = this.context,
                 iconRes = R.drawable.ic_damaged,
                 iconTintRes = R.color.colorAccent,
                 iconAlpha = 0.4F,
@@ -115,18 +111,13 @@ class SignatureScreen
         this.statusBarHidden = true
         this.flipScreen = true
         this.lockNavigationDrawer = true
-
-        this.context.setLocale(CountryCode.valueOf(this.stop.entity.address.countryCode))
-    }
-
-    override fun onDestroy() {
-        this.context.resetLocale()
-
-        super.onDestroy()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+
+        this.context.setLocale(CountryCode.valueOf(this.stop.entity.address.countryCode))
+
         val binding: ScreenTourStopSignatureBinding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.screen_tour_stop_signature,
@@ -134,6 +125,7 @@ class SignatureScreen
 
         // Setup bindings
         binding.vm = ViewModel(
+                context = this.context,
                 stop = this.stop,
                 recipient = this.stop.recipientName ?: ""
         )
@@ -198,6 +190,11 @@ class SignatureScreen
                         }
                     }
                 }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        this.context.resetLocale()
     }
 
     // SignaturePad listeners

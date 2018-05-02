@@ -68,7 +68,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/margin"
                             android:gravity="center"
-                            android:text="Summary"
+                            android:text="@string/summary"
                             />
 
                     </LinearLayout>
