@@ -28,11 +28,7 @@ class ShortTime {
         this.localTime = localTime
     }
 
-    override fun toString(): String {
-        return format.format(this.localTime.toLocalDateTime())
-    }
+    override fun toString(): String = format.format(this.localTime.toLocalDateTime())
 }
 
-fun Date.toShortTime(): ShortTime {
-    return ShortTime(this)
-}
+fun Date.toShortTime(): ShortTime = ShortTime(this)
