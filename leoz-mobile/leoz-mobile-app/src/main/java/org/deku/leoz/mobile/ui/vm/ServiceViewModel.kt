@@ -2,7 +2,9 @@ package org.deku.leoz.mobile.ui.vm
 
 import android.content.Context
 import android.databinding.BaseObservable
+import android.databinding.ObservableField
 import android.support.annotation.DrawableRes
+import android.view.View
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.model.ParcelService
 
@@ -18,6 +20,16 @@ open class ServiceViewModel(
 
     @get:DrawableRes
     val icon: Int = service.mobile.icon
+
     val text: String by lazy { service.mobile.textOrName(context) }
+
     val acknowledgeText: String by lazy { service.mobile.ackMessageText(context) ?: "" }
+
+    /** Reflects confirmation state */
+    val confirmed by lazy { ObservableField<Boolean>(false) }
+
+    fun onClick(view: View) {
+        /** Update confirmation state when view is clicked */
+        this.confirmed.set(this.confirmed.get()?.not() ?: false)
+    }
 }

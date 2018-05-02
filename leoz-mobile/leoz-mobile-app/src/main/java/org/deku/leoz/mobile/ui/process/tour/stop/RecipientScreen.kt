@@ -29,7 +29,7 @@ import org.deku.leoz.mobile.model.process.TourStop
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
-import org.deku.leoz.mobile.ui.vm.ServiceAckViewModel
+import org.deku.leoz.mobile.ui.vm.ServiceViewModel
 import org.deku.leoz.model.EventDeliveredReason
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
@@ -67,7 +67,7 @@ class RecipientScreen : ScreenFragment<Any>() {
                 .mapNotNull { service ->
                     service.mobile.ackMessageText(this.context)
                             ?.let {
-                                ServiceAckViewModel(context = this.context, service = service)
+                                ServiceViewModel(context = this.context, service = service)
                             }
                 }
     }
