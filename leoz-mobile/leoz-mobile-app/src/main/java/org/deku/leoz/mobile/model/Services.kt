@@ -21,8 +21,8 @@ data class ParcelServiceMeta(
     fun textOrName(context: Context): String =
             if (this.text != null) context.getString(this.text) else this.value.name
 
-    fun acknowledgeMessage(context: Context): String? =
-            if (this.ackMessage == null) null else context.getString(this.ackMessage)
+    fun ackMessageText(context: Context): String? =
+            this.ackMessage?.let { context.getString(it) }
 }
 
 /**

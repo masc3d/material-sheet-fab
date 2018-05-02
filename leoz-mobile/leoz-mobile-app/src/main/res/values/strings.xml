@@ -270,12 +270,12 @@
     <string name="service_fair">Fair service</string>
     <string name="service_fixed">Fixed appointment</string>
     <string name="service_ident_contract">Ident contract</string>
-    <string name="service_message_documented_personal_delivery">Attention: Fill out the attached document with information from an official ID card</string>
+    <string name="service_message_documented_personal_delivery">Fill out the attached document with information from an official ID card</string>
     <string name="service_message_ident_contract">Please check together with the consignee the attached contract. Send the signed contract back.</string>
     <string name="service_message_package_recirculation">Please return the packaging of the parcel</string>
-    <string name="service_message_receipt_acknowledgement">Attention: Please fill out the attached receipt</string>
+    <string name="service_message_receipt_acknowledgement">Please fill out the attached receipt</string>
     <string name="service_message_security_return">Exchange device required! Please check the IMEI number of the device</string>
-    <string name="service_message_submission">Attention: Submission participation!</string>
+    <string name="service_message_submission">Submission participation!</string>
     <string name="service_message_xchange">Exchange object required! Delivery only with exchange</string>
     <string name="service_no_alternative">No alternative delivery</string>
     <string name="service_packaging_recirculation">Packaging recirculation</string>

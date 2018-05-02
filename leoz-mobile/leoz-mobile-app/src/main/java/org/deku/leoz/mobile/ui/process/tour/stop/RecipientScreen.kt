@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui.process.tour.stop
 
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,17 +16,24 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.combineLatest
+import io.reactivex.rxkotlin.merge
 import kotlinx.android.synthetic.main.screen_tour_stop_recipient.*
+import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.databinding.ItemServiceAcknowledgementBinding
 import org.deku.leoz.mobile.model.entity.address
+import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.TourStop
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
+import org.deku.leoz.mobile.ui.vm.ServiceAckViewModel
 import org.deku.leoz.model.EventDeliveredReason
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
+import sx.android.databinding.toObservable
 import sx.android.hideSoftInput
 import sx.android.showSoftInput
 import sx.rx.just
@@ -50,6 +58,20 @@ class RecipientScreen : ScreenFragment<Any>() {
         this.tour.activeStop ?: throw IllegalArgumentException("Active stop not set")
     }
 
+    /** Indicates if street entry is required */
+    private val requiresStreet: Boolean by lazy { this.tourStop.deliveredReason == EventDeliveredReason.NEIGHBOR }
+
+    /** Acknowledgement view models */
+    private val acknowledgements by lazy {
+        this.tourStop.services
+                .mapNotNull { service ->
+                    service.mobile.ackMessageText(this.context)
+                            ?.let {
+                                ServiceAckViewModel(context = this.context, service = service)
+                            }
+                }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -65,9 +87,6 @@ class RecipientScreen : ScreenFragment<Any>() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.screen_tour_stop_recipient, container, false)
-
-    private val requiresStreet: Boolean by lazy { this.tourStop.deliveredReason == EventDeliveredReason.NEIGHBOR }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -95,22 +114,41 @@ class RecipientScreen : ScreenFragment<Any>() {
             this.uxStreet.imeOptions = EditorInfo.IME_ACTION_NONE
             this.uxStreetNo.imeOptions = EditorInfo.IME_ACTION_NONE
         }
+
+        this.acknowledgements.forEach { vm ->
+            // Create and bind acknowledgement views
+            val ackView = this.layoutInflater.inflate(R.layout.item_service_acknowledgement, null, false)
+
+            DataBindingUtil.bind<ItemServiceAcknowledgementBinding>(ackView)?.also {
+                it.setVariable(BR.service, vm)
+                this.uxAcknowledges.addView(it.root)
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
 
+        // Reset acknowledges on resume
+        this.acknowledgements.forEach { it.confirmed.set(false) }
+
+        // Reactive validation and processing
+        val ovAcknowledgesConfirmed = if (this.acknowledgements.count() > 0)
+            this.acknowledgements
+                    .map { it.confirmed.toObservable() }
+                    .merge()
+        else
+            true.just()
+
+
         val ovNeighborName = RxTextView
                 .textChanges(this.uxName)
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
 
         val ovNeighborStreet = RxTextView
                 .textChanges(this.uxStreet)
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
 
         val ovNeighborStreetNo = RxTextView
                 .textChanges(this.uxStreetNo)
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
 
         val ovLastEditorAction = when (this.requiresStreet) {
             true -> RxTextView.editorActions(this.uxStreetNo)
@@ -118,24 +156,24 @@ class RecipientScreen : ScreenFragment<Any>() {
         }
                 .filter { it == EditorInfo.IME_ACTION_DONE }
                 .map { Unit }
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
 
         val ovActionEvent = this.activity.actionEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
 
         // Observable which emits true/false idnicating required fields are filled or not
-        val ovFieldsFilled = Observable.combineLatest(
-                arrayOf(
-                        ovNeighborName.map { it.length > 0 },
-                        if (this.requiresStreet) ovNeighborStreet.map { it.length > 0 } else true.just(),
-                        if (this.requiresStreet) ovNeighborStreetNo.map { it.length > 0 } else true.just()
-                ),
-                { a: Array<Any> -> a.all { it == true } }
+        val ovFieldsFilled = listOf(
+                ovNeighborName.map { it.length > 0 },
+                if (this.requiresStreet) ovNeighborStreet.map { it.length > 0 } else true.just(),
+                if (this.requiresStreet) ovNeighborStreetNo.map { it.length > 0 } else true.just()
         )
+                .plus(
+                        ovAcknowledgesConfirmed
+                )
+                .combineLatest { it.all { it == true } }
                 .distinctUntilChanged()
 
         // Action button visibility
         ovFieldsFilled
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.actionItems = this.actionItems.apply {
                         first { it.id == R.id.action_continue }
@@ -154,6 +192,7 @@ class RecipientScreen : ScreenFragment<Any>() {
                 ovActionEvent
                         .filter { it == R.id.action_continue }
         )
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.context.inputMethodManager.hideSoftInput()
                     this.listener?.onRecipientScreenComplete(

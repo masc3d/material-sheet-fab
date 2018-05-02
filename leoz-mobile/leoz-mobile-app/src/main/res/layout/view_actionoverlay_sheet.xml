@@ -27,7 +27,7 @@
             <FrameLayout
                 android:id="@+id/uxAtionOverlaySheetBar"
                 android:layout_width="match_parent"
-                android:layout_height="16dp"
+                android:layout_height="12dp"
                 android:background="@color/colorDarkGrey"
                 />
 

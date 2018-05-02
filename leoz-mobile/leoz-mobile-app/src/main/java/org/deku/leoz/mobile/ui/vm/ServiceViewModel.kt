@@ -12,11 +12,12 @@ import org.deku.leoz.model.ParcelService
  * @param context Context required for on the fly service text translation with default value
  * @param servic Pracel service
  */
-class ServiceViewModel(
+open class ServiceViewModel(
         val context: Context,
         val service: ParcelService) : BaseObservable() {
 
     @get:DrawableRes
     val icon: Int = service.mobile.icon
-    val text: String = service.mobile.textOrName(context)
+    val text: String by lazy { service.mobile.textOrName(context) }
+    val acknowledgeText: String by lazy { service.mobile.ackMessageText(context) ?: "" }
 }

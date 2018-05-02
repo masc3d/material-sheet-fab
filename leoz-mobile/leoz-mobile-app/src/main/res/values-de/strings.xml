@@ -260,12 +260,12 @@
     <string name="service_fair">Messeservice</string>
     <string name="service_fixed">Fixtermin</string>
     <string name="service_ident_contract">Ident Vertragsservice</string>
-    <string name="service_message_documented_personal_delivery">Achtung: Beiliegendes Dokument ausfüllen. Amtlichen Lichtbildausweis verwenden!</string>
+    <string name="service_message_documented_personal_delivery">Beiliegendes Dokument ausfüllen. Amtlichen Lichtbildausweis verwenden!</string>
     <string name="service_message_ident_contract">Bitte überprüfen Sie zusammen mit dem Kunden den beiliegendne Vertrag, lassen Sie diesen unterschreiben und führen Sie ihn zurück</string>
     <string name="service_message_package_recirculation">Bitte führen Sie die Verpackung zurück. Zustellung sonst nicht erlaubt!</string>
-    <string name="service_message_receipt_acknowledgement">Achtung: Füllen Sie die beiliegende EB aus.</string>
+    <string name="service_message_receipt_acknowledgement">Füllen Sie die beiliegende EB aus.</string>
     <string name="service_message_security_return">Tauschgerät erforderlich! Bitte prüfen Sie die IMEI Nummer des Gerätes</string>
-    <string name="service_message_submission">Achtung, Submissionsteilnahme! [AHB einfügen]</string>
+    <string name="service_message_submission">Submissionsteilnahme! [AHB einfügen]</string>
     <string name="service_message_xchange">Tauschobjekt erforderlich! Zustellung nur bei Tausch</string>
     <string name="service_no_alternative">Keine Alternativzustellung</string>
     <string name="service_packaging_recirculation">Verpackungsrückführung</string>
