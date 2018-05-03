@@ -231,26 +231,26 @@ class DatabaseSyncConfiguration {
                     accurateDeletes = true
             ),
 
-            SyncPreset(
-                    Tables.MST_DEBITOR_STATION,
-                    Tables.MST_DEBITOR_STATION.SYNC_ID,
-                    QMstDebitorStation.mstDebitorStation,
-                    QMstDebitorStation.mstDebitorStation.syncId,
-                    { s ->
-                        MstDebitorStation().also { d ->
-                            d.id = s.id
-                            d.debitorId = s.debitorId
-                            d.stationId = s.stationId
-                            d.tsCreated = s.tsCreated
-                            d.tsUpdated = s.tsUpdated
-                            d.activFrom = s.activFrom
-                            d.activTo = s.activTo
-                            d.syncId = s.syncId
-
-                        }
-                    },
-                    accurateDeletes = true
-            ),
+//            SyncPreset(
+//                    Tables.MST_DEBITOR_STATION,
+//                    Tables.MST_DEBITOR_STATION.SYNC_ID,
+//                    QMstDebitorStation.mstDebitorStation,
+//                    QMstDebitorStation.mstDebitorStation.syncId,
+//                    { s ->
+//                        MstDebitorStation().also { d ->
+//                            d.id = s.id
+//                            d.debitorId = s.debitorId
+//                            d.stationId = s.stationId
+//                            d.tsCreated = s.tsCreated
+//                            d.tsUpdated = s.tsUpdated
+//                            d.activFrom = s.activFrom
+//                            d.activTo = s.activTo
+//                            d.syncId = s.syncId
+//
+//                        }
+//                    },
+//                    accurateDeletes = true
+//            ),
 
 //            SyncPreset(
 //                    Tables.TAD_NODE_GEOPOSITION,
