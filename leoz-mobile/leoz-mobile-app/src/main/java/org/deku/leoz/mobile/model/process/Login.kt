@@ -111,7 +111,7 @@ class Login {
     private val User.apiKeyDecrypted: String?
         get() = try {
             this.apiKey.parseHex().decrypt(CipherType.AES, key = SALT).toString(Charsets.UTF_8)
-        } catch(t: Throwable) {
+        } catch (t: Throwable) {
             log.warn(t.message)
             null
         }
@@ -130,6 +130,11 @@ class Login {
 
             val store = db.store.toBlocking()
 
+            val hashedPassword = hashUserPassword(
+                    salt = SALT,
+                    email = email,
+                    password = password)
+
             /**
              * Authorize online
              */
@@ -147,10 +152,7 @@ class Login {
                 val user = User.create(
                         id = authResponse.user?.id!!,
                         email = email,
-                        password = hashUserPassword(
-                                salt = SALT,
-                                email = email,
-                                password = password),
+                        password = hashedPassword,
                         apiKey = encryptApiKey(authResponse.key),
                         host = restConfiguration.host
                 )
@@ -168,6 +170,7 @@ class Login {
                 val user = store.select(UserEntity::class)
                         .where(UserEntity.EMAIL.eq(email))
                         .and(UserEntity.HOST.eq(restConfiguration.host))
+                        .and(UserEntity.PASSWORD.eq(hashedPassword))
                         .get()
                         .firstOrNull()
 
