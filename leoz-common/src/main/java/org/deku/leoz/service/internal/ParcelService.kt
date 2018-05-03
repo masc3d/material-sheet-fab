@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiParam
 import io.swagger.annotations.Authorization
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.AdditionalInfo
+import org.deku.leoz.model.SalutationType
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
 import java.util.*
@@ -43,6 +44,7 @@ interface ParcelServiceV1 {
             var pictureLocation: String? = null,
             var pictureFileName: String? = null
     )
+
     /**
      * Event message sent by nodes/devices
      */
@@ -58,6 +60,9 @@ interface ParcelServiceV1 {
     ) {
         data class DeliveredInfo(
                 val recipient: String? = null,
+                val recipientStreet: String? = null,
+                val recipientStreetNo: String? = null,
+                val recipientSalutation: SalutationType? = null,
                 val signature: String? = null,
                 val mimetype: String = MediaType.APPLICATION_SVG_XML //? "image/svg+xml" vs "application/svg+xml"? "image/jpg"
         )

@@ -1097,8 +1097,16 @@ class StopProcessScreen :
         this.finalizeStop()
     }
 
-    override fun onRecipientScreenComplete(recipientName: String) {
+    override fun onRecipientScreenComplete(
+            recipientName: String,
+            recipientSalutation: SalutationType?,
+            recipientStreet: String?,
+            recipientStreetNo: String?) {
+
         this.tourStop.recipientName = recipientName
+        this.tourStop.recipientSalutation = recipientSalutation
+        this.tourStop.recipientStreet = recipientStreet
+        this.tourStop.recipientStreetNo = recipientStreetNo
         this.tourStop.deliveredReason = EventDeliveredReason.NEIGHBOR
 
         this.activity.showScreen(

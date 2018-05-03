@@ -31,6 +31,7 @@ import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.ServiceViewModel
 import org.deku.leoz.model.EventDeliveredReason
+import org.deku.leoz.model.SalutationType
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toObservable
@@ -45,7 +46,12 @@ import sx.rx.just
 class RecipientScreen : ScreenFragment<Any>() {
 
     interface Listener {
-        fun onRecipientScreenComplete(recipientName: String)
+        fun onRecipientScreenComplete(
+                recipientName: String,
+                recipientSalutation: SalutationType? = null,
+                recipientStreet: String? = null,
+                recipientStreetNo: String? = null
+        )
     }
 
     private val listener by listenerDelegate<Listener>()
@@ -196,7 +202,13 @@ class RecipientScreen : ScreenFragment<Any>() {
                 .subscribe {
                     this.context.inputMethodManager.hideSoftInput()
                     this.listener?.onRecipientScreenComplete(
-                            recipientName = this.uxName.text.toString()
+                            recipientName = this.uxName.text.toString(),
+                            recipientSalutation = when (this.uxSalutation.checkedRadioButtonId) {
+                                R.id.uxSalutationMs -> SalutationType.Female
+                                else -> SalutationType.Male
+                            },
+                            recipientStreet = if (this.requiresStreet) this.uxStreet.text.toString() else null,
+                            recipientStreetNo = if (this.requiresStreet) this.uxStreetNo.text.toString() else null
                     )
                 }
     }

@@ -268,8 +268,13 @@ class TourStop(
     /** Postbox camera image */
     private var postboxImageUid: UUID? = null
 
-    /** Recipient name */
+    /** Recipient */
     var recipientName: String? = null
+    var recipientStreet: String? = null
+    var recipientStreetNo: String? = null
+
+    /** Recipient salutation */
+    var recipientSalutation: SalutationType? = null
 
     /** Delivery reason type */
     var deliveredReason: EventDeliveredReason = EventDeliveredReason.NORMAL
@@ -579,7 +584,7 @@ class TourStop(
             if (orders.flatMap { it.parcels }.any { it.state == Parcel.State.DELIVERED }) {
                 // Split order tasks referring to parcels which are still loaded (eg. had event)
                 orders
-                        .filter { it.parcels.any { it.state == Parcel.State.LOADED  } }
+                        .filter { it.parcels.any { it.state == Parcel.State.LOADED } }
                         .map { it.deliveryTask }
                         .also { tasks ->
                             if (tasks.count() > 0) {
@@ -621,7 +626,10 @@ class TourStop(
                                     deliveredInfo = when {
                                         signatureSvg != null -> ParcelServiceV1.ParcelMessage.DeliveredInfo(
                                                 signature = signatureSvg,
-                                                recipient = recipientName
+                                                recipient = recipientName,
+                                                recipientStreet = recipientStreet,
+                                                recipientStreetNo = recipientStreetNo,
+                                                recipientSalutation = recipientSalutation
                                         )
                                         else -> null
                                     },

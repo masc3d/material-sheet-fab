@@ -43,6 +43,7 @@
                     app:srcCompat="@drawable/ic_information_outline"/>
 
                 <RadioGroup
+                    android:id="@+id/uxSalutation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|center_horizontal"
@@ -60,6 +61,7 @@
                         />
 
                     <RadioButton
+                        android:id="@+id/uxSalutationMs"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/salutation_ms"

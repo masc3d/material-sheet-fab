@@ -546,3 +546,8 @@ enum class DelayedAppointmentReason(val value: Int) {
 enum class UserActivity(val value: String) {
     DATA_PROTECTION_POLICY_ACCEPTED("data protection policy accepted")
 }
+
+enum class SalutationType(val value: Int) {
+    Male(0),
+    Female(1)
+}
