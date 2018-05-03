@@ -11,8 +11,9 @@ import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
+import org.threeten.bp.format.DateTimeFormatter
+import sx.time.threeten.toLocalDateTime
 import sx.time.toTimestamp
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -64,9 +65,9 @@ class JooqStatusRepository {
 }
 
 fun TblstatusRecord.setDate(date: Date) {
-    this.datum = SimpleDateFormat("yyyyMMdd").format(date)
+    this.datum = DateTimeFormatter.ofPattern("yyyyMMdd").format(date.toLocalDateTime())
 }
 
 fun TblstatusRecord.setTime(date: Date) {
-    this.zeit = SimpleDateFormat("HHmm").format(date)
+    this.zeit = DateTimeFormatter.ofPattern("HHmm").format(date.toLocalDateTime())
 }

@@ -1,20 +1,21 @@
 package org.deku.leoz.time
 
+import org.threeten.bp.format.DateTimeFormatter
+import sx.time.threeten.toLocalDateTime
 import sx.time.toCalendar
-import java.text.SimpleDateFormat
 import java.util.*
 
 object DateFormats {
-    val gregorianLongDate by lazy { SimpleDateFormat("dd.MM.yyyy") }
-    val gregorianLongDateTime by lazy { SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSS") }
+    val gregorianLongDate by lazy { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
+    val gregorianLongDateTime by lazy { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss.SSS") }
 }
 
 fun Date.toGregorianLongDateString(): String {
-    return DateFormats.gregorianLongDate.format(this)
+    return DateFormats.gregorianLongDate.format(this.toLocalDateTime())
 }
 
 fun Date.toGregorianLongDateTimeString(): String {
-    return DateFormats.gregorianLongDateTime.format(this)
+    return DateFormats.gregorianLongDateTime.format(this.toLocalDateTime())
 }
 
 fun Date.toDateWithoutTime(): Date =

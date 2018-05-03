@@ -24,13 +24,14 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import sx.rs.RestProblem
 import sx.time.*
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
+import org.threeten.bp.format.DateTimeFormatter
+import sx.time.threeten.toLocalDateTime
 
 /**
  * Bundle service (leoz-central)
@@ -559,8 +560,7 @@ class BagService : BagService {
                 val dt = Date()
                 recLine.kfzhubeingang = dt.toTimestamp()
                 recLine.update()
-                val sdf = SimpleDateFormat("yyyMMddHHmmss")
-                val f = sdf.format(dt)
+                val f = DateTimeFormatter.ofPattern("yyyMMddHHmmss").format(dt.toLocalDateTime())
                 //grün
                 color = "green"
                 logHistoryRepository.save(

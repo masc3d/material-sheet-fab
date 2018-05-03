@@ -18,15 +18,17 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 import sx.log.slf4j.trace
 import sx.log.slf4j.warn
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.rs.RestProblem
 import sx.time.plusMinutes
+import sx.time.threeten.toDate
 import sx.time.toLocalDate
 import sx.time.toTimestamp
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import javax.servlet.http.HttpServletRequest
@@ -94,7 +96,7 @@ class LocationServiceV2 :
             else -> null
         }
 
-        val pos_from = from ?: SimpleDateFormat("yyyy-MM-dd").parse(Date().toLocalDate().toString())
+        val pos_from = from ?: LocalDate.parse(Date().toLocalDate().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).toDate()
         val pos_to = to ?: Date()
 
         val gpsdataList = mutableListOf<LocationServiceV2.GpsData>()

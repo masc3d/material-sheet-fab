@@ -904,7 +904,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
 
         bag.ordersToexport = getParcelsFilledInBagBackByBagBackUnitNo(bag.unitNoBack)
 
-        if (bag.ordersToexport != null) {
+        if (bag.ordersToexport.count() > 0) {
             bag.loadinglistNo = bag.ordersToexport.first().parcels.first().loadinglistNo
         }
 

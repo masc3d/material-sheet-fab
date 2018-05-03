@@ -90,8 +90,9 @@ class JooqStationRepository {
         val quota: Int = dsl.select(TBLDEPOTLISTE.BAGKONTINGENT)
                 .from(TBLDEPOTLISTE)
                 .where(TBLDEPOTLISTE.DEPOTNR.eq(stationNo)
-                        .and(TBLDEPOTLISTE.AKTIVIERUNGSDATUM.greaterOrEqual(Date().toTimestamp()))
-                        .and(TBLDEPOTLISTE.DEAKTIVIERUNGSDATUM.lessOrEqual(Date().toTimestamp()))
+                        .and(TBLDEPOTLISTE.AKTIVIERUNGSDATUM.lessOrEqual(Date().toTimestamp()))
+                        .and(TBLDEPOTLISTE.DEAKTIVIERUNGSDATUM.greaterOrEqual(Date().toTimestamp()))
+                        .and(TBLDEPOTLISTE.ISTGUELTIG.eq(1))
                 )
                 .fetchOne(0, Int::class.java) ?: 0
 
