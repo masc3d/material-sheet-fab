@@ -164,7 +164,7 @@ class JavaPackagerPlugin extends PackagerPlugin {
             extension = packagerExtension
         }
 
-        project.gradle.projectsEvaluated {
+        project.plugins.withType(JavaPlugin) {
             project.tasks.buildNativeBundle.dependsOn(project.tasks.jar)
             project.tasks.releaseUpdate.dependsOn(project.tasks.jar)
         }
@@ -218,12 +218,9 @@ class AndroidPackagerPlugin extends PackagerPlugin {
             extension = packagerExtension
         }
 
-        project.plugins.withType(JavaPlugin).whenPluginAdded {
+        project.gradle.projectsEvaluated {
             if (this.packagerExtension.bundleName == null)
                 this.packagerExtension.bundleName = project.name
-        }
-
-        project.gradle.projectsEvaluated {
 
             if (this.packagerExtension.version == null)
                 this.packagerExtension.version = project.android.defaultConfig.versionName
