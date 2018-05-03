@@ -878,7 +878,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
         }
     }
 
-    override fun getBag(stationNo: Int, bagID: String): ExportService.Bag {
+    override fun getBag(stationNo: Int, bagID: String, includeParcels: Boolean): ExportService.Bag {
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -901,11 +901,12 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
                 )
             }
         }
+        if (includeParcels) {
+            bag.ordersToexport = getParcelsFilledInBagBackByBagBackUnitNo(bag.unitNoBack)
 
-        bag.ordersToexport = getParcelsFilledInBagBackByBagBackUnitNo(bag.unitNoBack)
-
-        if (bag.ordersToexport.count() > 0) {
-            bag.loadinglistNo = bag.ordersToexport.first().parcels.first().loadinglistNo
+            if (bag.ordersToexport.count() > 0) {
+                bag.loadinglistNo = bag.ordersToexport.first().parcels.first().loadinglistNo
+            }
         }
 
         return bag

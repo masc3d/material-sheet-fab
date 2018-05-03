@@ -193,7 +193,8 @@ interface ExportService {
     @ApiOperation(value = "Get bag by bagId", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getBag(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
-            @PathParam(BAG_ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagID: String
+            @PathParam(BAG_ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagID: String,
+            @QueryParam("includeParcels") @ApiParam(defaultValue = "false", value = "Include parcels") includeParcels: Boolean=false
     ): Bag
 
     @GET

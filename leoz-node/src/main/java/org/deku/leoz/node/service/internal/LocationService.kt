@@ -24,6 +24,7 @@ import sx.persistence.transaction
 import sx.rs.RestProblem
 import sx.time.plusMinutes
 import sx.time.threeten.toDate
+import sx.time.toDate
 import sx.time.toLocalDate
 import sx.time.toTimestamp
 import java.util.*
@@ -78,7 +79,7 @@ class LocationService :
             else -> null
         }
 
-        val pos_from = from ?: LocalDate.parse(Date().toLocalDate().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).toDate()
+        val pos_from = from ?: Date().toLocalDate().toDate()
         val pos_to = to ?: Date()
 
         val gpsdataList = mutableListOf<LocationServiceV2.GpsData>()
