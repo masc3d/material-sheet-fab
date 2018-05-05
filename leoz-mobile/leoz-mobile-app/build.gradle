@@ -459,14 +459,6 @@ afterEvaluate {
             removeSqliteLibs()
         }
     }
-
-    // masc20170731. workaround for release builds failing
-    android.applicationVariants.findAll {
-        it.buildType.name == 'release'
-    }.forEach {
-        // masc20180123. mitigating risk for release apks to become corrupt due to previous build remains
-        it.assemble.dependsOn(tasks.cleanAll)
-    }
 }
 
 /**
