@@ -73,8 +73,6 @@ class MqttConfiguration {
                         connectOptions = instance<MqttConnectOptions>()
                 )
 
-                val listeners = instance<MqttListeners>()
-
                 // TODO: dispatcher should support durable subscriptions
                 client.statusEvent.subscribeBy(onNext = {
                     when {
@@ -82,6 +80,7 @@ class MqttConfiguration {
                             log.debug { "Starting mq listeners" }
 
                             try {
+                                val listeners = instance<MqttListeners>()
                                 // Start listeners on connection
                                 listeners.also {
                                     it.mobile.broadcast.start()
