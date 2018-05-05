@@ -50,6 +50,7 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
     abstract var services: ArrayList<ParcelService>
 
     @get:Lazy
+    // TODO: cascade delete on @ManyToOne causes referential integrity issues (under load)
     @get:ManyToOne(cascade = arrayOf(CascadeAction.SAVE))
     abstract var stop: Stop?
 }
