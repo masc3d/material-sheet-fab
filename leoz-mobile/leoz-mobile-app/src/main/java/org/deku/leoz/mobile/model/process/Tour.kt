@@ -27,6 +27,7 @@ import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.log.slf4j.trace
+import sx.log.slf4j.warn
 import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.requery.ObservableTupleQuery
@@ -296,7 +297,13 @@ class Tour : CompositeDisposableSupplier {
                     .merge(listOf(order))
                     .blockingAwait()
 
+            // Workaround for requery's buggy cascade delete which had to be disabled to prevent
+            // corruption of referential integrity
+            stopRepository.cleanOrphanStops()
+                    .blockingAwait()
+
             val task = order.deliveryTask
+
             var stop = stopRepository
                     .findStopForTask(task)
                     .blockingGet()
@@ -306,12 +313,28 @@ class Tour : CompositeDisposableSupplier {
                 update(stop)
             } else {
                 stop = Stop.create(tasks = listOf(task))
+
                 stopRepository
                         .merge(listOf(stop))
                         .blockingAwait()
             }
         }
-                .toCompletable()
+                .ignoreElement()
+                .subscribeOn(db.scheduler)
+    }
+
+    /**
+     * Reset all tour data
+     */
+    fun reset(): Completable {
+        return db.store.withTransaction {
+            orderRepository.removeAll()
+                    .blockingAwait()
+
+            stopRepository.cleanOrphanStops()
+                    .blockingAwait()
+        }
+                .ignoreElement()
                 .subscribeOn(db.scheduler)
     }
 

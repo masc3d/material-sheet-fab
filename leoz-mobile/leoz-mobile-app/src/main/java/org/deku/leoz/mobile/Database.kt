@@ -157,7 +157,9 @@ class Database(
             override fun onConfigure(builder: ConfigurationBuilder) {
                 builder.setEntityCache(
                         EntityCacheBuilder(Models.DEFAULT)
-                                .useReferenceCache(true)
+                                // Disabling reference cache as it trigger #644 when cascade is disabled.
+                                // and it has to be disabled as it's buggy, removing references still in use eg.
+                                .useReferenceCache(false)
                                 .build()
                 )
                 super.onConfigure(builder)
@@ -165,7 +167,7 @@ class Database(
 
             override fun onConfigure(db: SQLiteDatabase) {
                 super.onConfigure(db)
-                // TODO: workaround for requery bug #698 and #644 (disabling foreign key constraints)
+//                // TODO: workaround for requery bug #698 and #644 (disabling foreign key constraints)
                 db.setForeignKeyConstraintsEnabled(false)
             }
         }

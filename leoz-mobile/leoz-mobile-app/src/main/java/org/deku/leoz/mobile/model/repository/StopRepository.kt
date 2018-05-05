@@ -7,6 +7,7 @@ import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.mobile.model.entity.*
 import org.slf4j.LoggerFactory
+import sx.log.slf4j.trace
 import sx.requery.scalarOr
 import java.util.*
 
@@ -101,6 +102,17 @@ class StopRepository(
                 store.insert(stop)
             }
 
+            this.cleanOrphanStops()
+
+            this.updateStopStateFromParcels(stops)
+                    .blockingGet()
+        }
+    }
+
+    fun cleanOrphanStops(): Completable {
+        return Completable.fromCallable {
+            val store = this.store.toBlocking()
+
             val mappedStops = store.select(OrderEntity::class)
                     .get()
                     .flatMap { it.tasks }
@@ -114,9 +126,6 @@ class StopRepository(
                     .forEach {
                         store.delete(it)
                     }
-
-            this.updateStopStateFromParcels(stops)
-                    .blockingGet()
         }
     }
 

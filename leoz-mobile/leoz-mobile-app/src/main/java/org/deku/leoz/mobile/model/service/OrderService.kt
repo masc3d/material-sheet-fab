@@ -16,7 +16,6 @@ fun OrderService.Order.toOrder(
     val now = Date()
 
     return Order.create(
-            //TODO
             id = this.id,
             carrier = this.carrier,
             exchangeOrderId = this.referenceIDToExchangeOrderID,

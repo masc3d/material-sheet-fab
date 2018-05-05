@@ -148,6 +148,7 @@ android {
         exclude 'kotlin/kotlin.kotlin_builtins'
         exclude 'kotlin/ranges/ranges.kotlin_builtins'
         exclude 'kotlin/reflect/reflect.kotlin_builtins'
+        exclude 'logback.xml'
     }
 }
 

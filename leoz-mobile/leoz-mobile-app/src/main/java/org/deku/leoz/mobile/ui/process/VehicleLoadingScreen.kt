@@ -316,12 +316,7 @@ class VehicleLoadingScreen :
                 .subscribe {
                     when (it.itemId) {
                         R.id.action_reset -> {
-                            db.store.withTransaction {
-                                orderRepository.removeAll()
-                                        .blockingAwait()
-                            }
-                                    .subscribeOn(db.scheduler)
-                                    .subscribe()
+                            tour.reset().subscribe()
                         }
 
                         R.id.action_vehicle_loading_dev_mark_all_loaded -> {
@@ -667,23 +662,25 @@ class VehicleLoadingScreen :
 
                                         this.tour
                                                 .mergeOrder(order)
-                                                .andThen(
-                                                        this.parcelRepository
-                                                                .findByNumber(unitNumber.value)
-                                                                .subscribeOn(db.scheduler)
-                                                )
+                                                .toSingleDefault(Unit).toObservable()
+                                                .concatMap {
+                                                    this.parcelRepository
+                                                            .findByNumber(unitNumber.value)
+                                                            .toObservable()
+                                                }
+                                                .concatMap {
+                                                    this.vehicleLoading.load(it)
+                                                            .toObservable<Unit>()
+                                                }
+                                                .subscribeOn(db.scheduler)
                                                 .observeOnMainThreadWithLifecycle(this)
-                                                .subscribeBy(
-                                                        onSuccess = {
-                                                            this.isBusy = false
-                                                            this.onParcel(it)
-                                                        },
-                                                        onError = {
-                                                            this.isBusy = false
-                                                            log.error("Merging order failed. ${it.message}", it)
-                                                            feedback.error()
-                                                        }
-                                                )
+                                                .subscribe({
+                                                    this.isBusy = false
+                                                }, {
+                                                    this.isBusy = false
+                                                    log.error("Merging order failed. ${it.message}", it)
+                                                    feedback.error()
+                                                })
                                     }
 
                                     if (this.tour.deliveryListIds.get().isEmpty() || acceptDetachedOrdersWithoutConfirmation) {

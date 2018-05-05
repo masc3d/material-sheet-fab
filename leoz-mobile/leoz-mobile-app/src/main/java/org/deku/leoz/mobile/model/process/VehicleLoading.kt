@@ -20,6 +20,7 @@ import org.deku.leoz.model.Event
 import org.deku.leoz.model.Reason
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.slf4j.LoggerFactory
+import sx.log.slf4j.trace
 import sx.mq.mqtt.channel
 import sx.rx.CompositeDisposableSupplier
 import sx.rx.behave

@@ -8,7 +8,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.Database
@@ -24,10 +23,10 @@ import org.deku.leoz.mobile.ui.core.Activity
 import org.deku.leoz.mobile.ui.core.ChangelogItem
 import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.process.MenuScreen
+import org.deku.leoz.mobile.ui.process.TourScreen
 import org.deku.leoz.mobile.ui.process.VehicleLoadingScreen
 import org.deku.leoz.mobile.ui.process.VehicleUnloadingScreen
 import org.deku.leoz.mobile.ui.process.tour.StopDetailsScreen
-import org.deku.leoz.mobile.ui.process.TourScreen
 import org.deku.leoz.mobile.ui.process.tour.StopProcessScreen
 import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
@@ -149,13 +148,8 @@ class TourActivity : Activity(),
                                                     .positiveText(android.R.string.yes)
                                                     .negativeText(android.R.string.no)
                                                     .onPositive { _, _ ->
-                                                        db.store.withTransaction {
-                                                            log.trace("RESETTING DATA")
-                                                            orderRepository.removeAll()
-                                                                    .blockingAwait()
-                                                        }
-                                                                .toCompletable()
-                                                                .subscribeOn(db.scheduler)
+                                                        log.trace("RESETTING DATA")
+                                                        tour.reset()
                                                                 .observeOnMainThread()
                                                                 .subscribeBy(
                                                                         onComplete = {

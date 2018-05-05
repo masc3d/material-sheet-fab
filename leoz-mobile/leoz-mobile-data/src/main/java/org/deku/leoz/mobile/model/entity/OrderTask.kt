@@ -50,7 +50,7 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
     abstract var services: ArrayList<ParcelService>
 
     @get:Lazy
-    @get:ManyToOne(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
+    @get:ManyToOne(cascade = arrayOf(CascadeAction.SAVE))
     abstract var stop: Stop?
 }
 
