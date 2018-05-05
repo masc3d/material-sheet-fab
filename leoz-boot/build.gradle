@@ -69,7 +69,7 @@ dependencies {
             "org.apache.sshd:sshd-core:$v_sshd",
 
             "com.dooapp.fxform2:core:$v_fxform2",
-            "org.jfxtras:jfxtras-all:8.0-r5",
+            "org.jfxtras:jfxtras-all:9.0-r1",
 
             // REST client
             "org.jboss.resteasy:resteasy-client:$v_resteasy",

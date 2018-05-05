@@ -10,7 +10,7 @@ buildscript {
         v_jgit = '4.11.0.201803080745-r'
         v_jaxb = '2.3.0'
         v_jna = '4.5.1'
-        v_jooq = '3.10.6'
+        v_jooq = '3.10.7'
         v_jsch = '0.1.54'
         v_jsch_proxy = '0.0.9'
         v_querydsl = '4.2.1'

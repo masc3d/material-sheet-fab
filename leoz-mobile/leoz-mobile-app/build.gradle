@@ -287,11 +287,10 @@ dependencies {
             },
 
             // UI
-            "eu.davidea:flexible-adapter:5.0.3",
-            "eu.davidea:flexible-adapter-ui:1.0.0-b3@aar",
+            "eu.davidea:flexible-adapter:5.0.4",
+            "eu.davidea:flexible-adapter-ui:1.0.0-b4@aar",
             "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0",
 
-            // Dialog
             "com.afollestad.material-dialogs:core:$v_material_dialogs",
             "com.afollestad.material-dialogs:commons:$v_material_dialogs",
 
@@ -301,6 +300,8 @@ dependencies {
             "com.github.BlacKCaT27:CurrencyEditText:2.0.2",
             "com.code-troopers.betterpickers:library:3.1.0",
             "mobi.upod:time-duration-picker:1.1.3",
+
+            "com.anthonymandra:ToggleButtons:2.0.0",
 
             // GMS
             "com.google.android.gms:play-services-location:$v_android_gms",
@@ -314,15 +315,15 @@ dependencies {
                 transitive false
             },
 
+            "org.zeroturnaround:zt-zip:1.13",
+
+            //region EVALUATION
             // Socket.IO
             dependencies.create("io.socket:socket.io-client:$v_socketio") {
                 // excluding org.json which is provided by Android
                 exclude group: 'org.json', module: 'json'
             },
 
-            "org.zeroturnaround:zt-zip:1.12",
-
-            //region EVALUATION
             "com.github.lzyzsd:circleprogress:1.2.1",
 
             //RX Location
