@@ -601,6 +601,7 @@ class VehicleLoadingScreen :
     fun onInput(
             deliveryListNumber: DekuDeliveryListNumber? = null,
             tourIdent: TourIdentification? = null) {
+
         var loaded = false
         this.isBusy = true
 
@@ -675,11 +676,12 @@ class VehicleLoadingScreen :
                                                 .subscribeOn(db.scheduler)
                                                 .observeOnMainThreadWithLifecycle(this)
                                                 .subscribe({
-                                                    this.isBusy = false
                                                 }, {
                                                     this.isBusy = false
                                                     log.error("Merging order failed. ${it.message}", it)
                                                     feedback.error()
+                                                }, {
+                                                    this.isBusy = false
                                                 })
                                     }
 
