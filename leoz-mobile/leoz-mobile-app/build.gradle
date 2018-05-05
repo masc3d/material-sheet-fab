@@ -72,7 +72,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 2
-        versionName "0.145-SNAPSHOT"
+        versionName "0.146-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         multiDexKeepProguard file('multidex-keep.pro')
