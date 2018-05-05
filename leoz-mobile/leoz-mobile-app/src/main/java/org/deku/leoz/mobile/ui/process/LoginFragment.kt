@@ -112,8 +112,7 @@ class LoginFragment : Fragment<Any>() {
                         // Verify all fields
                         if (listOf(
                                         validateMailAddress(),
-                                        validatePassword(),
-                                        queryPrivacyConfirmation()
+                                        validatePassword()
                                 ).any { it == false }) {
                             throw IllegalArgumentException("Validation failed")
                         }
