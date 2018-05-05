@@ -6,9 +6,14 @@ import sx.aidc.SymbologyType
  * Collection of synthetic inputs
  */
 class SyntheticInput(
+        /** Name of this input type */
         val name: String,
+        /** Input entries */
         val entries: List<Entry>,
-        val multipleChoice: Boolean = false
+        /** Multiple choice input */
+        val multipleChoice: Boolean = false,
+        /** Performs a monkey test, repeating, shuffling and emitting all inputs at the same time */
+        val monkeyRepetitions: Int = 0
 ) {
 
     /**

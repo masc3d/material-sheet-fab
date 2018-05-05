@@ -37,6 +37,8 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.toObservable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main_content.*
@@ -512,8 +514,21 @@ abstract class Activity : BaseActivity(),
                         when (syntheticInputs.multipleChoice) {
                             false -> it
                                     .itemsCallback { _, _, position, _ ->
-                                        syntheticInputs.entries.get(position).also {
-                                            simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
+                                        if (syntheticInputs.monkeyRepetitions > 1) {
+                                            (0..syntheticInputs.monkeyRepetitions).map {
+                                                syntheticInputs.entries
+                                            }
+                                                    .flatten()
+                                                    .shuffled()
+                                                    .toObservable()
+                                                    .subscribeOn(Schedulers.computation())
+                                                    .subscribe {
+                                                        simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
+                                                    }
+                                        } else {
+                                            syntheticInputs.entries.get(position).also {
+                                                simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
+                                            }
                                         }
                                     }
                             true -> it
