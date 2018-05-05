@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="-4dp"
                     android:layout_marginEnd="@dimen/medium_margin"
-                    android:checked="@{service.confirmed}"
+                    android:checked="@{safeUnbox(service.confirmed)}"
                     />
 
                 <TextView
