@@ -58,6 +58,7 @@
 
     <string name="data_protection">Datenschutz</string>
     <string name="data_protection_policy">Datenschutzerklärung</string>
+    <string name="data_protection_accept">Ich akzeptiere die Erklärung</string>
 
     <string name="delay_reason_bad_weather">Schlechtes Wetter</string>
     <string name="delay_reason_car_accident">Autounfall</string>

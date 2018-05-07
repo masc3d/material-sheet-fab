@@ -234,7 +234,7 @@ class LoginFragment : Fragment<Any>() {
             disclaimerDialog = MaterialDialog.Builder(this.context).also {
                 it.title(R.string.data_protection)
                 it.icon(ContextCompat.getDrawable(this.context, R.drawable.ic_search_data)!!)
-                it.checkBoxPrompt("Ich akzeptiere die Erklärung", false, { _, checked ->
+                it.checkBoxPromptRes(R.string.data_protection_accept, false, { _, checked ->
                     disclaimerDialog?.getActionButton(DialogAction.POSITIVE)?.isEnabled = checked
                 })
                 it.content(R.string.privacy_disclaimer_text)
