@@ -103,6 +103,7 @@ class StopRepository(
             }
 
             this.cleanOrphanStops()
+                    .blockingAwait()
 
             this.updateStopStateFromParcels(stops)
                     .blockingGet()
