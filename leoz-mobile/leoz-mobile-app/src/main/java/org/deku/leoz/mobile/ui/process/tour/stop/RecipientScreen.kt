@@ -31,12 +31,14 @@ import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.ServiceViewModel
 import org.deku.leoz.model.EventDeliveredReason
+import org.deku.leoz.model.ParcelService
 import org.deku.leoz.model.SalutationType
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toObservable
 import sx.android.hideSoftInput
 import sx.android.showSoftInput
+import sx.log.slf4j.trace
 import sx.rx.just
 
 /**
@@ -70,6 +72,11 @@ class RecipientScreen : ScreenFragment<Any>() {
     /** Acknowledgement view models */
     private val acknowledgements by lazy {
         this.tourStop.services
+                .plus(listOf(
+                        ParcelService.RECEIPT_ACKNOWLEDGEMENT,
+                        ParcelService.IDENT_CONTRACT_SERVICE,
+                        ParcelService.SUBMISSION_PARTICIPATION
+                ))
                 .mapNotNull { service ->
                     service.mobile.ackMessageText(this.context)
                             ?.let {
@@ -97,8 +104,10 @@ class RecipientScreen : ScreenFragment<Any>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.uxName.requestFocus()
-        this.context.inputMethodManager.showSoftInput()
+        if (this.acknowledgements.count() == 0) {
+            this.uxName.requestFocus()
+            this.context.inputMethodManager.showSoftInput()
+        }
 
         this.uxStreet.setAdapter(
                 ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line,
@@ -142,7 +151,14 @@ class RecipientScreen : ScreenFragment<Any>() {
         val ovAcknowledgesConfirmed = if (this.acknowledgements.count() > 0)
             this.acknowledgements
                     .map { it.confirmed.toObservable() }
-                    .merge()
+                    .combineLatest { it.all { it == true } }
+                    .doOnNext {
+                        if (it) {
+                            this.uxName.requestFocus()
+                            if (this.context.inputMethodManager.isActive)
+                                this.context.inputMethodManager.showSoftInput()
+                        }
+                    }
         else
             true.just()
 
