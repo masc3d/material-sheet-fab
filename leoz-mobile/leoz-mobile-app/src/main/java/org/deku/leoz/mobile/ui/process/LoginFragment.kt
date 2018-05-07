@@ -89,7 +89,9 @@ class LoginFragment : Fragment<Any>() {
         data class State(
                 val pending: Boolean = false,
                 val result: User? = null
-        )
+        ) {
+            val isComplete get() = this.pending == false
+        }
 
         // Actions triggering login
 
@@ -133,19 +135,20 @@ class LoginFragment : Fragment<Any>() {
                                     .delay(250, TimeUnit.MILLISECONDS)
                             )
                             // Complete this observable on success result
-                            .takeUntil {
-                                it.pending == false
-                            }
+                            .takeUntil { state -> state.isComplete }
                 }
                 .switchMap { state ->
-                    this.queryPrivacyConfirmation()
-                            .toObservable()
-                            .switchMap {
-                                when (it) {
-                                    true -> state.just()
-                                    false -> Observable.empty()
+                    when {
+                        state.isComplete -> this.queryPrivacyConfirmation()
+                                .toObservable()
+                                .switchMap {
+                                    when (it) {
+                                        true -> state.just()
+                                        false -> Observable.empty()
+                                    }
                                 }
-                            }
+                        else -> state.just()
+                    }
                 }
                 .doOnError {
                     log.error(it.message, it)
@@ -159,12 +162,12 @@ class LoginFragment : Fragment<Any>() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     when {
-                        it.pending == true -> {
-                            this.listener?.onLoginPending()
-                        }
-                        else -> {
+                        it.isComplete -> {
                             log.info("Login successful $it")
                             this.listener?.onLoginSuccessful()
+                        }
+                        else -> {
+                            this.listener?.onLoginPending()
                         }
                     }
                 }
