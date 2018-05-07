@@ -6,9 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
-import android.text.InputType
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -25,7 +23,6 @@ import eu.davidea.flexibleadapter.SelectableAdapter
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_tour_stop_detail.*
-import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
@@ -33,7 +30,6 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.address
-import org.deku.leoz.mobile.model.entity.appointmentTimeLeft
 import org.deku.leoz.mobile.model.entity.hasValidPhoneNumber
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.Tour
@@ -53,7 +49,6 @@ import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
-import sx.time.TimeSpan
 
 class StopDetailsScreen
     :

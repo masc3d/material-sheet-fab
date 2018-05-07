@@ -82,6 +82,11 @@ class TourStop(
                         it.add(
                                 EventNotDeliveredReason.NO_IDENT)
                     }
+                    if (services.contains(ParcelService.DOCUMENTED_PERSONAL_DELIVERY)) {
+                        it.add(
+                                EventNotDeliveredReason.NO_IDENT
+                        )
+                    }
                 }
                 .distinct()
     }

@@ -69,7 +69,7 @@ interface DocumentService {
         var services: List<String>? = null
     }
 
-    @GET
+    @POST
     @Path("/label")
     @ApiOperation(value = "Get Label-Document")
     @Produces(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM)
