@@ -7,7 +7,6 @@ import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_USER
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
 import org.deku.leoz.central.data.jooq.dekuclient.tables.MstUser
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstUserRecord
-import org.deku.leoz.hashUserPassword
 import org.deku.leoz.model.UserActivity
 import org.deku.leoz.node.data.jooq.Tables.MST_DEBITOR
 import org.deku.leoz.service.internal.UserService
@@ -15,7 +14,10 @@ import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import sx.security.DigestType
+import sx.security.hash
 import sx.text.parseHex
+import sx.text.toHexString
 import sx.time.toTimestamp
 import java.util.*
 import javax.inject.Inject
@@ -35,10 +37,11 @@ class JooqUserRepository {
          * @param password Password to verify
          */
         fun MstUserRecord.verifyPassword(password: String): Boolean {
-            return this.password == hashUserPassword(
-                    salt = SALT,
-                    email = this.email,
-                    password = password)
+            return this.password == listOf(
+                    SALT,
+                    this.email.toByteArray(),
+                    password.toByteArray()
+            ).hash(DigestType.SHA1).toHexString()
         }
 
         /**
@@ -47,11 +50,11 @@ class JooqUserRepository {
          * @param password Password to hash
          */
         fun MstUserRecord.setHashedPassword(password: String) {
-            this.password = hashUserPassword(
-                    salt = SALT,
-                    email = email,
-                    password = password
-            )
+            this.password = listOf(
+                    SALT,
+                    this.email.toByteArray(),
+                    password.toByteArray()
+            ).hash(DigestType.SHA1).toHexString()
         }
     }
 

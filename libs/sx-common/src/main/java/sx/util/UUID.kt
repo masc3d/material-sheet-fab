@@ -1,6 +1,7 @@
 package sx.util
 
-import org.apache.commons.codec.digest.DigestUtils
+import sx.security.DigestType
+import sx.security.hash
 import java.nio.ByteBuffer
 import java.util.*
 
@@ -25,5 +26,6 @@ fun UUID.toByteArray(): ByteArray =
  * @param length Length of hash
  */
 fun UUID.hashWithSha1(length: Int = 20) =
-    DigestUtils.sha1Hex(this.toByteArray())
-            .take(length)
+        listOf(this.toByteArray())
+                .hash(DigestType.SHA1)
+                .take(length)

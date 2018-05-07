@@ -9,7 +9,10 @@ import javax.inject.Inject
 import javax.persistence.EntityManager
 import org.deku.leoz.service.internal.UserService
 import sx.persistence.querydsl.from
+import sx.security.DigestType
+import sx.security.hash
 import sx.text.parseHex
+import sx.text.toHexString
 import javax.persistence.PersistenceContext
 
 interface UserRepository :
@@ -36,7 +39,7 @@ class UserRepositoryImpl : UserRepositoryExtension {
         return userRepository.findOne(
                 mstUser.alias.eq(alias)
                         .and(mstUser.debitorId.eq(debitorId))
-                         )
+        )
                 .orElse(null)
     }
 
@@ -86,16 +89,20 @@ val MstUser.isExternalUser: Boolean
     get() = (this.externalUser ?: 0) != 0
 
 private val SALT = "27abf393a822078603768c78de67e4a3".parseHex()
+
+fun MstUser.hashPassword(password: String): String {
+    return listOf(
+            SALT,
+            this.email.toByteArray(),
+            password.toByteArray()
+    ).hash(DigestType.SHA1).toHexString()
+}
+
 /**
  * Verify password
  * @param password Password to verify
  */
-fun MstUser.verifyPassword(password: String): Boolean {
-    return this.password == org.deku.leoz.hashUserPassword(
-            salt = SALT,
-            email = this.email,
-            password = password)
-}
+fun MstUser.verifyPassword(password: String): Boolean = this.password == this.hashPassword(password)
 
 /**
  * Hash password
@@ -103,9 +110,5 @@ fun MstUser.verifyPassword(password: String): Boolean {
  * @param password Password to hash
  */
 fun MstUser.setHashedPassword(password: String) {
-    this.password = org.deku.leoz.hashUserPassword(
-            salt = SALT,
-            email = email,
-            password = password
-    )
+    this.password = this.hashPassword(password)
 }

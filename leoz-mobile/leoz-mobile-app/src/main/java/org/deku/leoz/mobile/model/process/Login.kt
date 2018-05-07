@@ -7,7 +7,6 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
-import org.deku.leoz.hashUserPassword
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.model.entity.User
@@ -22,9 +21,7 @@ import org.slf4j.LoggerFactory
 import sx.android.Connectivity
 import sx.android.rx.observeOnMainThread
 import sx.rx.ObservableRxProperty
-import sx.security.CipherType
-import sx.security.decrypt
-import sx.security.encrypt
+import sx.security.*
 import sx.text.parseHex
 import sx.text.toHexString
 import java.net.ConnectException
@@ -130,10 +127,11 @@ class Login {
 
             val store = db.store.toBlocking()
 
-            val hashedPassword = hashUserPassword(
-                    salt = SALT,
-                    email = email,
-                    password = password)
+            val hashedPassword = listOf(
+                    SALT,
+                    email.toByteArray(),
+                    password.toByteArray()
+            ).hash(DigestType.SHA1).toHexString()
 
             /**
              * Authorize online
