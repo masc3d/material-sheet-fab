@@ -28,7 +28,7 @@
                 style="@style/medium_bold"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="+ 30 Min." />
+                android:text="00:00" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -37,22 +37,28 @@
 
                 <Button
                     android:id="@+id/uxMinusFifteen"
+                    android:background="@color/bpTransparent"
+                    android:textStyle="bold"
+                    android:textSize="50dp"
                     android:layout_weight="1"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="- 15m"
+                    android:text="-"
                     tools:ignore="HardcodedText" />
 
                 <Button
                     android:id="@+id/uxPlusFifteen"
+                    android:background="@color/bpTransparent"
+                    android:textStyle="bold"
+                    android:textSize="50dp"
                     android:layout_weight="1"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="+ 15m"
+                    android:text="+"
                     tools:ignore="HardcodedText" />
 
             </LinearLayout>
