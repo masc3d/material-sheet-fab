@@ -7,8 +7,7 @@ import feign.Request
 import feign.Retryer
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
-import feign.jaxrs.JAXRS2Contract
-import feign.jaxrs.JAXRSContract
+import feign.jaxrs2.JAXRS2Contract
 import feign.okhttp.OkHttpClient
 import org.glassfish.jersey.client.ClientProperties
 import org.glassfish.jersey.client.JerseyClientBuilder

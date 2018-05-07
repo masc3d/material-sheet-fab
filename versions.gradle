@@ -17,7 +17,7 @@ buildscript {
         v_commons_io = '2.6'
         v_commons_logging = '1.2'
         v_eclipselink = '2.7.1'
-        v_feign = '9.6.0'
+        v_feign = '9.7.0'
         v_flyway = '5.0.7'
         v_fxform2 = '8.2.4'
         v_guava = '25.0-jre'
