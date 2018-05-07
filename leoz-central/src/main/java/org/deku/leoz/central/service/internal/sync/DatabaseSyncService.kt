@@ -83,7 +83,7 @@ class SyncPreset<TCentralRecord : org.jooq.Record, TEntity>(
         /** Destination QueryDSL sync id field path */
         val dstJpaSyncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>?,
         /** Conversion function JOOQ record -> JPA entity */
-        val transformation: (TCentralRecord) -> TEntity,
+        val transformation: (TCentralRecord) -> Iterable<TEntity>,
         /** Perform accurate delete synchronisation (on each sync interval).
          * By default (false) only outdated sync-ids weil be cleaned.
          * REMARK: (true) not recommended for large tables, as the entire index of
@@ -475,9 +475,10 @@ constructor(
                                 // Fetch next record
                                 val record = source.fetchNext()
                                 // Convert to entity
-                                val entity = transformation(record)
-                                // Store entity
-                                em.merge(entity)
+                                transformation(record).forEach { entity ->
+                                    // Store entity
+                                    em.merge(entity)
+                                }
 
                                 count++
 

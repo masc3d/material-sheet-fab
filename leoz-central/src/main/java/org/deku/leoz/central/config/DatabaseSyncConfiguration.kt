@@ -37,13 +37,15 @@ class DatabaseSyncConfiguration {
                     QMstBundleVersion.mstBundleVersion,
                     QMstBundleVersion.mstBundleVersion.syncId,
                     { s ->
-                        MstBundleVersion().also { d ->
-                            d.id = s.id.toLong()
-                            d.bundle = s.bundle
-                            d.alias = s.alias
-                            d.version = s.version
-                            d.syncId = s.syncId
-                        }
+                        listOf(
+                                MstBundleVersion().also { d ->
+                                    d.id = s.id.toLong()
+                                    d.bundle = s.bundle
+                                    d.alias = s.alias
+                                    d.version = s.version
+                                    d.syncId = s.syncId
+                                }
+                        )
                     },
                     accurateDeletes = true
             ),
@@ -54,37 +56,39 @@ class DatabaseSyncConfiguration {
                     QMstStation.mstStation,
                     QMstStation.mstStation.syncId,
                     { s ->
-                        MstStation().also { d ->
-                            d.stationId = s.id
-                            d.stationNr = s.depotnr
-                            d.timestamp = s.timestamp
-                            d.address1 = s.firma1
-                            d.address2 = s.firma2
-                            d.city = s.ort
-                            d.contactPerson1 = s.anprechpartner1
-                            d.contactPerson2 = s.anprechpartner2
-                            d.country = s.lkz
-                            d.email = s.email
-                            d.houseNr = s.strnr
-                            d.mobile = s.mobil
-                            d.phone1 = s.telefon1
-                            d.phone2 = s.telefon2
-                            d.posLat = s.poslat
-                            d.posLong = s.poslong
-                            d.sector = s.sektor
-                            d.servicePhone1 = s.nottelefon1
-                            d.servicePhone2 = s.nottelefon2
-                            // TODO: strang? strange? ;)
-                            d.strang = null
-                            d.street = s.strasse
-                            d.telefax = s.telefax
-                            d.ustid = s.ustid
-                            d.webAddress = s.webadresse
-                            d.zip = s.plz
-                            d.syncId = s.syncId
-                            d.exportValuablesAllowed = if (s.valok == 1.toUInteger()) 1 else 0
-                            d.exportValuablesWithoutBagAllowed = if (s.valokWithoutBag == 1) 1 else 0
-                        }
+                        listOf(
+                                MstStation().also { d ->
+                                    d.stationId = s.id
+                                    d.stationNr = s.depotnr
+                                    d.timestamp = s.timestamp
+                                    d.address1 = s.firma1
+                                    d.address2 = s.firma2
+                                    d.city = s.ort
+                                    d.contactPerson1 = s.anprechpartner1
+                                    d.contactPerson2 = s.anprechpartner2
+                                    d.country = s.lkz
+                                    d.email = s.email
+                                    d.houseNr = s.strnr
+                                    d.mobile = s.mobil
+                                    d.phone1 = s.telefon1
+                                    d.phone2 = s.telefon2
+                                    d.posLat = s.poslat
+                                    d.posLong = s.poslong
+                                    d.sector = s.sektor
+                                    d.servicePhone1 = s.nottelefon1
+                                    d.servicePhone2 = s.nottelefon2
+                                    // TODO: strang? strange? ;)
+                                    d.strang = null
+                                    d.street = s.strasse
+                                    d.telefax = s.telefax
+                                    d.ustid = s.ustid
+                                    d.webAddress = s.webadresse
+                                    d.zip = s.plz
+                                    d.syncId = s.syncId
+                                    d.exportValuablesAllowed = if (s.valok == 1.toUInteger()) 1 else 0
+                                    d.exportValuablesWithoutBagAllowed = if (s.valokWithoutBag == 1) 1 else 0
+                                }
+                        )
                     },
                     accurateDeletes = true
             ),
@@ -95,15 +99,17 @@ class DatabaseSyncConfiguration {
                     QMstCountry.mstCountry,
                     QMstCountry.mstCountry.syncId,
                     { s ->
-                        MstCountry().also { d ->
-                            d.code = s.code
-                            d.timestamp = s.timestamp
-                            d.routingTyp = s.routingTyp
-                            d.minLen = s.minLen
-                            d.maxLen = s.maxLen
-                            d.zipFormat = s.zipFormat
-                            d.syncId = s.syncId
-                        }
+                        listOf(
+                                MstCountry().also { d ->
+                                    d.code = s.code
+                                    d.timestamp = s.timestamp
+                                    d.routingTyp = s.routingTyp
+                                    d.minLen = s.minLen
+                                    d.maxLen = s.maxLen
+                                    d.zipFormat = s.zipFormat
+                                    d.syncId = s.syncId
+                                }
+                        )
                     },
                     accurateDeletes = true
             ),
@@ -114,15 +120,17 @@ class DatabaseSyncConfiguration {
                     QMstHolidayCtrl.mstHolidayCtrl,
                     QMstHolidayCtrl.mstHolidayCtrl.syncId,
                     { s ->
-                        MstHolidayCtrl().also { d ->
-                            d.id = s.id.toLong()
-                            d.country = s.country
-                            d.ctrlPos = s.ctrlPos
-                            d.description = s.description
-                            d.holiday = s.holiday
-                            d.timestamp = s.timestamp
-                            d.syncId = s.syncId
-                        }
+                        listOf(
+                                MstHolidayCtrl().also { d ->
+                                    d.id = s.id.toLong()
+                                    d.country = s.country
+                                    d.ctrlPos = s.ctrlPos
+                                    d.description = s.description
+                                    d.holiday = s.holiday
+                                    d.timestamp = s.timestamp
+                                    d.syncId = s.syncId
+                                }
+                        )
                     },
                     accurateDeletes = true
             ),
@@ -133,28 +141,30 @@ class DatabaseSyncConfiguration {
                     QMstRoute.mstRoute,
                     QMstRoute.mstRoute.syncId,
                     { s ->
-                        MstRoute().also { d ->
-                            d.id = s.id.toLong()
-                            d.layer = s.layer
-                            d.country = s.country
-                            d.zipFrom = s.zipfrom
-                            d.zipTo = s.zipto
-                            d.validCrtr = s.validCtrl
-                            d.validFrom = s.validfrom
-                            d.validTo = s.validto
-                            d.timestamp = s.timestamp
-                            d.station = s.station
-                            d.area = s.area
-                            d.etod = s.etod
-                            d.ltop = s.ltop
-                            d.term = s.term
-                            d.saturdayOk = s.saturdayOk
-                            d.ltodsa = s.ltodsa
-                            d.ltodholiday = s.ltodholiday
-                            d.island = s.island
-                            d.holidayCtrl = s.holidayctrl
-                            d.syncId = s.syncId
-                        }
+                        listOf(
+                                MstRoute().also { d ->
+                                    d.id = s.id.toLong()
+                                    d.layer = s.layer
+                                    d.country = s.country
+                                    d.zipFrom = s.zipfrom
+                                    d.zipTo = s.zipto
+                                    d.validCrtr = s.validCtrl
+                                    d.validFrom = s.validfrom
+                                    d.validTo = s.validto
+                                    d.timestamp = s.timestamp
+                                    d.station = s.station
+                                    d.area = s.area
+                                    d.etod = s.etod
+                                    d.ltop = s.ltop
+                                    d.term = s.term
+                                    d.saturdayOk = s.saturdayOk
+                                    d.ltodsa = s.ltodsa
+                                    d.ltodholiday = s.ltodholiday
+                                    d.island = s.island
+                                    d.holidayCtrl = s.holidayctrl
+                                    d.syncId = s.syncId
+                                }
+                        )
                     }
             ),
 
@@ -164,15 +174,17 @@ class DatabaseSyncConfiguration {
                     QMstSector.mstSector,
                     QMstSector.mstSector.syncId,
                     { s ->
-                        MstSector().also { d ->
-                            d.id = s.id.toLong()
-                            d.sectorFrom = s.sectorfrom
-                            d.sectorTo = s.sectorto
-                            d.timestamp = s.timestamp
-                            d.validFrom = s.validfrom
-                            d.validTo = s.validto
-                            d.syncId = s.syncId
-                        }
+                        listOf(
+                                MstSector().also { d ->
+                                    d.id = s.id.toLong()
+                                    d.sectorFrom = s.sectorfrom
+                                    d.sectorTo = s.sectorto
+                                    d.timestamp = s.timestamp
+                                    d.validFrom = s.validfrom
+                                    d.validTo = s.validto
+                                    d.syncId = s.syncId
+                                }
+                        )
                     },
                     accurateDeletes = true
             ),
@@ -183,13 +195,15 @@ class DatabaseSyncConfiguration {
                     QMstRoutingLayer.mstRoutingLayer,
                     QMstRoutingLayer.mstRoutingLayer.syncId,
                     { s ->
-                        MstRoutingLayer().also { d ->
-                            d.layer = s.layer
-                            d.services = s.services
-                            d.description = s.description
-                            d.timestamp = s.timestamp
-                            d.syncId = s.syncId
-                        }
+                        listOf(
+                                MstRoutingLayer().also { d ->
+                                    d.layer = s.layer
+                                    d.services = s.services
+                                    d.description = s.description
+                                    d.timestamp = s.timestamp
+                                    d.syncId = s.syncId
+                                }
+                        )
                     },
                     accurateDeletes = true
             ),
@@ -200,14 +214,16 @@ class DatabaseSyncConfiguration {
                     QMstStationSector.mstStationSector,
                     QMstStationSector.mstStationSector.syncId,
                     { s ->
-                        MstStationSector().also { d ->
-                            d.id = s.id.toLong()
-                            d.stationNr = s.stationNr
-                            d.sector = s.sector
-                            d.routingLayer = s.routingLayer
-                            d.timestamp = s.timestamp
-                            d.syncId = s.syncId
-                        }
+                        listOf(
+                                MstStationSector().also { d ->
+                                    d.id = s.id.toLong()
+                                    d.stationNr = s.stationNr
+                                    d.sector = s.sector
+                                    d.routingLayer = s.routingLayer
+                                    d.timestamp = s.timestamp
+                                    d.syncId = s.syncId
+                                }
+                        )
                     },
                     accurateDeletes = true
             ),
@@ -218,15 +234,16 @@ class DatabaseSyncConfiguration {
                     QMstDebitor.mstDebitor,
                     QMstDebitor.mstDebitor.syncId,
                     { s ->
-                        MstDebitor().also { d ->
-                            d.debitorId = s.debitorId
-                            d.debitorNr = s.debitorNr
-                            d.tsCreated = s.tsCreated
-                            d.tsUpdated = s.tsUpdated
-                            d.parentId = s.parentId
-                            d.syncId = s.syncId
-
-                        }
+                        listOf(
+                                MstDebitor().also { d ->
+                                    d.debitorId = s.debitorId
+                                    d.debitorNr = s.debitorNr
+                                    d.tsCreated = s.tsCreated
+                                    d.tsUpdated = s.tsUpdated
+                                    d.parentId = s.parentId
+                                    d.syncId = s.syncId
+                                }
+                        )
                     },
                     accurateDeletes = true
             ),
