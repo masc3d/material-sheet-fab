@@ -68,7 +68,7 @@ class DocumentService: DocumentService {
                         .header(HttpHeaders.CONTENT_LENGTH, documentFile.length().toString())
                         .build()
 
-                //TODO Delete temporary File
+                // TODO Delete temporary file if client is done
             }
 
             else -> {
@@ -221,19 +221,15 @@ class DocumentService: DocumentService {
                 text = (request.services ?: listOf("")).toTypedArray()
         )
 
-        try {
-            // Make sure that the content stream is closed:
-            contentStream.close()
+        // Make sure that the content stream is closed:
+        contentStream.close()
 
-            // Save the results and ensure that the document is properly closed:
-            document.save(documentFile)
-            document.close()
+        // Save the results and ensure that the document is properly closed:
+        document.save(documentFile)
+        document.close()
 
-            return documentFile
-        } finally {
-            // TODO Check if this wont delete the file before it is downloaded by the client
-            documentFile.delete()
-        }
+        return documentFile
+
     }
 }
 
