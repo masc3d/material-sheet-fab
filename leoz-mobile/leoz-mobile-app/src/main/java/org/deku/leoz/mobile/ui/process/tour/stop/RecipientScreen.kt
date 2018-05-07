@@ -72,11 +72,6 @@ class RecipientScreen : ScreenFragment<Any>() {
     /** Acknowledgement view models */
     private val acknowledgements by lazy {
         this.tourStop.services
-                .plus(listOf(
-                        ParcelService.RECEIPT_ACKNOWLEDGEMENT,
-                        ParcelService.IDENT_CONTRACT_SERVICE,
-                        ParcelService.SUBMISSION_PARTICIPATION
-                ))
                 .mapNotNull { service ->
                     service.mobile.ackMessageText(this.context)
                             ?.let {
