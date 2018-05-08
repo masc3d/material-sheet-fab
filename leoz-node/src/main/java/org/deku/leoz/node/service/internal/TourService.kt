@@ -18,10 +18,7 @@ import org.deku.leoz.node.data.jpa.QTadTour.tadTour
 import org.deku.leoz.node.data.jpa.QTadTourEntry.tadTourEntry
 import org.deku.leoz.node.data.jpa.TadTour
 import org.deku.leoz.node.data.jpa.TadTourEntry
-import org.deku.leoz.node.data.repository.StationRepository
-import org.deku.leoz.node.data.repository.TadTourEntryRepository
-import org.deku.leoz.node.data.repository.TadTourRepository
-import org.deku.leoz.node.data.repository.toAddress
+import org.deku.leoz.node.data.repository.*
 import org.deku.leoz.time.ShortDate
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.TourServiceV1
@@ -30,7 +27,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.zalando.problem.Status
-import sx.log.slf4j.debug
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
@@ -87,6 +83,8 @@ class TourServiceV1
     private lateinit var tourEntryRepo: TadTourEntryRepository
     @Inject
     private lateinit var stationRepo: StationRepository
+    @Inject
+    private lateinit var stationContractRepo: StationContractRepository
 
     @Inject
     private lateinit var userService: org.deku.leoz.service.internal.UserService

@@ -1,7 +1,7 @@
 package org.deku.leoz.central.service.internal
 
 import io.reactivex.rxkotlin.subscribeBy
-import org.deku.leoz.central.data.repository.*
+import org.deku.leoz.node.data.repository.StationContractRepository
 import org.deku.leoz.node.service.internal.SmartlaneBridge
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -25,7 +25,7 @@ class TourServiceV1
 
     // Repositories
     @Inject
-    private lateinit var deliverylistRepository: JooqDeliveryListRepository
+    private lateinit var stationContractRepo: StationContractRepository
 
     @Inject
     private lateinit var userService: UserService

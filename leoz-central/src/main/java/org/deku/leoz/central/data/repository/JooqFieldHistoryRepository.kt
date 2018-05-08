@@ -6,7 +6,7 @@ import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragcolliesRecord
 import org.deku.leoz.central.data.toUInteger
-import org.deku.leoz.model.counter
+import org.deku.leoz.model.CounterType
 import org.deku.leoz.time.toGregorianLongDateString
 import org.deku.leoz.time.toGregorianLongDateTimeString
 import org.deku.leoz.time.toShortTime
@@ -14,7 +14,6 @@ import org.jooq.DSLContext
 import org.jooq.UpdatableRecord
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
-import sx.time.threeten.toLocalDateTimeBp
 import java.sql.Timestamp
 import java.util.*
 import javax.inject.Inject
@@ -36,7 +35,7 @@ class JooqFieldHistoryRepository {
         fieldHistoryRecord.newvalue = newValue
         fieldHistoryRecord.changer = changer
         fieldHistoryRecord.point = point
-        fieldHistoryRecord.id = Routines.fTan(dsl.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+        fieldHistoryRecord.id = Routines.fTan(dsl.configuration(), CounterType.FIELD_HISTORY.value).toInt().toUInteger()
         fieldHistoryRecord.store()
     }
 }
@@ -98,7 +97,7 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
             fieldHistoryRecord.point = point
 
             if (fieldHistoryRecord.oldvalue != fieldHistoryRecord.newvalue) {
-                fieldHistoryRecord.id = Routines.fTan(dsl.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+                fieldHistoryRecord.id = Routines.fTan(dsl.configuration(), CounterType.FIELD_HISTORY.value).toInt().toUInteger()
                 fieldHistoryRecord.store()
             }
 

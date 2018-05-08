@@ -2,7 +2,7 @@ package org.deku.leoz.node.service.internal
 
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstStation
-import org.deku.leoz.node.data.repository.DebitorStationRepository
+import org.deku.leoz.node.data.repository.StationContractRepository
 import org.deku.leoz.node.data.repository.StationRepository
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.entity.GeoLocation
@@ -33,7 +33,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
     private lateinit var stationRepository: StationRepository
 
     @Inject
-    private lateinit var debitorStationRepository: DebitorStationRepository
+    private lateinit var stationContractRepo: StationContractRepository
 
     @Context
     private lateinit var httpRequest: HttpServletRequest
@@ -69,8 +69,8 @@ class StationService : org.deku.leoz.service.internal.StationService {
 
     /** */
     override fun getByDebitorId(debitorId: Int): Array<StationV2> {
-        val stationIds = debitorStationRepository
-                .findStationIdsByDebitorid(debitorId)
+        val stationIds = stationContractRepo
+                .findStationIds(debitorId)
                 .also {
                     if (it.count() == 0)
                         throw RestProblem(status = Response.Status.NOT_FOUND, title = "Station IDs not found")

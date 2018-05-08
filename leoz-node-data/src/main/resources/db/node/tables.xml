@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 
-<!-- Table mapping names to @Serialzable uids. -->
+<!--
+Table mapping names to @Serialzable uids.
+-->
 <tables xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.w3schools.com tables.xsd">
 
+    <table name="lcl_property" uid="0xaa946790064006" />
+    <table name="lcl_sync" uid="0x2244b44d5f16ff" />
     <table name="mst_bundle_version" uid="0x6a0acd69ac1a6c" />
     <table name="mst_country" uid="0x61175aa6b510b3" />
+    <table name="mst_debitor" uid="0xaa946790064009" />
     <table name="mst_holiday_ctrl" uid="0x56c4d6ff7b69dc" />
     <table name="mst_node" uid="0xee9824a64c632c" />
+    <table name="mst_key" uid="0x8556806322cf47" />
     <table name="mst_route" uid="0xef6d8232d3263d" />
     <table name="mst_routing_layer" uid="0x92ed6a2fc3f79f" />
     <table name="mst_sector" uid="0xf1dec2bb66db87" />
     <table name="mst_station" uid="0x1f6229f711c472" />
+    <table name="mst_station_contract" uid="0xde8bab8b77a1a5" />
     <table name="mst_station_sector" uid="0x0d1eaebfd81899" />
-    <table name="lcl_property" uid="0xaa946790064006" />
-    <table name="lcl_sync" uid="0x2244b44d5f16ff" />
-    <table name="tad_node_geoposition" uid="0xaa946790064007" />
-    <table name="tad_tour" uid="0x08b6aa2cdefbb2" />
-    <table name="tad_tour_entry" uid="0x6c32a669a4a424" />
-    <table name="mst_debitor_station" uid="0xaa946790064008" />
-    <table name="mst_debitor" uid="0xaa946790064009" />
-    <table name="mst_key" uid="0x8556806322cf47" />
-    <table name="mst_user" uid="0xd0345b4eedac00" />
     <table name="mst_station_user" uid="0xea2337d04d0a2b" />
+    <table name="mst_user" uid="0xd0345b4eedac00" />
+    <table name="tad_node_geoposition" uid="0xaa946790064007" />
     <table name="tad_order" uid="0x9a5068e155ba00" />
     <table name="tad_order_parcel" uid="0x08cfee2e2d5075" />
+    <table name="tad_tour" uid="0x08b6aa2cdefbb2" />
+    <table name="tad_tour_entry" uid="0x6c32a669a4a424" />
 </tables>

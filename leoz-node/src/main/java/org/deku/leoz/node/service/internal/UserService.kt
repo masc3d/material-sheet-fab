@@ -47,7 +47,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
     private lateinit var debitorRepository: DebitorRepository
 
     @Inject
-    private lateinit var debitorStationRepository: DebitorStationRepository
+    private lateinit var stationContractRepo: StationContractRepository
 
     @Inject
     private lateinit var em: EntityManager
@@ -129,7 +129,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                 !stationMatchcode.isNullOrEmpty() -> {
                     val stationId = stationRepository.findByStation(stationMatchcode!!.toInt())?.stationId //stationRepository.findByMatchcode(matchcode = stationMatchcode!!).debitorId
                     if (stationId != null) {
-                        user.debitorId = debitorStationRepository.findByStationId(stationId)?.debitorId
+                        user.debitorId = stationContractRepo.findByStationId(stationId)?.debitorId
                     }
 
                 }
