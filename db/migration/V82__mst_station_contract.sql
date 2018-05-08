@@ -1,5 +1,11 @@
 USE `dekuclient`;
 
+# Drop `mst_debitor_station` in favor of `mst_station_contract`
+DROP TABLE IF EXISTS mst_debitor_station;
+DROP VIEW IF EXISTS mst_v_debitor_station;
+
+# `mst_station_contract`
+
 CREATE TABLE mst_station_contract (
   id            INT(11)   NOT NULL  AUTO_INCREMENT,
   debitor_id    INT(11)   NULL,
@@ -20,6 +26,8 @@ CREATE TABLE mst_station_contract (
 
 ALTER TABLE `mst_station_contract`
   ADD INDEX `ix_sync_id` (`sync_id`);
+
+# `mst_station_contract` sync-id support
 
 INSERT INTO `sys_sync` (`table_name`) VALUES ('mst_station_contract');
 
@@ -43,7 +51,7 @@ CREATE DEFINER = CURRENT_USER TRIGGER `mst_station_contract_sync_update`
 
 DELIMITER ;
 
-DROP VIEW IF EXISTS mst_v_debitor_station;
+# `mst_v_station_contract`
 
 CREATE OR REPLACE
   ALGORITHM = UNDEFINED
