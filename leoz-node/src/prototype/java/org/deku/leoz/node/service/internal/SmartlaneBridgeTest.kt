@@ -1,15 +1,8 @@
 package org.deku.leoz.node.service.internal
 
-import io.reactivex.Observable
+import org.deku.leoz.node.service.smartlane.SmartlaneBridge
 import org.deku.leoz.smartlane.model.Address
-import org.deku.leoz.smartlane.model.Routinginput
-import org.deku.leoz.smartlane.model.toRouteDeliveryInput
-import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.Stopwatch
-import sx.log.slf4j.trace
-import sx.time.plusHours
-import java.util.*
 
 /**
  * Created by masc on 20.11.17.

@@ -1,4 +1,4 @@
-package org.deku.leoz.node.service.internal
+package org.deku.leoz.node.service.smartlane
 
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -63,6 +63,21 @@ class SmartlaneBridge {
 
     @Inject
     private lateinit var identity: Identity
+
+    /**
+     * Smartlane container
+     */
+    data class Container(
+            val path: String
+    )
+
+    /**
+     * Smartlaner container resolver interface
+     */
+    interface Resolver {
+        fun containerByTour(tour: Tour): Container
+        fun containerByUser(user: UserService.User): Container
+    }
 
     /**
      * Rest client with connection pool for efficient use across all smartlane domains

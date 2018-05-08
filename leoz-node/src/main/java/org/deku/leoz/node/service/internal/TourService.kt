@@ -19,6 +19,7 @@ import org.deku.leoz.node.data.jpa.QTadTourEntry.tadTourEntry
 import org.deku.leoz.node.data.jpa.TadTour
 import org.deku.leoz.node.data.jpa.TadTourEntry
 import org.deku.leoz.node.data.repository.*
+import org.deku.leoz.node.service.smartlane.SmartlaneBridge
 import org.deku.leoz.time.ShortDate
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.TourServiceV1

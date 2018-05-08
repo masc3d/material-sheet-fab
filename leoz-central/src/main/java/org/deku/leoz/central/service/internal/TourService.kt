@@ -2,7 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.node.data.repository.StationContractRepository
-import org.deku.leoz.node.service.internal.SmartlaneBridge
+import org.deku.leoz.node.service.smartlane.SmartlaneBridge
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import sx.mq.MqHandler
