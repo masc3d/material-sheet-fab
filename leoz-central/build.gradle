@@ -23,6 +23,9 @@ buildscript {
         classpath "org.jooq:jooq-meta:$v_jooq"
         classpath "org.jooq:jooq-codegen:$v_jooq"
 
+        // masc20180508. use `slf4j-simple` instead of `slf4j-nop` for more detailed (jooq generation) logging
+        classpath "org.slf4j:slf4j-nop:$v_slf4j"
+
         // Flyway
         classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
         classpath "mysql:mysql-connector-java:$v_mysql"
@@ -310,6 +313,9 @@ tasks.generateMainJooqSchemaSource {
 
 tasks.generateMainJooqSchemaSource.with {
     javaExecSpec = { JavaExecSpec s ->
+        // Pass buildscript classpath to provide slf4j
+        s.classpath = buildscript.configurations.classpath
+        // JDK>=9 support
         s.jvmArgs '--add-modules', 'java.xml.bind'
     }
 }
