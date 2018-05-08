@@ -5,7 +5,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.toCompletable
 import io.reactivex.subjects.PublishSubject
-import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SysSyncRecord
 import org.deku.leoz.central.data.repository.JooqSyncRepository
 import org.deku.leoz.node.data.jpa.LclSync
 import org.deku.leoz.node.data.jpa.QLclSync.lclSync
@@ -67,6 +66,18 @@ class NotifyPreset<TCentralRecord : org.jooq.Record>(
 ) {
     override fun toString(): String =
             "Notify [${srcJooqTable.name}]"
+}
+
+/**
+ * Extension for transforming sync preset to repository sync spec
+ */
+fun List<Preset<*>>.toSyncSpec(): List<JooqSyncRepository.SyncSpec<*>> {
+    return this.mapNotNull {
+        if (it.srcJooqSyncIdField != null)
+            JooqSyncRepository.SyncSpec(it.srcJooqTable, it.srcJooqSyncIdField)
+        else
+            null
+    }
 }
 
 /**
@@ -200,7 +211,7 @@ constructor(
      */
     private class ProcessStep {
         /** Source (central) sync record */
-        var srcSyncRecord: SysSyncRecord by Delegates.notNull()
+        var srcSyncRecord: JooqSyncRepository.SyncRecord by Delegates.notNull()
         /** Preset to process */
         var preset: Preset<*> by Delegates.notNull()
     }
@@ -215,7 +226,7 @@ constructor(
                         Observable.fromIterable(
                                 // Retrieve source (central) sync ids and map to process steps
                                 this.syncJooqRepository
-                                        .findAll()
+                                        .findSyncRecords(presets.toSyncSpec())
                                         .mapNotNull { record ->
                                             val preset = this.presets.firstOrNull { it.tableName == record.tableName }
 
@@ -283,11 +294,8 @@ constructor(
 
             val syncMap = Stopwatch.createStarted(this, "FINDSYNCIDS", {
                 this.syncJooqRepository
-                        .findAll()
-                        .groupBy { it.tableName }
-                        .mapValues {
-                            it.value.first()
-                        }
+                        .findSyncRecords(this.presets.toSyncSpec())
+                        .associateBy { it.tableName }
             })
 
             this.presets.forEach {
@@ -314,11 +322,12 @@ constructor(
     @Suppress("UNCHECKED_CAST")
     @Synchronized
     private fun Preset<*>.update(
-            sysSyncRecord: SysSyncRecord,
+            sysSyncRecord: JooqSyncRepository.SyncRecord,
             clean: Boolean): Boolean {
 
         return when (this) {
             is SyncPreset<*, *> -> (this as SyncPreset<Record, Any>).update(
+                    sysSyncRecord = sysSyncRecord,
                     clean = clean
             )
             is NotifyPreset<*> -> (this as NotifyPreset<Record>).update(
@@ -333,7 +342,7 @@ constructor(
      * Update from notify preset
      */
     private fun NotifyPreset<Record>.update(
-            sysSyncRecord: SysSyncRecord,
+            sysSyncRecord: JooqSyncRepository.SyncRecord,
             clean: Boolean): Boolean {
 
         val tableName = this.srcJooqTable.name
@@ -343,7 +352,7 @@ constructor(
                 syncRepository.deleteAll()
             }
 
-            val dbSyncId = sysSyncRecord.syncId
+            val dbSyncId = sysSyncRecord.syncIdRange?.endInclusive ?: 0
 
             val localSync = syncRepository.findOne(
                     lclSync.tableName.eq(tableName)
@@ -380,6 +389,7 @@ constructor(
      * @param clean delete all records before updating
      */
     private fun SyncPreset<Record, Any>.update(
+            sysSyncRecord: JooqSyncRepository.SyncRecord,
             clean: Boolean
     ): Boolean {
         // Stopwatch
@@ -411,10 +421,7 @@ constructor(
         }
 
         val srcSyncIdRange = if (srcJooqSyncIdField != null) {
-            syncJooqRepository.findMinMaxSyncId(
-                    srcJooqTable,
-                    srcJooqSyncIdField
-            )
+            sysSyncRecord.syncIdRange
         } else null
         //endregion
 
