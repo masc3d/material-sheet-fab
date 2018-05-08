@@ -49,16 +49,6 @@ class JooqStationRepository {
                 .fetchInto(String::class.java)
     }
 
-    fun findDebitor(StationNr: Int): Int {
-        return dsl
-                .select(MST_DEBITOR.DEBITOR_ID)
-                .from(MST_DEBITOR).innerJoin(MST_DEBITOR_STATION)
-                .on(MST_DEBITOR.DEBITOR_ID.eq(MST_DEBITOR_STATION.DEBITOR_ID))
-                .where(MST_DEBITOR_STATION.STATION_ID.eq(StationNr)
-//todo include send_date  between active_from and active_to
-                ).fetchOne(MST_DEBITOR_STATION.DEBITOR_ID)
-    }
-
     fun findStationsByDebitorId(debitorId: Int): List<String> {
         return dsl
                 .select(TBLDEPOTLISTE.DEPOTNR)
