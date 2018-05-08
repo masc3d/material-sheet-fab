@@ -5,6 +5,7 @@ CREATE TABLE mst_station_contract (
   debitor_id    INT(11)   NULL,
   station_id    INT(11)   NULL,
   contract_type INT(11)   NOT NULL,
+  contract_no   VARCHAR(100),
   active_from   DATE,
   active_to     DATE,
   meta          JSON      NULL,
@@ -19,6 +20,8 @@ CREATE TABLE mst_station_contract (
 
 ALTER TABLE `mst_station_contract`
   ADD INDEX `ix_sync_id` (`sync_id`);
+
+INSERT INTO `sys_sync` (`table_name`) VALUES ('mst_station_contract');
 
 DELIMITER $$
 
@@ -51,12 +54,11 @@ VIEW `mst_v_station_contract` AS
     debitor_id    AS debitor_id,
     station_id    AS station_id,
     contract_type AS contract_type,
+    contract_no   AS contract_no,
     active_from   AS active_from,
     active_to     AS active_to,
     meta          AS meta,
     sync_id       AS sync_id
   FROM mst_station_contract
   WHERE date(now()) BETWEEN active_from AND active_to;
-
-INSERT INTO `sys_sync` (`table_name`) VALUES ('mst_v_station_contract');
 
