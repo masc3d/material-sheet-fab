@@ -1,6 +1,6 @@
 rootProject.name = 'leoz'
 
-// project dependencies
+// Generic components
 include ':sx-common'
 include ':sx-discovery'
 include ':sx-mq'
@@ -11,6 +11,7 @@ include ':sx-serialization'
 include ':sx-packager'
 include ':barbarywatchservice'
 
+// Projects
 include ':leoz-common'
 include ':leoz-core'
 include ':leoz-node'
@@ -21,6 +22,7 @@ include ':leoz-boot'
 include ':leoz-ui'
 include ':leoz-smartlane'
 
+// Physical project locations
 project(':sx-common').projectDir = file('libs/sx-common')
 project(':sx-discovery').projectDir = file('libs/sx-discovery')
 project(':sx-mq').projectDir = file('libs/sx-mq')
@@ -31,22 +33,7 @@ project(':sx-serialization').projectDir = file('libs/sx-serialization')
 project(':sx-packager').projectDir = file('libs/sx-packager')
 project(':barbarywatchservice').projectDir = file('libs/barbarywatchservice')
 
-// Android
-//include ':sx-android'
-//include ':sx-android-honeywell'
-//include ':leoz-mobile-app'
-//include ':leoz-mobile-data'
-//include ':material-sheet-fab'
-//include ':camerakit'
-//
-//project(':leoz-mobile-app').projectDir = file('leoz-mobile/leoz-mobile-app')
-//project(':leoz-mobile-data').projectDir = file('leoz-mobile/leoz-mobile-data')
-//
-//project(':sx-android').projectDir = file('libs/sx-android')
-//project(':sx-android-honeywell').projectDir = file('libs/sx-android-honeywell')
-//project(':material-sheet-fab').projectDir = file('leoz-mobile/libs/material-sheet-fab/material-sheet-fab')
-//project(':camerakit').projectDir = file('leoz-mobile/libs/CameraKit-Android/camerakit')
-
+// Build cache configuration
 buildCache {
     local(DirectoryBuildCache) {
         directory = new File(rootDir, 'build-cache')
