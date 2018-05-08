@@ -494,6 +494,8 @@ constructor(
                                 }
                             }
 
+                            em.flush()
+                            em.clear()
                             jpaTransactionManager.commit(transaction)
 
                         } catch (e: Throwable) {
