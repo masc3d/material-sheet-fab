@@ -2,7 +2,7 @@ package org.deku.leoz.node.service.internal
 
 import org.deku.leoz.model.*
 import org.deku.leoz.node.Application
-import org.deku.leoz.node.data.repository.DebitorStationRepository
+import org.deku.leoz.node.data.repository.StationContractRepository
 import org.deku.leoz.node.data.repository.OrderParcelRepository
 import org.deku.leoz.node.data.repository.OrderRepository
 import org.deku.leoz.node.data.repository.StationRepository
@@ -36,7 +36,7 @@ class OrderService : org.deku.leoz.service.internal.OrderService {
     private lateinit var orderParcelRepository: OrderParcelRepository
 
     @Inject
-    private lateinit var debitorStationRepository: DebitorStationRepository
+    private lateinit var stationContractRepo: StationContractRepository
 
     @Inject
     private lateinit var stationRepository: StationRepository
@@ -129,7 +129,7 @@ class OrderService : org.deku.leoz.service.internal.OrderService {
             Type.PICKUP -> stationNo = this.pickupStation
             Type.DELIVERY -> stationNo = this.deliveryStation
         }
-        return stationRepository.findByStation(stationNo)?.let { debitorStationRepository.findByStationId(it.stationId)?.debitorId }
+        return stationRepository.findByStation(stationNo)?.let { stationContractRepo.findByStationId(it.stationId)?.debitorId }
     }
 
     fun TadOrder.toOrder(): OrderService.Order {

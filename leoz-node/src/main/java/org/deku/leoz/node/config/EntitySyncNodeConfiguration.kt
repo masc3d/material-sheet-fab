@@ -60,7 +60,7 @@ class EntitySyncNodeConfiguration {
                         Preset(MstSector::class.java),
                         Preset(MstBundleVersion::class.java),
                         Preset(MstDebitor::class.java),
-                        Preset(MstDebitorStation::class.java)
+                        Preset(MstStationContract::class.java)
                 )
         )
     }

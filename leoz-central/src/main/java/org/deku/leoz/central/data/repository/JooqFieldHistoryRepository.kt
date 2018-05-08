@@ -14,7 +14,6 @@ import org.jooq.DSLContext
 import org.jooq.UpdatableRecord
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
-import sx.time.threeten.toLocalDateTimeBp
 import java.sql.Timestamp
 import java.util.*
 import javax.inject.Inject

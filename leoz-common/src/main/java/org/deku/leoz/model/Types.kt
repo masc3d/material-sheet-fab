@@ -547,7 +547,19 @@ enum class UserActivity(val value: String) {
     DATA_PROTECTION_POLICY_ACCEPTED("data protection policy accepted")
 }
 
+/**
+ * Salutation types
+ */
 enum class SalutationType(val value: Int) {
     Male(0),
     Female(1)
+}
+
+/**
+ * Station contract types
+ */
+enum class ContractType(val value: Int) {
+    DELIVERY(0),
+    PICKUP(1),
+    TOUR_ROUTE_PROVIDER(2)
 }

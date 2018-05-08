@@ -35,7 +35,7 @@ class StationRepositoryImpl : StationRepositoryExtension {
     private lateinit var stationUserRepository: StationUserRepository
 
     @Inject
-    private lateinit var stationDebitorRepository: DebitorStationRepository
+    private lateinit var stationContractRepo: StationContractRepository
 
 
     override fun findWithQuery(query: String): List<MstStation> {
@@ -111,7 +111,7 @@ class StationRepositoryImpl : StationRepositoryExtension {
     }
 
     override fun findStationsByDebitorId(debitorId: Long): List<Int> {
-        val stationIds = stationDebitorRepository.findStationIdsByDebitorid(debitorId.toInt())
+        val stationIds = stationContractRepo.findStationIds(debitorId.toInt())
         val stationRecords = depotRepository.findByStationIds(stationIds)
         return stationRecords.map { it.stationNr }
     }
