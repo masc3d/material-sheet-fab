@@ -559,7 +559,10 @@ enum class SalutationType(val value: Int) {
  * Station contract types
  */
 enum class ContractType(val value: Int) {
+    /** Delivery contract */
     DELIVERY(0),
+    /** Pickup contract */
     PICKUP(1),
-    TOUR_ROUTE_PROVIDER(2)
+    /** Smartlane route provider contract */
+    SMARTLANE(2)
 }
