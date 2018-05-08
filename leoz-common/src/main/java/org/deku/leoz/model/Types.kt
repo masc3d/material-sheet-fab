@@ -497,7 +497,7 @@ enum class Reason(val id: Int, val oldValue: Int = 0) {
 //  Fehlverladung(id = 511, oldValue = 43),
 }
 
-enum class counter(val value: Int) {
+enum class CounterType(val value: Int) {
     FIELD_HISTORY(19),
     LOADING_LIST(4000)
 }

@@ -231,7 +231,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
     override fun getNewLoadinglistNo(): ExportService.Loadinglist {
         var loadlistNo: Long
         do {
-            loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 300000
+            loadlistNo = Routines.fTan(dsl.configuration(), CounterType.LOADING_LIST.value) + 300000
             var checklist = parcelRepository.findParcelsByLoadingList(loadlistNo)
         } while (checklist.count() > 0)
 
@@ -339,14 +339,14 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
     override fun getNewBagLoadinglistNo(): ExportService.Loadinglist {
         var loadlistNo: Long
         do {
-            loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 10000
+            loadlistNo = Routines.fTan(dsl.configuration(), CounterType.LOADING_LIST.value) + 10000
             //da auf ladeliste>100000 geprüft wird für schon geladene aber nicht im Bag wird der Tageszaehler zurückgesetzt sobald 100000 erreicht ist
             //laut Alex reicht es, da ja alle 3 Monate archiviert wird
             if (loadlistNo >= 100000) {
                 dsl.update(Tables.USYSTBLZAEHLER).set(Tables.USYSTBLZAEHLER.TAGESZAEHLER, 1)
-                        .where(Tables.USYSTBLZAEHLER.COUNTERTYP.eq(counter.LOADING_LIST.value))
+                        .where(Tables.USYSTBLZAEHLER.COUNTERTYP.eq(CounterType.LOADING_LIST.value))
                         .execute()
-                loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 10000
+                loadlistNo = Routines.fTan(dsl.configuration(), CounterType.LOADING_LIST.value) + 10000
             }
             var checklist = parcelRepository.findParcelsByLoadingList(loadlistNo)
         } while (checklist.count() > 0)
