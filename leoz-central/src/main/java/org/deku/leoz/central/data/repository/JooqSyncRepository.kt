@@ -1,11 +1,10 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.dekuclient.Tables.SYS_SYNC
-import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SysSyncRecord
 import org.deku.leoz.central.data.prepared
 import org.jooq.*
 import org.jooq.impl.DSL
+import org.jooq.impl.DSL.inline
 import org.jooq.impl.TableImpl
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -26,38 +25,61 @@ class JooqSyncRepository {
     private lateinit var dsl: DSLContext
 
     /**
-     * Prepared statement
+     * Specification for a table to sync
      */
-    private val qFindSyncIdByTableName by lazy {
-        dsl
-                .select(SYS_SYNC.SYNC_ID)
-                .from(SYS_SYNC)
-                .where(SYS_SYNC.TABLE_NAME.eq(
-                        DSL.param(SYS_SYNC.TABLE_NAME.name, String::class.java)))
-    }
-
-    private val qFindAll by lazy {
-        dsl.selectFrom(SYS_SYNC)
-    }
+    data class SyncSpec<T : Record>(
+            /** Jooq table */
+            val table: TableImpl<T>,
+            /** Jooq sync id field */
+            val syncIdField: TableField<out Record, Long>
+    )
 
     /**
-     * Find sync id by table name
-     * @param tableName Table name
+     * Sync record (synthetic)
      */
-    fun findSyncIdByTableName(tableName: String): Long? {
-        return this.qFindSyncIdByTableName.prepared {
-            val query = it.bind(SYS_SYNC.TABLE_NAME.name, tableName)
+    data class SyncRecord(
+            /** Table name */
+            val tableName: String,
+            /** Sync id range */
+            val syncIdRange: LongRange?
+    )
 
-            query.fetchOne()?.value1()
+    /**
+     * Find sync records
+     */
+    fun findSyncRecords(tables: List<SyncSpec<*>>): List<SyncRecord> {
+        if (tables.count() == 0)
+            return listOf()
+
+        fun <T : Record> createStatement(spec: SyncSpec<T>): Select<Record3<String, Long, Long>> {
+            return dsl.select(
+                    inline(spec.table.name),
+                    spec.syncIdField.min(),
+                    spec.syncIdField.max()
+            )
+                    .from(spec.table)
         }
-    }
 
-    /**
-     * Fetch all sync records
-     */
-    fun findAll(): List<SysSyncRecord> {
-        return this.qFindAll.prepared {
-            it.fetch().toList()
+        // Build statement
+        var stmt = createStatement(tables[0])
+
+        if (tables.count() > 1) {
+            tables.subList(1, tables.count())
+                    .forEach { stmt = stmt.union(createStatement(it)) }
+        }
+
+        return stmt.toList().map {
+            val tableName = it.value1()
+            val min = it.value2()
+            val max = it.value3()
+
+            SyncRecord(
+                    tableName,
+                    if (min != null && max != null)
+                        LongRange(min, max)
+                    else
+                        null
+            )
         }
     }
 
@@ -84,19 +106,6 @@ class JooqSyncRepository {
                 .resultSetType(ResultSet.TYPE_FORWARD_ONLY)
                 .fetchSize(Int.MIN_VALUE)
                 .fetchLazy()
-    }
-
-    /**
-     * Find maximum sync id for central table
-     * @param table Jooq table
-     * @param field Jooq sync id field
-     */
-    fun <TRecord : Record> findMaxSyncId(
-            table: TableImpl<TRecord>,
-            field: TableField<out TRecord, Long>
-    ): Long? {
-        return dsl.selectFrom(table)
-                .fetchOne(field.max())
     }
 
     /**
@@ -132,27 +141,6 @@ class JooqSyncRepository {
                 .from(table)
                 .fetchInto(Long::class.java)
                 .toSet()
-    }
-
-    /**
-     * Find minimum and maximum sync id
-     * @param table table
-     * @param syncIdField sync id field
-     * @return range of sync ids (min..max) or null when table is empty
-     */
-    fun <TRecord : Record> findMinMaxSyncId(
-            table: TableImpl<TRecord>,
-            syncIdField: TableField<out TRecord, Long>): LongRange? {
-
-        return dsl.select(syncIdField.min(), syncIdField.max())
-                .from(table)
-                .fetchOne()
-                .let {
-                    val min = it.component1() ?: return null
-                    val max = it.component2() ?: return null
-
-                    (min..max)
-                }
     }
 
     fun <TRecord : Record> count(
