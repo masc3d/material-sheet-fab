@@ -2,9 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
-import org.deku.leoz.central.data.repository.JooqNodeRepository
 import org.deku.leoz.central.data.repository.fetchByUid
 import org.deku.leoz.node.data.jooq.Tables
 import org.deku.leoz.time.ShortDate

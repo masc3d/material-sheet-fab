@@ -44,7 +44,7 @@ dependencies {
             localGroovy(),
             gradleApi(),
 
-            project(':sx-common'),
+            project(':sx-core'),
             project(':sx-packager'),
 
             // JSR-310 / java.time drop-in replacement

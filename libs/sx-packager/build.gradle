@@ -52,7 +52,7 @@ sourceSets {
 
 dependencies {
     compile(
-            project(':sx-common'),
+            project(':sx-core'),
             project(':sx-rsync'),
 
             // JSR-310 / java.time drop-in replacement

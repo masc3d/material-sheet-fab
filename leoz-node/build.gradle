@@ -131,7 +131,7 @@ repositories {
 dependencies {
     // leoz webservice dependencies
     compile(
-            project(':sx-common'),
+            project(':sx-core'),
             project(':leoz-core'),
             project(':leoz-node-data'),
             project(':leoz-smartlane'),

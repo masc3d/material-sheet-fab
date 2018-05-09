@@ -39,7 +39,7 @@ sourceSets {
 
 dependencies {
     compile(
-            project(':sx-common'),
+            project(':sx-core'),
             project(':sx-fx'),
             project(':sx-ssh'),
             project(':leoz-core'),

@@ -27,7 +27,7 @@ repositories {
 
 dependencies {
     compile(
-            project(':sx-common'),
+            project(':sx-core'),
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 

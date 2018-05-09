@@ -25,8 +25,8 @@ import java.util.concurrent.TimeUnit
 class ProcessExecutor @JvmOverloads constructor(
         private val processBuilder: ProcessBuilder,
         private val terminationTimeout: Duration = Duration.ofSeconds(10),
-        private val outputHandler: ProcessExecutor.TextStreamHandler = ProcessExecutor.DefaultTextStreamHandler(),
-        private val errorHandler: ProcessExecutor.TextStreamHandler = ProcessExecutor.DefaultTextStreamHandler())
+        private val outputHandler: TextStreamHandler = DefaultTextStreamHandler(),
+        private val errorHandler: TextStreamHandler = DefaultTextStreamHandler())
     :
         Disposable {
     /** Logger */
@@ -86,7 +86,7 @@ class ProcessExecutor @JvmOverloads constructor(
                                 trim = trim,
                                 omitEmptyLines = omitEmptyLines,
                                 collectInto = output),
-                        errorHandler = ProcessExecutor.DefaultTextStreamHandler(
+                        errorHandler = DefaultTextStreamHandler(
                                 trim = trim,
                                 omitEmptyLines = omitEmptyLines,
                                 collectInto = error))
@@ -95,7 +95,7 @@ class ProcessExecutor @JvmOverloads constructor(
                 pe.waitFor()
 
                 return Result(0, output.toString(), error.toString())
-            } catch(e: ProcessExecutor.ProcessException) {
+            } catch(e: ProcessException) {
                 throw ProcessRunException(Result(e.errorCode, output.toString(), error.toString()))
             }
         }

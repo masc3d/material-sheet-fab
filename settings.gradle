@@ -2,6 +2,7 @@ rootProject.name = 'leoz'
 
 // Generic components
 include ':sx-common'
+include ':sx-core'
 include ':sx-discovery'
 include ':sx-mq'
 include ':sx-fx'
@@ -24,6 +25,7 @@ include ':leoz-smartlane'
 
 // Physical project locations
 project(':sx-common').projectDir = file('libs/sx-common')
+project(':sx-core').projectDir = file('libs/sx-core')
 project(':sx-discovery').projectDir = file('libs/sx-discovery')
 project(':sx-mq').projectDir = file('libs/sx-mq')
 project(':sx-fx').projectDir = file('libs/sx-fx')

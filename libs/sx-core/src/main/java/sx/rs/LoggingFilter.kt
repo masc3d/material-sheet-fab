@@ -2,7 +2,6 @@ package sx.rs
 
 import org.slf4j.LoggerFactory
 import sx.log.slf4j.trace
-import sx.rs.client.RestEasyClient
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream

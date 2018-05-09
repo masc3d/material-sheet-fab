@@ -32,5 +32,5 @@ object JvmUtil {
      * Short JVM info text
      */
     val shortInfoText: String
-        get() = "JVM [${this.version}] max memory [${this.maxMemory/1024/1024}M]"
+        get() = "JVM [$version] max memory [${maxMemory /1024/1024}M]"
 }

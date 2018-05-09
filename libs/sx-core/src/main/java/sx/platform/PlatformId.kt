@@ -16,7 +16,7 @@ class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuArch) {
         }
 
         override fun unmarshal(v: String?): PlatformId? {
-            return if (v == null) null else PlatformId.parse(v)
+            return if (v == null) null else parse(v)
         }
     }
 

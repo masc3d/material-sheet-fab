@@ -7,8 +7,6 @@ import java.nio.channels.FileLock
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 import sx.Process
-import java.io.FileInputStream
-import java.nio.ByteBuffer
 
 /**
  * Process lock file.

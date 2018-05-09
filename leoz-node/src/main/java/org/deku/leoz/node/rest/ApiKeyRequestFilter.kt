@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component
 import sx.reflect.allInterfaces
 import sx.rs.RestProblem
 import sx.rs.annotatedParametersOfType
-import sx.rs.annotationOfType
 import sx.rs.auth.ApiKeyRequestFilterBase
 import java.util.*
 import javax.inject.Inject

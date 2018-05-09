@@ -6,8 +6,8 @@ import org.deku.leoz.Storage
 import org.deku.leoz.bundle.*
 import org.deku.leoz.ui.config.StorageConfiguration
 import org.slf4j.LoggerFactory
+import sx.Process
 import sx.io.ProcessLockFile
-import sx.io.WindowsShellLink
 import sx.packager.Bundle
 import sx.packager.BundleProcessInterface
 import java.io.File
@@ -41,7 +41,7 @@ class Setup : BundleProcessInterface() {
             SystemUtils.IS_OS_WINDOWS -> {
                 val desktopLinkFile = this.desktopLinkFile
                 if (desktopLinkFile != null) {
-                    val shellLink = WindowsShellLink(desktopLinkFile.absolutePath)
+                    val shellLink = sx.io.WindowsShellLink(desktopLinkFile.absolutePath)
                     shellLink.target = bundle.path!!.resolve("${bundle.name!!}.exe").absolutePath
                     shellLink.save()
                 }
@@ -75,7 +75,7 @@ class Setup : BundleProcessInterface() {
             val pid = processLockFile.pid
 
             // Signal kill and wait for lock to become available
-            sx.Process.kill(pid)
+            Process.kill(pid)
             processLockFile.waitForLock(
                     writeCurrentProcessPid = true
             )

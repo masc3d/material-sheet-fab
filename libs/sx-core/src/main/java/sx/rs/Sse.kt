@@ -4,7 +4,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.merge
 import io.reactivex.rxkotlin.subscribeBy
-import sx.log.slf4j.info
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.ws.rs.core.MediaType

@@ -5,7 +5,6 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
 import org.deku.leoz.node.data.repository.BundleVersionRepository
-import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.deku.leoz.service.internal.update.BundleUpdateService
 import org.slf4j.LoggerFactory

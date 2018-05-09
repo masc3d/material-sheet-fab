@@ -28,8 +28,12 @@ class Process private constructor(
          */
         fun kill(pid: Long) {
             when {
-                SystemUtils.IS_OS_WINDOWS -> { ProcessExecutor.run(listOf("taskkill", "/pid", pid.toString())) }
-                else -> { ProcessExecutor.run(listOf("kill", pid.toString())) }
+                SystemUtils.IS_OS_WINDOWS -> {
+                    ProcessExecutor.run(listOf("taskkill", "/pid", pid.toString()))
+                }
+                else -> {
+                    ProcessExecutor.run(listOf("kill", pid.toString()))
+                }
             }
         }
     }

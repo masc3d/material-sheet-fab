@@ -3,13 +3,20 @@ version = '0.1'
 
 buildscript {
     ext {
-        v_feign = '9.7.0'
         v_jackson = '2.9.5'
+        v_javax_persistence = '2.2'
+        v_jersey = '2.27'
+        v_jgit = '4.11.0.201803080745-r'
+        v_jaxb = '2.3.0'
+        v_jna = '4.5.1'
         v_jooq = '3.10.7'
+        v_jsch = '0.1.54'
+        v_jsch_proxy = '0.0.9'
+        v_querydsl = '4.2.1'
         v_kotlin = '1.2.41'
         v_koptional = '1.3.0'
-        v_logback = '1.2.3'
-        v_requery = '1.5.1'
+        v_resteasy = '4.0.0.Beta3'
+        v_spring = '5.0.6.RELEASE'
         v_socketio = '1.0.0'
         v_slf4j = '1.7.25'
         v_threeten = '1.3.6'
@@ -33,9 +40,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
-        // masc20181101. android support
-        // API levels < 24 are not compatible with some java8 bytecode kt compiler produces
-        jvmTarget = JavaVersion.VERSION_1_6
+        jvmTarget = JavaVersion.VERSION_1_8
     }
 }
 
@@ -46,17 +51,10 @@ repositories {
 
 dependencies {
     compile(
+            project(':sx-common'),
+
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
-
-            // Logging
-            "org.slf4j:slf4j-api:$v_slf4j",
-            "org.slf4j:jcl-over-slf4j:$v_slf4j",
-            "org.slf4j:jul-to-slf4j:$v_slf4j",
-
-            // RX
-            "io.reactivex.rxjava2:rxjava:2.1.13",
-            "io.reactivex:rxkotlin:2.0.0-RC1",
 
             "com.gojuno.koptional:koptional:$v_koptional",
             "com.gojuno.koptional:koptional-rxjava2-extensions:$v_koptional",
@@ -73,12 +71,18 @@ dependencies {
             "javax.ws.rs:javax.ws.rs-api:2.1",
             "org.zalando:problem:0.20.3",
 
-            // REST
+            // JNA
+            "net.java.dev.jna:jna:$v_jna",
+            "net.java.dev.jna:jna-platform:$v_jna",
 
-            // Feign REST
-            "io.github.openfeign:feign-jackson:$v_feign",
-            "io.github.openfeign:feign-okhttp:$v_feign",
-            "io.github.openfeign:feign-jaxrs2:$v_feign",
+            // REST
+            // Jersey REST client
+            "org.glassfish.jersey.core:jersey-client:$v_jersey",
+            "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey",
+
+            // RESTeasy client
+            "org.jboss.resteasy:resteasy-client:$v_resteasy",
+            "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",
 
             // YAML
             "org.yaml:snakeyaml:1.19",
@@ -87,9 +91,27 @@ dependencies {
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
 
-            // Requery
-            "io.requery:requery:$v_requery",
-            "io.requery:requery-kotlin:$v_requery",
+            // JGit
+            "org.eclipse.jgit:org.eclipse.jgit:$v_jgit",
+            // For authenticating ssh/jgit against key agent
+            "com.jcraft:jsch:$v_jsch",
+            "com.jcraft:jsch.agentproxy.connector-factory:$v_jsch_proxy",
+            "com.jcraft:jsch.agentproxy.jsch:$v_jsch_proxy",
+            "com.jcraft:jsch.agentproxy.sshagent:$v_jsch_proxy",
+            "com.jcraft:jsch.agentproxy.pageant:$v_jsch_proxy",
+
+            // QueryDSL
+            "com.querydsl:querydsl-core:$v_querydsl",
+            "com.querydsl:querydsl-jpa:$v_querydsl",
+
+            // Jooq
+            "org.jooq:jooq:$v_jooq",
+
+            // JPA
+            "javax.persistence:javax.persistence-api:$v_javax_persistence",
+            dependencies.create("org.eclipse.persistence:eclipselink:$v_eclipselink") {
+                exclude module: 'javax.persistence'
+            },
 
             // JUnit
             "junit:junit:4.12",
@@ -97,8 +119,8 @@ dependencies {
             // Digest utils (security)
             "commons-codec:commons-codec:1.11",
 
-            // Logback
-            "ch.qos.logback:logback-classic:$v_logback",
+            // Spring
+            "org.springframework:spring-core:$v_spring"
     )
 
     testCompile(
