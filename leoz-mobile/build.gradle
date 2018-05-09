@@ -1,8 +1,8 @@
+import org.apache.commons.lang3.SystemUtils
 import sx.packager.BundleRepository
 import sx.rsync.Rsync
 import sx.ssh.SshHost
 import sx.ssh.SshTunnelProvider
-import org.apache.commons.lang3.SystemUtils
 
 import java.lang.management.ManagementFactory
 
@@ -10,11 +10,11 @@ import java.lang.management.ManagementFactory
 
 apply from: '../versions.gradle'
 apply from: '../common.gradle'
-apply plugin: 'idea'
 
 buildscript {
     ext {
         v_android_gradle = '3.1.2'
+        v_kotlin = '1.2.41'
     }
 
     repositories {
@@ -30,6 +30,8 @@ buildscript {
     }
 
     dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+
         // masc20171004. as of 3.0.0-beta7, agp must solely be included on root project level to avoid
         // local project configuration/variant resolution to work properly.
         classpath "com.android.tools.build:gradle:$v_android_gradle"
@@ -38,6 +40,11 @@ buildscript {
         classpath "com.github.ben-manes:gradle-versions-plugin:0.17.0"
     }
 }
+
+apply plugin: 'idea'
+// masc20180509. applying kapt plugin in root project to avoid databinding warning
+// about kapt task not being found
+apply plugin: 'kotlin-kapt'
 
 idea {
     module {
