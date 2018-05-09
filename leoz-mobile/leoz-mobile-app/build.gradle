@@ -69,14 +69,24 @@ android {
 
     defaultConfig {
         applicationId "org.deku.leoz.mobile"
-        minSdkVersion 19
-        targetSdkVersion 27
         versionCode 2
         versionName "0.147-SNAPSHOT"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        minSdkVersion 19
+        targetSdkVersion 27
+
+        // Multidex options
         multiDexEnabled true
         multiDexKeepProguard file('multidex-keep.pro')
+
+        // Resource options
+        // Only keep localizations for those languages
+        resConfigs "en", "de"
         vectorDrawables.useSupportLibrary true
+
+        // Test settings
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
 
     dataBinding {
@@ -102,13 +112,22 @@ android {
     buildTypes {
         release {
             minifyEnabled true
+            shrinkResources true
+
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
 
         debug {
-            minifyEnabled false
             debuggable true
+
+            // Use android class shrinker
+            minifyEnabled false
+            useProguard false
+
+            // Disable crashlytics as it's not used
+            ext.enableCrashlytics = false
+
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-rules-debug.pro'
             testProguardFile('proguard-rules.pro')
         }
@@ -117,8 +136,6 @@ android {
     sourceSets {
         main {
             svg.srcDirs += 'src/main/svg'
-            java.srcDirs += 'src/main/kotlin'
-
             res.srcDirs += GENERATED_SVG_DIR
         }
     }
