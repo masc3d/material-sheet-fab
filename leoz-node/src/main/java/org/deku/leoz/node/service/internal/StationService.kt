@@ -60,7 +60,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
     override fun getByStationNo(stationNo: Int): StationV2 {
         // TODO: verify / filter result by authorized user debitor
         val station = stationRepository
-                .findByStation(stationNo)
+                .findByStationNo(stationNo)
                 ?: throw RestProblem(status = Response.Status.NOT_FOUND, title = "Station not found")
 
 

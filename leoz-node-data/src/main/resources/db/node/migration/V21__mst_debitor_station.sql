@@ -5,6 +5,7 @@ CREATE TABLE mst_station_contract (
   debitor_id    INTEGER,
   station_id    INTEGER,
   contract_type INTEGER   NOT NULL DEFAULT 0,
+  contract_no    VARCHAR,
   active_from   TIMESTAMP NOT NULL,
   active_to     TIMESTAMP NOT NULL,
   sync_id       BIGINT    NOT NULL,

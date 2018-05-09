@@ -23,10 +23,6 @@ class TourServiceV1
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    // Repositories
-    @Inject
-    private lateinit var stationContractRepo: StationContractRepository
-
     @Inject
     private lateinit var userService: UserService
 
@@ -35,7 +31,6 @@ class TourServiceV1
 
     @Inject
     private lateinit var smartlane: SmartlaneBridge
-    //endregion
 
     // TODO: move to node as soon as location service has been migrated
 
@@ -52,11 +47,11 @@ class TourServiceV1
 
                         val user = this.userService.getById(userId)
 
-                        if (smartlane.hasDriver(user.email)) {
+                        if (smartlane.hasDriver(user)) {
                             val positions = gpsMessage.dataPoints?.toList() ?: listOf()
 
                             this.smartlane.putDriverPosition(
-                                    email = user.email,
+                                    user = user,
                                     positions = positions
                             )
                                     .subscribeBy(

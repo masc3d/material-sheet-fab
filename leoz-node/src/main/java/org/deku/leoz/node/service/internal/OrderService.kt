@@ -129,7 +129,7 @@ class OrderService : org.deku.leoz.service.internal.OrderService {
             Type.PICKUP -> stationNo = this.pickupStation
             Type.DELIVERY -> stationNo = this.deliveryStation
         }
-        return stationRepository.findByStation(stationNo)?.let { stationContractRepo.findByStationId(it.stationId)?.debitorId }
+        return stationRepository.findByStationNo(stationNo)?.let { stationContractRepo.findByStationId(it.stationId)?.debitorId }
     }
 
     fun TadOrder.toOrder(): OrderService.Order {

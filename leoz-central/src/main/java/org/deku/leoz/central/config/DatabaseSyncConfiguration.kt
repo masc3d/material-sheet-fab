@@ -266,6 +266,7 @@ class DatabaseSyncConfiguration {
                                     d.activeFrom = s.activeFrom.toTimestamp()
                                     d.activeTo = s.activeTo.toTimestamp()
                                     d.contractType = s.contractType.toInt()
+                                    d.contractNo = s.contractNo
                                     d.syncId = s.syncId
                                 }
                         )

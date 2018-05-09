@@ -21,13 +21,14 @@ interface StationRepository :
 
 interface StationRepositoryExtension {
     fun findWithQuery(query: String): List<MstStation>
-    fun findByStation(stationNo: Int): MstStation?
+    fun findByStationNo(stationNo: Int): MstStation?
     fun findByStationIds(stationIds: List<Int>): List<MstStation>
     fun findAllowedStationsByUserId(userId: Long): List<Int>
     fun findStationsByDebitorId(debitorId: Long): List<Int>
 }
 
 class StationRepositoryImpl : StationRepositoryExtension {
+
     @Inject
     private lateinit var depotRepository: StationRepository
 
@@ -85,7 +86,7 @@ class StationRepositoryImpl : StationRepositoryExtension {
         return Lists.newArrayList(depots)
     }
 
-    override fun findByStation(stationNo: Int): MstStation? {
+    override fun findByStationNo(stationNo: Int): MstStation? {
         // QueryDSL
         return depotRepository.findOne(
                 mstStation.stationNr.eq(stationNo))

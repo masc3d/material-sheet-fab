@@ -20,10 +20,8 @@ import org.springframework.stereotype.Component
 import sx.time.toDate
 import sx.time.toLocalDate
 import sx.time.toTimestamp
-import java.sql.Timestamp
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
 import javax.persistence.EntityManagerFactory
@@ -291,7 +289,7 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
 
         //TODO Sector aus stationsector
 
-        val rStation = stationRepository.findByStation(rRoute.station)
+        val rStation = stationRepository.findByStationNo(rRoute.station)
 
         if (rStation == null)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} Route Station not found")

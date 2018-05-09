@@ -16,13 +16,26 @@ interface StationContractRepository :
 
 
 interface StationContractRepositoryExtensions {
-    fun findStationIds(debitorId: Int, contractType: ContractType = ContractType.DELIVERY): List<Int>
-    fun findByStationId(stationId: Int, contractType: ContractType = ContractType.DELIVERY): MstStationContract?
+    fun findStationIds(
+            debitorId: Int,
+            contractType: ContractType = ContractType.DELIVERY): List<Int>
+
+    fun findByStationId(
+            stationId: Int,
+            contractType: ContractType = ContractType.DELIVERY): MstStationContract?
+
+    fun findByStationNo(
+            stationNo: Int,
+            contractType: ContractType = ContractType.DELIVERY): MstStationContract?
 }
 
 class StationContractRepositoryImpl : StationContractRepositoryExtensions {
+
     @PersistenceContext
     private lateinit var em: EntityManager
+
+    @Inject
+    private lateinit var stationRepo: StationRepository
 
     override fun findStationIds(debitorId: Int, contractType: ContractType): List<Int> {
         return em.from(mstStationContract)
@@ -39,5 +52,12 @@ class StationContractRepositoryImpl : StationContractRepositoryExtensions {
                         .and(mstStationContract.contractType.eq(contractType.value)))
                 .fetch()
                 .lastOrNull()
+    }
+
+    override fun findByStationNo(stationNo: Int, contractType: ContractType): MstStationContract? {
+        return stationRepo.findByStationNo(stationNo)
+                ?.let {
+                    this.findByStationId(it.stationId, contractType)
+                }
     }
 }
