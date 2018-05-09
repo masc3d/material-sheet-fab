@@ -65,6 +65,10 @@ class SmartlaneBridge {
     /** Default customer id */
     private val CONTAINER_PATH_TEST = "der-kurier-test"
 
+    /** Smartlane administrative credentials for all containers */
+    private val ADMIN_USERNAME = "dekuadmin@smartlane.de"
+    private val ADMIN_PASSWORD = "d7#PfDKiv9.M"
+
     @Inject
     private lateinit var identity: Identity
 
@@ -123,8 +127,8 @@ class SmartlaneBridge {
                         .proxy(AuthApi::class.java,
                                 path = container.path)
                         .auth(AuthApi.Request(
-                                email = "juergen.toepper@derkurier.de",
-                                password = "PanicLane"
+                                email = ADMIN_USERNAME,
+                                password = ADMIN_PASSWORD
                         ))
                         .accessToken
             }
