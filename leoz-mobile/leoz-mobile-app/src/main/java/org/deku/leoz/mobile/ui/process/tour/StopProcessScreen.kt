@@ -390,6 +390,7 @@ class StopProcessScreen :
                         id = R.id.action_report_delay,
                         colorRes = R.color.colorGrey,
                         iconRes = R.drawable.ic_appointment_at_risk,
+                        iconTintRes = android.R.color.white,
                         visible = !this.tourStop.canClose
                 )
         )

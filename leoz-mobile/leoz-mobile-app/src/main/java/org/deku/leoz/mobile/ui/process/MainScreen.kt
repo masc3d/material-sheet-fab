@@ -40,6 +40,7 @@ class MainScreen : ScreenFragment<Any>() {
 
         this.title = "mobileX"
         this.headerImage = Headers.street
+        this.accentColor = R.color.colorPrimary
     }
 
     /**

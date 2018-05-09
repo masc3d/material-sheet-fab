@@ -266,6 +266,7 @@ class StopDetailsScreen
                         id = R.id.action_stop_add_information,
                         colorRes = R.color.colorGrey,
                         iconRes = R.drawable.ic_comment_alert,
+                        iconTintRes = android.R.color.white,
                         alignEnd = false,
                         menu = stopNoteMenu
                 )
