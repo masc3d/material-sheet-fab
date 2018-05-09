@@ -6,7 +6,6 @@ import sx.io.serialization.Serializer
 import sx.reflect.allGenericInterfaces
 import java.lang.reflect.ParameterizedType
 import java.util.*
-import javax.jms.Message
 
 /**
  * Lightweight message listener abstraction with object conversion and dispatch support
@@ -37,7 +36,7 @@ abstract class MqListener
         mqHandler = this.handlerDelegates.get(messageObject.javaClass)
 
         if (mqHandler == null) {
-            throw HandlingException("No delegate for message object type [%s]".format(messageObject.javaClass, Message::class.java))
+            throw HandlingException("No delegate for message object type [${messageObject.javaClass}]")
         }
 
         // Delegate to handler

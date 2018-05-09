@@ -5,6 +5,7 @@ include ':sx-common'
 include ':sx-core'
 include ':sx-discovery'
 include ':sx-mq'
+include ':sx-mq-jms'
 include ':sx-fx'
 include ':sx-rsync'
 include ':sx-ssh'
@@ -28,6 +29,7 @@ project(':sx-common').projectDir = file('libs/sx-common')
 project(':sx-core').projectDir = file('libs/sx-core')
 project(':sx-discovery').projectDir = file('libs/sx-discovery')
 project(':sx-mq').projectDir = file('libs/sx-mq')
+project(':sx-mq-jms').projectDir = file('libs/sx-mq-jms')
 project(':sx-fx').projectDir = file('libs/sx-fx')
 project(':sx-rsync').projectDir = file('libs/sx-rsync')
 project(':sx-ssh').projectDir = file('libs/sx-ssh')
