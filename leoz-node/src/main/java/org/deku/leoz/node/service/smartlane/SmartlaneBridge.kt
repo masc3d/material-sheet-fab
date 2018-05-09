@@ -14,7 +14,6 @@ import org.deku.leoz.model.TourStopRouteMeta
 import org.deku.leoz.service.internal.LocationServiceV2
 import org.deku.leoz.service.internal.TourServiceV1.Tour
 import org.deku.leoz.service.internal.TourServiceV1.TourOptimizationOptions
-import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.internal.UserService.User
 import org.deku.leoz.service.internal.uid
 import org.deku.leoz.smartlane.SmartlaneApi
@@ -33,7 +32,10 @@ import sx.log.slf4j.warn
 import sx.rs.client.RestEasyClient
 import sx.rx.toObservable
 import sx.text.toHexString
-import sx.time.*
+import sx.time.TimeSpan
+import sx.time.plusDays
+import sx.time.plusMinutes
+import sx.time.replaceDate
 import sx.time.threeten.toDate
 import sx.time.threeten.toLocalDateTime
 import java.net.URI
@@ -156,9 +158,9 @@ class SmartlaneBridge {
     /** Map of containers to smartlane domains */
     private val domains = ConcurrentHashMap<Container, Domain>()
 
-    private fun domain(container: Container): Domain {
-        return this.domains.getOrPut(container, {
-            Domain(container)
+    fun Container.domain(): Domain {
+        return domains.getOrPut(this, {
+            Domain(this)
         })
     }
 
@@ -243,7 +245,7 @@ class SmartlaneBridge {
     fun putDriver(
             user: User
     ): Completable {
-        val domain = domain(resolver.containerByUser(user))
+        val domain = resolver.containerByUser(user).domain()
 
         return Observable.fromCallable {
             val driverApi = domain.proxy(DriverApi::class.java)
@@ -276,7 +278,7 @@ class SmartlaneBridge {
      * @param email User / driver email
      */
     private fun getDriverId(user: User): Int? {
-        val domain = domain(resolver.containerByUser(user))
+        val domain = resolver.containerByUser(user).domain()
         val driverApi = domain.proxy(DriverApi::class.java)
 
         return synchronized(this.driverIdByEmail) {
@@ -313,7 +315,7 @@ class SmartlaneBridge {
             user: User,
             positions: Iterable<LocationServiceV2.GpsDataPoint>
     ): Completable {
-        val domain = domain(resolver.containerByUser(user))
+        val domain = resolver.containerByUser(user).domain()
 
         val driverId = this.getDriverId(user)
                 ?: throw NoSuchElementException("Driver not found")
@@ -357,7 +359,7 @@ class SmartlaneBridge {
         return byContainer.keys
                 .filterNotNull()
                 .map { container ->
-                    val domain = domain(container)
+                    val domain = container.domain()
                     val domainTours = byContainer.getValue(container)
 
                     val routeApi = domain.proxy(RouteExtendedApi::class.java)
@@ -400,7 +402,7 @@ class SmartlaneBridge {
             throw UnsupportedOperationException("Cross domain lookup not supported for batch route retrieval")
 
         val container = containers.first()
-        val domain = domain(container)
+        val domain = container.domain()
 
         val routeApi = domain.proxy(RouteExtendedApi::class.java)
 
@@ -423,7 +425,7 @@ class SmartlaneBridge {
         return byContainer.keys
                 .filterNotNull()
                 .map { container ->
-                    val domain = domain(container)
+                    val domain = container.domain()
                     val domainTours = byContainer.getValue(container)
 
                     val routeApi = domain.proxy(RouteExtendedApi::class.java)
@@ -469,7 +471,7 @@ class SmartlaneBridge {
             user: User,
             tour: Tour
     ): Completable {
-        val domain = domain(resolver.containerByTour(tour))
+        val domain = resolver.containerByTour(tour).domain()
         val routeApi = domain.proxy(RouteExtendedApi::class.java)
 
         return this.getDriverId(user)
@@ -502,7 +504,7 @@ class SmartlaneBridge {
             options: TourOptimizationOptions
     ): Single<List<Tour>> {
         // The smartlane domain to interact with
-        val domain = domain(resolver.containerByTour(tour))
+        val domain = resolver.containerByTour(tour).domain()
         val routeApi = domain.proxy(RouteExtendedApi::class.java)
 
         val vehicleCount = (options.vehicles?.count() ?: 0).let {
@@ -580,7 +582,7 @@ class SmartlaneBridge {
      */
     fun clean() {
         log.info { "Cleaning smartlane container [${CONTAINER_PATH_TEST}]" }
-        val domain = domain(Container(path = CONTAINER_PATH_TEST))
+        val domain = Container(path = CONTAINER_PATH_TEST).domain()
 
         val deliveryApi = domain.proxy(DeliveryExtendedApi::class.java)
         val routeApi = domain.proxy(RouteExtendedApi::class.java)
