@@ -1,10 +1,11 @@
-package org.deku.leoz.node.service.internal
+package org.deku.leoz.node.service.smartlane
 
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.internal.schedulers.SchedulerWhen
+import io.reactivex.rxkotlin.merge
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.model.TimeRange
@@ -14,6 +15,7 @@ import org.deku.leoz.service.internal.LocationServiceV2
 import org.deku.leoz.service.internal.TourServiceV1.Tour
 import org.deku.leoz.service.internal.TourServiceV1.TourOptimizationOptions
 import org.deku.leoz.service.internal.UserService
+import org.deku.leoz.service.internal.UserService.User
 import org.deku.leoz.service.internal.uid
 import org.deku.leoz.smartlane.SmartlaneApi
 import org.deku.leoz.smartlane.api.*
@@ -59,10 +61,24 @@ class SmartlaneBridge {
     private val baseUri = URI.create("https://dispatch.smartlane.io/")
 
     /** Default customer id */
-    private val customerId = "der-kurier-test"
+    private val CONTAINER_PATH_TEST = "der-kurier-test"
 
     @Inject
     private lateinit var identity: Identity
+
+    /** Smartlane container */
+    data class Container(
+            val path: String
+    )
+
+    /** Smartlaner container resolver interface */
+    interface Resolver {
+        fun containerByTour(tour: Tour): Container
+        fun containerByUser(user: User): Container
+    }
+
+    @Inject
+    private lateinit var resolver: Resolver
 
     /**
      * Rest client with connection pool for efficient use across all smartlane domains
@@ -81,7 +97,7 @@ class SmartlaneBridge {
      * @param customerId Smartlane customer id / domain path
      */
     inner class Domain(
-            val customerId: String
+            val container: Container
     ) {
         private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -99,11 +115,11 @@ class SmartlaneBridge {
         private val jwtTokenInstance = LazyInstance({
             Observable.fromCallable {
                 // Authorize smartlane customer
-                log.trace { "Authorizing [${customerId}]" }
+                log.trace { "Authorizing at [${container}]" }
 
                 this@SmartlaneBridge.restClient
                         .proxy(AuthApi::class.java,
-                                path = customerId)
+                                path = container.path)
                         .auth(AuthApi.Request(
                                 email = "juergen.toepper@derkurier.de",
                                 password = "PanicLane"
@@ -120,17 +136,31 @@ class SmartlaneBridge {
         fun resetToken() {
             this.jwtTokenInstance.reset()
         }
+
+        /**
+         * Get rest client proxy for specific container.
+         * This method will authenticate synchronously (via `Domain`) if necessary.
+         *
+         * @param serviceClass service class
+         * @param container smartlane conatiner
+         */
+        fun <T> proxy(serviceClass: Class<T>): T {
+            return this@SmartlaneBridge.restClient.proxy(
+                    serviceClass,
+                    path = container.path,
+                    jwtToken = { this.jwtToken }
+            )
+        }
     }
 
-    /** Map of customer specific smartlane domains */
-    private val domains = ConcurrentHashMap<String, Domain>()
+    /** Map of containers to smartlane domains */
+    private val domains = ConcurrentHashMap<Container, Domain>()
 
-    private fun domain(customerId: String): Domain {
-        return this.domains.getOrPut(customerId, {
-            Domain(this.customerId)
+    private fun domain(container: Container): Domain {
+        return this.domains.getOrPut(container, {
+            Domain(container)
         })
     }
-
 
     /**
      * Smartlane custom id
@@ -186,21 +216,6 @@ class SmartlaneBridge {
     }
 
     /**
-     * Get rest client proxy for specific customer.
-     * This method will authenticate synchronously (via `Domain`) if necessary.
-     *
-     * @param serviceClass Service class
-     * @param customerId Smartlane customer id
-     */
-    private fun <T> proxy(serviceClass: Class<T>, customerId: String): T {
-        return this.restClient.proxy(
-                serviceClass,
-                path = customerId,
-                jwtToken = { this.domain(customerId).jwtToken }
-        )
-    }
-
-    /**
      * Retries an operation which consumes smartlane REST apis in case of token expiry.
      * The REST proxy creation must be part of the observable (not cached) for this extension to work.
      */
@@ -226,12 +241,12 @@ class SmartlaneBridge {
      * @param User User to put as driver
      */
     fun putDriver(
-            user: UserService.User
+            user: User
     ): Completable {
-        val domain = domain(customerId)
+        val domain = domain(resolver.containerByUser(user))
 
         return Observable.fromCallable {
-            val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
+            val driverApi = domain.proxy(DriverApi::class.java)
 
             val srcDriver = user.toDriver()
 
@@ -260,19 +275,18 @@ class SmartlaneBridge {
      * Get driver id with caching support
      * @param email User / driver email
      */
-    private fun getDriverId(email: String): Int? {
-        val domain = domain(customerId)
-
-        val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
+    private fun getDriverId(user: User): Int? {
+        val domain = domain(resolver.containerByUser(user))
+        val driverApi = domain.proxy(DriverApi::class.java)
 
         return synchronized(this.driverIdByEmail) {
             this.driverIdByEmail.getOrPut(
-                    this.formatEmail(email),
+                    this.formatEmail(user.email),
                     // Default value -> determine driver (id)
                     {
                         Callable {
                             driverApi.getDriverByEmail(
-                                    email = this.formatEmail(email)
+                                    email = this.formatEmail(user.email)
                             )
                                     ?.id
                         }
@@ -287,21 +301,21 @@ class SmartlaneBridge {
     /**
      * Indicates if a driver is known @smartlane
      */
-    fun hasDriver(email: String): Boolean =
-            this.getDriverId(email) != null
+    fun hasDriver(user: User): Boolean =
+            this.getDriverId(user) != null
 
     /**
      * Update a drivers geo position
-     * @param email User / driver email
+     * @param user user
      * @param positions Driver's geo positions
      */
     fun putDriverPosition(
-            email: String,
+            user: User,
             positions: Iterable<LocationServiceV2.GpsDataPoint>
     ): Completable {
-        val domain = domain(customerId)
+        val domain = domain(resolver.containerByUser(user))
 
-        val driverId = this.getDriverId(email)
+        val driverId = this.getDriverId(user)
                 ?: throw NoSuchElementException("Driver not found")
 
         return Observable
@@ -311,7 +325,7 @@ class SmartlaneBridge {
                 .flatMap { positionWindow ->
                     positionWindow.flatMap { position ->
                         Observable.fromCallable {
-                            val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
+                            val driverApi = domain.proxy(DriverApi::class.java)
 
                             driverApi.postDrivertracking(Drivertracking().also {
                                 it.driverId = driverId
@@ -338,29 +352,37 @@ class SmartlaneBridge {
      * Delete smartlane routes
      */
     fun deleteRoutes(tours: List<Tour>): Completable {
-        val domain = domain(customerId)
+        val byContainer = tours.groupBy { resolver.containerByTour(it) }
 
-        val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
-        val deliveryApi = this.proxy(DeliveryExtendedApi::class.java, customerId = customerId)
+        return byContainer.keys
+                .filterNotNull()
+                .map { container ->
+                    val domain = domain(container)
+                    val domainTours = byContainer.getValue(container)
 
-        return this.getRoutes(tours)
-                // Collect for batch deletion
-                .toList().toObservable()
-                .flatMap { routes ->
-                    deliveryApi.delete(routes.flatMap { it.deliveries }.map { it.id })
-                            .concatWith(
-                                    routeApi.delete(routes.map { it.id })
-                            )
-                            .toObservable<Unit>()
+                    val routeApi = domain.proxy(RouteExtendedApi::class.java)
+                    val deliveryApi = domain.proxy(DeliveryExtendedApi::class.java)
+
+                    this.getRoutes(domainTours)
+                            // Collect for batch deletion
+                            .toList().toObservable()
+                            .flatMap { routes ->
+                                deliveryApi.delete(routes.flatMap { it.deliveries }.map { it.id })
+                                        .concatWith(
+                                                routeApi.delete(routes.map { it.id })
+                                        )
+                                        .toObservable<Unit>()
+                            }
+                            .composeRest(domain)
+                            .onErrorResumeNext { e: Throwable ->
+                                when (e) {
+                                    is NoSuchElementException -> Observable.empty()
+                                    else -> throw e
+                                }
+                            }
                 }
-                .composeRest(domain)
+                .merge()
                 .ignoreElements()
-                .onErrorComplete { e ->
-                    when (e) {
-                        is NoSuchElementException -> true
-                        else -> false
-                    }
-                }
     }
 
     /**
@@ -368,9 +390,19 @@ class SmartlaneBridge {
      * @param tours Tours
      */
     private fun getRoutes(tours: List<Tour>): Observable<Route> {
-        val domain = domain(customerId)
+        // Make sure all tours belong to the same container, as this method does not support crossdomain lookups
+        val containers = tours
+                .groupBy { resolver.containerByTour(it) }
+                .keys
+                .filterNotNull()
 
-        val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
+        if (containers.count() > 1)
+            throw UnsupportedOperationException("Cross domain lookup not supported for batch route retrieval")
+
+        val container = containers.first()
+        val domain = domain(container)
+
+        val routeApi = domain.proxy(RouteExtendedApi::class.java)
 
         return routeApi.getRouteByCustomIdSubstring(
                 *tours.map {
@@ -386,38 +418,47 @@ class SmartlaneBridge {
      * @param tours Tours
      */
     fun updateRoutes(tours: List<Tour>): Completable {
-        val domain = domain(customerId)
+        val byContainer = tours.groupBy { resolver.containerByTour(it) }
 
-        val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
+        return byContainer.keys
+                .filterNotNull()
+                .map { container ->
+                    val domain = domain(container)
+                    val domainTours = byContainer.getValue(container)
 
-        return this.getRoutes(tours)
-                .doOnNext { route ->
-                    val customId = CustomId.deserialize(route.customId)
+                    val routeApi = domain.proxy(RouteExtendedApi::class.java)
 
-                    // Backreference tours from parsed custom id
-                    tours.firstOrNull { it.uid?.startsWith(customId.shortUid) ?: false }
-                            ?.also { tour ->
-                                // Update route with complete custom id
-                                routeApi.patchRouteById(
-                                        route.id,
-                                        Route().also {
-                                            it.customId = CustomId.create(
-                                                    id = tour.id,
-                                                    uid = UUID.fromString(tour.uid)
-                                            ).serialize()
+                    this.getRoutes(domainTours)
+                            .doOnNext { route ->
+                                val customId = CustomId.deserialize(route.customId)
+
+                                // Backreference tours from parsed custom id
+                                tours.firstOrNull { it.uid?.startsWith(customId.shortUid) ?: false }
+                                        ?.also { tour ->
+                                            // Update route with complete custom id
+                                            routeApi.patchRouteById(
+                                                    route.id,
+                                                    Route().also {
+                                                        it.customId = CustomId.create(
+                                                                id = tour.id,
+                                                                uid = UUID.fromString(tour.uid)
+                                                        ).serialize()
+                                                    }
+                                            )
                                         }
-                                )
+                            }
+                            .composeRest(domain)
+                            .onErrorResumeNext { e: Throwable ->
+                                when (e) {
+                                    is NoSuchElementException -> Observable.empty()
+                                    else -> throw e
+                                }
                             }
                 }
-                .composeRest(domain)
+                .merge()
                 .ignoreElements()
-                .onErrorComplete { e ->
-                    when (e) {
-                        is NoSuchElementException -> true
-                        else -> false
-                    }
-                }
     }
+
 
     /**
      * Assign driver to route
@@ -425,14 +466,13 @@ class SmartlaneBridge {
      * @param tour Tour to assign driver to
      */
     fun assignDriver(
-            email: String,
+            user: User,
             tour: Tour
     ): Completable {
-        val domain = domain(customerId)
+        val domain = domain(resolver.containerByTour(tour))
+        val routeApi = domain.proxy(RouteExtendedApi::class.java)
 
-        val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
-
-        return this.getDriverId(email)
+        return this.getDriverId(user)
                 ?.let { driverId ->
                     this.getRoutes(listOf(tour))
                             .firstElement()
@@ -448,7 +488,7 @@ class SmartlaneBridge {
                             .composeRest(domain)
                             .ignoreElements()
                 }
-                ?: Completable.error(NoSuchElementException("Driver [${email}] not found"))
+                ?: Completable.error(NoSuchElementException("Driver [${user.email}] not found"))
     }
 
     /**
@@ -462,10 +502,8 @@ class SmartlaneBridge {
             options: TourOptimizationOptions
     ): Single<List<Tour>> {
         // The smartlane domain to interact with
-        val domain = domain(customerId)
-
-        // Smartlane APIs
-        val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
+        val domain = domain(resolver.containerByTour(tour))
+        val routeApi = domain.proxy(RouteExtendedApi::class.java)
 
         val vehicleCount = (options.vehicles?.count() ?: 0).let {
             if (it > 0) it else 1
@@ -526,7 +564,7 @@ class SmartlaneBridge {
                 }
                 .composeRest(domain)
                 .doOnError {
-                    val deliveryApi = this.proxy(DeliveryExtendedApi::class.java, customerId = customerId)
+                    val deliveryApi = domain.proxy(DeliveryExtendedApi::class.java)
 
                     try {
                         deliveryApi.deleteUnreferenced()
@@ -541,12 +579,14 @@ class SmartlaneBridge {
      * Clean routes, deliveries and drivertracking info from smartlane container
      */
     fun clean() {
-        log.info { "Cleaning smartlane container [${customerId}]" }
-        val deliveryApi = this.proxy(DeliveryExtendedApi::class.java, customerId)
-        val routeApi = this.proxy(RouteExtendedApi::class.java, customerId)
-        val addressApi = this.proxy(AddressExtendedApi::class.java, customerId)
-        val driverApi = this.proxy(DriverExtendedApi::class.java, customerId)
-        val drivertrackingApi = this.proxy(DrivertrackingExtendedApi::class.java, customerId)
+        log.info { "Cleaning smartlane container [${CONTAINER_PATH_TEST}]" }
+        val domain = domain(Container(path = CONTAINER_PATH_TEST))
+
+        val deliveryApi = domain.proxy(DeliveryExtendedApi::class.java)
+        val routeApi = domain.proxy(RouteExtendedApi::class.java)
+        val addressApi = domain.proxy(AddressExtendedApi::class.java)
+        val driverApi = domain.proxy(DriverExtendedApi::class.java)
+        val drivertrackingApi = domain.proxy(DrivertrackingExtendedApi::class.java)
 
         deliveryApi.deleteAll()
         routeApi.deleteAll()
@@ -574,7 +614,7 @@ class SmartlaneBridge {
     /**
      * Transform domain user to smartlane driver
      */
-    private fun UserService.User.toDriver(): Driver {
+    private fun User.toDriver(): Driver {
         return Driver().also {
             it.companyId = 1
             it.vehicle = "car"

@@ -47,7 +47,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
     private lateinit var debitorRepository: DebitorRepository
 
     @Inject
-    private lateinit var debitorStationRepository: DebitorStationRepository
+    private lateinit var stationContractRepo: StationContractRepository
 
     @Inject
     private lateinit var em: EntityManager
@@ -127,9 +127,9 @@ class UserService : org.deku.leoz.service.internal.UserService {
                 }
 
                 !stationMatchcode.isNullOrEmpty() -> {
-                    val stationId = stationRepository.findByStation(stationMatchcode!!.toInt())?.stationId //stationRepository.findByMatchcode(matchcode = stationMatchcode!!).debitorId
+                    val stationId = stationRepository.findByStationNo(stationMatchcode!!.toInt())?.stationId //stationRepository.findByMatchcode(matchcode = stationMatchcode!!).debitorId
                     if (stationId != null) {
-                        user.debitorId = debitorStationRepository.findByStationId(stationId)?.debitorId
+                        user.debitorId = stationContractRepo.findByStationId(stationId)?.debitorId
                     }
 
                 }
@@ -385,7 +385,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                                 //Insert into mst_station_user
                                 val recStation = MstStationUser()
                                 recStation.userId = rec.id
-                                val stationId = stationRepository.findByStation(it)?.stationId
+                                val stationId = stationRepository.findByStationNo(it)?.stationId
                                 stationId ?: throw RestProblem(
                                         status = Response.Status.NOT_FOUND,
                                         title = "Station with No [$it] not found"
@@ -400,7 +400,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                         allowedStations.forEach {
                             if (!userStations.contains(it)) {
                                 //delete from mst_station_user
-                                val stationId = stationRepository.findByStation(it)?.stationId
+                                val stationId = stationRepository.findByStationNo(it)?.stationId
                                 stationId ?: throw RestProblem(
                                         status = Response.Status.NOT_FOUND,
                                         title = "Station with No [$it] not found"

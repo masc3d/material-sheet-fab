@@ -14,6 +14,10 @@ import org.springframework.context.annotation.Lazy
 import org.threeten.bp.Duration
 import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker
+import sx.security.DigestType
+import sx.security.hashUUid
+import sx.time.toTimestamp
+import java.nio.ByteBuffer
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 
@@ -248,26 +252,27 @@ class DatabaseSyncConfiguration {
                     accurateDeletes = true
             ),
 
-//            SyncPreset(
-//                    Tables.MST_DEBITOR_STATION,
-//                    Tables.MST_DEBITOR_STATION.SYNC_ID,
-//                    QMstDebitorStation.mstDebitorStation,
-//                    QMstDebitorStation.mstDebitorStation.syncId,
-//                    { s ->
-//                        MstDebitorStation().also { d ->
-//                            d.id = s.id
-//                            d.debitorId = s.debitorId
-//                            d.stationId = s.stationId
-//                            d.tsCreated = s.tsCreated
-//                            d.tsUpdated = s.tsUpdated
-//                            d.activFrom = s.activFrom
-//                            d.activTo = s.activTo
-//                            d.syncId = s.syncId
-//
-//                        }
-//                    },
-//                    accurateDeletes = true
-//            ),
+            SyncPreset(
+                    Tables.MST_V_STATION_CONTRACT,
+                    Tables.MST_V_STATION_CONTRACT.SYNC_ID,
+                    QMstStationContract.mstStationContract,
+                    QMstStationContract.mstStationContract.syncId,
+                    { s ->
+                        listOf(
+                                MstStationContract().also { d ->
+                                    d.id = s.id
+                                    d.debitorId = s.debitorId
+                                    d.stationId = s.stationId
+                                    d.activeFrom = s.activeFrom.toTimestamp()
+                                    d.activeTo = s.activeTo.toTimestamp()
+                                    d.contractType = s.contractType.toInt()
+                                    d.contractNo = s.contractNo
+                                    d.syncId = s.syncId
+                                }
+                        )
+                    },
+                    accurateDeletes = true
+            ),
 
 //            SyncPreset(
 //                    Tables.TAD_NODE_GEOPOSITION,

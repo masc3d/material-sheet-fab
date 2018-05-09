@@ -1,8 +1,8 @@
 package org.deku.leoz.central.service.internal
 
 import io.reactivex.rxkotlin.subscribeBy
-import org.deku.leoz.central.data.repository.*
-import org.deku.leoz.node.service.internal.SmartlaneBridge
+import org.deku.leoz.node.data.repository.StationContractRepository
+import org.deku.leoz.node.service.smartlane.SmartlaneBridge
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import sx.mq.MqHandler
@@ -23,10 +23,6 @@ class TourServiceV1
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    // Repositories
-    @Inject
-    private lateinit var deliverylistRepository: JooqDeliveryListRepository
-
     @Inject
     private lateinit var userService: UserService
 
@@ -35,7 +31,6 @@ class TourServiceV1
 
     @Inject
     private lateinit var smartlane: SmartlaneBridge
-    //endregion
 
     // TODO: move to node as soon as location service has been migrated
 
@@ -52,11 +47,11 @@ class TourServiceV1
 
                         val user = this.userService.getById(userId)
 
-                        if (smartlane.hasDriver(user.email)) {
+                        if (smartlane.hasDriver(user)) {
                             val positions = gpsMessage.dataPoints?.toList() ?: listOf()
 
                             this.smartlane.putDriverPosition(
-                                    email = user.email,
+                                    user = user,
                                     positions = positions
                             )
                                     .subscribeBy(

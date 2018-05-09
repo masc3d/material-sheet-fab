@@ -18,10 +18,8 @@ import org.deku.leoz.node.data.jpa.QTadTour.tadTour
 import org.deku.leoz.node.data.jpa.QTadTourEntry.tadTourEntry
 import org.deku.leoz.node.data.jpa.TadTour
 import org.deku.leoz.node.data.jpa.TadTourEntry
-import org.deku.leoz.node.data.repository.StationRepository
-import org.deku.leoz.node.data.repository.TadTourEntryRepository
-import org.deku.leoz.node.data.repository.TadTourRepository
-import org.deku.leoz.node.data.repository.toAddress
+import org.deku.leoz.node.data.repository.*
+import org.deku.leoz.node.service.smartlane.SmartlaneBridge
 import org.deku.leoz.time.ShortDate
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.TourServiceV1
@@ -30,7 +28,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.zalando.problem.Status
-import sx.log.slf4j.debug
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
@@ -74,12 +71,8 @@ class TourServiceV1
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    //region Dependencies
-
     @PersistenceUnit(name = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
     private lateinit var emf: EntityManagerFactory
-
-    // Repositories
 
     @Inject
     private lateinit var tourRepo: TadTourRepository
@@ -87,7 +80,9 @@ class TourServiceV1
     private lateinit var tourEntryRepo: TadTourEntryRepository
     @Inject
     private lateinit var stationRepo: StationRepository
-
+    @Inject
+    private lateinit var stationContractRepo: StationContractRepository
+    
     @Inject
     private lateinit var userService: org.deku.leoz.service.internal.UserService
     @Inject
@@ -414,16 +409,11 @@ class TourServiceV1
      * Get the (current) tour for a user
      */
     override fun getByUser(userId: Long): Tour {
-        return this.emf.withEntityManager { em ->
-            // Get latest tour for user
-            val tourRecord = em.from(tadTour)
-                    .where(tadTour.userId.eq(userId))
-                    .orderBy(tadTour.modified.desc())
-                    .fetchFirst()
-                    ?: throw NoSuchElementException("No assignable tour for user [${userId}]")
+        // Get latest tour for user
+        val tourRecord = tourRepo.findMostRecentByUserId(userId)
+                ?: throw NoSuchElementException("No assignable tour for user [${userId}]")
 
-            tourRecord.toTour()
-        }
+        return tourRecord.toTour()
     }
 
     /**
@@ -740,7 +730,7 @@ class TourServiceV1
                                         ))
 
                                 this.smartlane.assignDriver(
-                                        email = user.email,
+                                        user = user,
                                         tour = optimizedTour
                                 )
                                         .subscribeBy({ e -> log.error(e.message, e) })
@@ -859,7 +849,7 @@ class TourServiceV1
         if (options.start == null) {
             // Complement start address if applicable
             tour.stationNo?.also { stationNo ->
-                val station = this.stationRepo.findByStation(stationNo.toInt())
+                val station = this.stationRepo.findByStationNo(stationNo.toInt())
                         ?: throw NoSuchElementException("Station no [${stationNo}] doesn't exist")
 
                 options.start = station.toAddress()
@@ -908,7 +898,7 @@ class TourServiceV1
         }
 
         message.startStationNo?.also { stationNo ->
-            val station = stationRepo.findByStation(stationNo)
+            val station = stationRepo.findByStationNo(stationNo)
             when (station) {
                 null -> log.warn("Station no [${stationNo}] doesn't exist")
                 else -> {
