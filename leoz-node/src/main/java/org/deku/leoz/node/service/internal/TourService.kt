@@ -498,7 +498,8 @@ class TourServiceV1
                                     tours = records.map {
                                         Tour(
                                                 id = it.get(tadTour.id),
-                                                uid = it.get(tadTour.uid).toString()
+                                                uid = it.get(tadTour.uid).toString(),
+                                                stationNo = it.get(tadTour.stationNo)
                                         )
                                     }
                             )
