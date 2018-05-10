@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { Message } from 'primeng/components/common/api';
@@ -55,6 +55,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
                private userService: UserService,
                protected msgService: MsgService,
                private roleGuard: RoleGuard,
+               private permissionCheck: PermissionCheck,
                protected cd: ChangeDetectorRef,
                protected translate: TranslateService,
                private ics: InetConnectionService ) {
@@ -155,7 +156,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
   }
 
   myself(): boolean {
-    return PermissionCheck.myself( this.activeUser );
+    return this.permissionCheck.myself( this.activeUser );
   }
 
   onSubmit() {

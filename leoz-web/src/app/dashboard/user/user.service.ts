@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable ,  BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
 import { User } from '../../core/models/user.model';
@@ -9,7 +8,9 @@ import { environment } from '../../../environments/environment';
 import { MsgService } from '../../shared/msg/msg.service';
 import { InetConnectionService } from 'app/core/inet-connection.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class UserService {
 
   private userListUrl = `${environment.apiUrl}/internal/v1/user`;

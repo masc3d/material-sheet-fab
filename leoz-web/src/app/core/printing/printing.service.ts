@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import * as jsPDF from 'jspdf';
 import { MsgService } from '../../shared/msg/msg.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class PrintingService {
 
   constructor(protected msgService: MsgService) {

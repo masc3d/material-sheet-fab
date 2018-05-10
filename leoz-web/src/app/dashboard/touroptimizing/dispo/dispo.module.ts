@@ -38,9 +38,6 @@ import { DispoComponent } from './dispo.component';
   ],
   exports: [
     DispoComponent,
-  ],
-  providers: [
-    TouroptimizingService
   ]
 } )
 export class DispoModule {

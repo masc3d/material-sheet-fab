@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject ,  Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import * as moment from 'moment';
@@ -21,7 +20,9 @@ import { SseTouroptimizationMsgModel } from '../../core/models/sse-touroptimizat
 import { SseTourchangesMsgModel } from '../../core/models/sse-tourchanges-msg.model';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class TouroptimizingService {
 
   protected allToursUrl = `${environment.apiUrl}/internal/v1/tour`; // ?debitor-id=2052&station-no=100

@@ -35,8 +35,7 @@ import { UserService } from './user.service';
     UserFormComponent,
     UserListComponent
   ],
-  exports: [ UserComponent ],
-  providers: [ UserService ]
+  exports: [ UserComponent ]
 } )
 export class UserModule {
 }

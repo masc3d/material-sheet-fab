@@ -34,13 +34,6 @@ import { DateMomentjsPipe } from '../../core/translate/date-momentjs.pipe';
     TourMapComponent,
     TourDriverListComponent
   ],
-  providers: [
-    DriverService,
-    UserService,
-    TourService,
-    DatePipe,
-    DateMomentjsPipe
-  ],
   exports: [
     TourComponent
   ]

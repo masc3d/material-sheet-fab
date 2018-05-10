@@ -4,7 +4,9 @@ import * as moment from 'moment';
 
 import { NOW_MINUS_X_HOURS } from './constants';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class WorkingdateService {
 
   private nowMinusXHours: moment.Moment;

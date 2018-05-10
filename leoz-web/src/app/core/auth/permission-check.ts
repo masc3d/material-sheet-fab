@@ -1,23 +1,27 @@
 import { User } from '../models/user.model';
+import { Injectable } from '@angular/core';
 
+@Injectable({
+  providedIn: 'root',
+})
 export class PermissionCheck {
 
-  private static roleSorting = [
+  private roleSorting = [
     User.RoleEnum.ADMIN,
     User.RoleEnum.POWERUSER,
     User.RoleEnum.USER,
     User.RoleEnum.DRIVER,
     User.RoleEnum.CUSTOMER ];
 
-  public static isAllowedRole( ownRole: User.RoleEnum, givenRole: User.RoleEnum ): boolean {
+  public isAllowedRole( ownRole: User.RoleEnum, givenRole: User.RoleEnum ): boolean {
     return this.roleSorting.indexOf( ownRole) <= this.roleSorting.indexOf( givenRole );
   }
 
-  public static hasLessPermissions( ownRole: User.RoleEnum, givenRole: User.RoleEnum ): boolean {
+  public hasLessPermissions( ownRole: User.RoleEnum, givenRole: User.RoleEnum ): boolean {
     return this.roleSorting.indexOf( ownRole) < this.roleSorting.indexOf( givenRole );
   }
 
-  public static myself( user: User ): boolean {
+  public myself( user: User ): boolean {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
     return currUser && currUser.user.email === user.email;
   }

@@ -38,9 +38,6 @@ import { DriverdispoRoutingModule } from './driverdispo-routing.module';
   ],
   exports: [
     DriverdispoComponent
-  ],
-  providers: [
-    TouroptimizingService
   ]
 } )
 

@@ -37,6 +37,7 @@ interface ScanMsg {
 @Component( {
   selector: 'app-loadinglistscan',
   templateUrl: './loadinglistscan.component.html',
+  providers: [ DatePipe ],
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class LoadinglistscanComponent extends AbstractTranslateComponent implements OnInit {

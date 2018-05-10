@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
+import {timer as observableTimer,  Observable ,  Subscription } from 'rxjs';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
-import 'rxjs/add/observable/timer';
+
 
 import { SelectItem } from 'primeng/api';
 
@@ -151,6 +150,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
                private userService: UserService,
                protected translate: TranslateService,
                private roleGuard: RoleGuard,
+               private permissionCheck: PermissionCheck,
                private auth: AuthenticationService ) {
     super( translate, cd, msgService, () => {
       this.intervalOptions = this.createIntervalOptions();
@@ -323,7 +323,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-    this.refreshTimer$ = Observable.timer( 0, this.selectedRefresh * 60 * 1000 );
+    this.refreshTimer$ = observableTimer( 0, this.selectedRefresh * 60 * 1000 );
     this.subscription = this.refreshTimer$.subscribe( ( tick: number ) => {
       this.periodicallyUsedCallback( {
         driver: this.periodicallyUsedDriver,
@@ -384,7 +384,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     } else {
       let filtered = filterName === 'driverfilter'
         ? drivers.filter( ( driver: User ) => driver.role === User.RoleEnum.DRIVER )
-        : drivers.filter( ( driver: User ) => PermissionCheck.isAllowedRole( this.roleGuard.userRole, driver.role ) );
+        : drivers.filter( ( driver: User ) => this.permissionCheck.isAllowedRole( this.roleGuard.userRole, driver.role ) );
       filtered = filtered.filter( ( driver: User ) => driver.active );
       return filtered;
     }

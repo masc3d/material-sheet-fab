@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 
 import { DATEFORMATS } from './dateformats';
 import { Translation } from './translation';
@@ -7,7 +7,9 @@ import { environment } from '../../../environments/environment';
 import { CALENDAR_LOCALES } from './calendar-locales';
 import { User } from '../models/user.model';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class TranslateService {
 
   public onLangChanged: Subject<string> = new Subject<string>();

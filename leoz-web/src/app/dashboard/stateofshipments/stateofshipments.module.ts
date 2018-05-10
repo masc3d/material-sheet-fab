@@ -27,8 +27,7 @@ import { InfoComponent } from './info/info.component';
     StateofshipmentsComponent,
     InfoComponent
   ],
-  exports: [ StateofshipmentsComponent ],
-  providers: []
+  exports: [ StateofshipmentsComponent ]
 } )
 export class StateofshipmentsModule {
 }

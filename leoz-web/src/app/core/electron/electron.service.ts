@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
 import { ipcRenderer, PrinterInfo } from 'electron';
 import * as fs from 'fs';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ElectronService {
 
   public ipc: typeof ipcRenderer;

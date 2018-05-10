@@ -38,9 +38,6 @@ import { OfficedispoComponent } from './officedispo.component';
   ],
   exports: [
     OfficedispoComponent
-  ],
-  providers: [
-    TouroptimizingService
   ]
 } )
 export class OfficedispoModule {

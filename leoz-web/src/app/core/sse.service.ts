@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 const EventSource: any = window[ 'EventSource' ];
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class SseService {
 
   constructor() {

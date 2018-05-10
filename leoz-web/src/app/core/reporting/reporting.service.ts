@@ -3,7 +3,9 @@ import * as jsPDF from 'jspdf';
 
 import { TranslateService } from '../translate/translate.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export abstract class ReportingService {
 
   dateFormatLong: string;

@@ -1,27 +1,8 @@
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-
-import { AuthenticationService } from './auth/authentication.service';
-import { AuthenticationGuard } from './auth/authentication.guard';
-import { Translation } from './translate/translation';
-import { TranslateService } from './translate/translate.service';
-import { RoleGuard } from './auth/role.guard';
-import { BrowserCheck } from './auth/browser-check';
-import { KeyUpEventService } from './key-up-event.service';
-import { SoundService } from './sound.service';
-import { PrintingService } from './printing/printing.service';
-import { LoadinglistReportingService } from './reporting/loadinglist-reporting.service';
-import { BagscanReportingService } from './reporting/bagscan-reporting.service';
 import { ApiKeyHeaderInterceptor } from './api-key-header.interceptor';
 import { MockHttpInterceptor } from './mock-http.interceptor';
-import { BagscanGuard } from './auth/bagscan.guard';
-import { InetConnectionService } from './inet-connection.service';
-import { PreloadSelectedModules } from './preload-selected-modules';
-import { WorkingdateService } from './workingdate.service';
-import { ElectronService } from './electron/electron.service';
-import { StoplistReportingService } from './reporting/stoplist-reporting.service';
-import { SseService } from './sse.service';
 
 @NgModule( {
   imports: [
@@ -36,25 +17,26 @@ export class CoreModule {
       ngModule: CoreModule,
       providers: [
         { provide: HTTP_INTERCEPTORS, useClass: ApiKeyHeaderInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: MockHttpInterceptor, multi: true },
-        AuthenticationService,
-        AuthenticationGuard,
-        BagscanGuard,
-        BagscanReportingService,
-        BrowserCheck,
-        ElectronService,
-        InetConnectionService,
-        KeyUpEventService,
-        LoadinglistReportingService,
-        PreloadSelectedModules,
-        PrintingService,
-        RoleGuard,
-        SseService,
-        SoundService,
-        StoplistReportingService,
-        TranslateService,
-        Translation,
-        WorkingdateService]
+        { provide: HTTP_INTERCEPTORS, useClass: MockHttpInterceptor, multi: true }
+        ]
+        // AuthenticationService,
+        // AuthenticationGuard,
+        // BagscanGuard,
+        // LabelReportingService,
+        // BrowserCheck,
+        // ElectronService,
+        // InetConnectionService,
+        // KeyUpEventService,
+        // LoadinglistReportingService,
+        // PreloadSelectedModules,
+        // PrintingService,
+        // RoleGuard,
+        // SseService,
+        // SoundService,
+        // StoplistReportingService,
+        // TranslateService,
+        // Translation,
+        // WorkingdateService]
     };
   }
 

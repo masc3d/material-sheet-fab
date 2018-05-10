@@ -14,8 +14,7 @@ import { TouroptimizingService } from './touroptimizing.service';
     TouroptimizingRoutingModule
   ],
   declarations: [ TouroptimizingComponent ],
-  exports: [ TouroptimizingComponent ],
-  providers: [TouroptimizingService ]
+  exports: [ TouroptimizingComponent ]
 } )
 
 export class TouroptimizingModule {

@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
 import { Message } from 'primeng/components/common/api';
 
 import { TranslateService } from '../../core/translate/translate.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class MsgService {
 
   private msgsSubject = new BehaviorSubject<Message[]>( <Message[]> [] );

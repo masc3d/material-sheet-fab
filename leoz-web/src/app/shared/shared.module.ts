@@ -16,7 +16,6 @@ import { MsgService } from './msg/msg.service';
     TranslateModule,
     GrowlModule
   ],
-  providers: [ MsgService ],
   declarations: [
     TopBarComponent,
     MsgBoxComponent ],

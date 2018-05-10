@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
@@ -11,7 +10,9 @@ import { MsgService } from '../../shared/msg/msg.service';
 import { User } from '../models/user.model';
 import { Station } from './station.model';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AuthenticationService {
 
   private authUrl = `${environment.apiUrl}/internal/v1/authorize/web`;

@@ -48,8 +48,7 @@ import { PackagesRowComponent } from './packages/packages.row.component';
     PackagesRowComponent,
     SystemComponent
   ],
-  exports: [ OrderformComponent ],
-  providers: []
+  exports: [ OrderformComponent ]
 } )
 export class OrderformModule {
 }

@@ -1,13 +1,15 @@
+
+import {fromEvent as observableFromEvent,  BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable } from 'rxjs/Observable';
 import { distinctUntilChanged } from 'rxjs/operators';
-import 'rxjs/add/observable/fromEvent';
+
 
 import { environment } from '../../environments/environment';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class InetConnectionService {
 
   private runPeriodicPing = false;
@@ -17,11 +19,11 @@ export class InetConnectionService {
   public isOnline$ = this.isOnlineSubject.asObservable().pipe(distinctUntilChanged());
 
   constructor( private http: HttpClient ) {
-    Observable.fromEvent( window, 'online' ).subscribe( ( evt: Event ) => {
+    observableFromEvent( window, 'online' ).subscribe( ( evt: Event ) => {
       this.runPeriodicPing = true;
       this.startPeriodicPing();
     } );
-    Observable.fromEvent( window, 'offline' ).subscribe( ( evt: Event ) => {
+    observableFromEvent( window, 'offline' ).subscribe( ( evt: Event ) => {
       this.isOnlineSubject.next( false );
       this.runPeriodicPing = false;
     } );

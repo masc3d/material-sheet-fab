@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AuthenticationGuard implements CanActivate {
 
   private versionUrl = `assets/version.json`;

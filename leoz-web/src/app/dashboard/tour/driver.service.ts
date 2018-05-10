@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
@@ -9,7 +9,9 @@ import { InetConnectionService } from '../../core/inet-connection.service';
 import { Station } from '../../core/auth/station.model';
 import { User } from '../../core/models/user.model';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class DriverService {
 
   private driverListUrl = `${environment.apiUrl}/internal/v1/user`;

@@ -10,7 +10,9 @@ import { Report } from './report.model';
 import { ReportPart } from './report-part.model';
 import { ReportingService } from './reporting.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class LoadinglistReportingService extends ReportingService {
 
   startPageNo: number;

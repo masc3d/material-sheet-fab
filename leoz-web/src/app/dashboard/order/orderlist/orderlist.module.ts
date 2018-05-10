@@ -9,9 +9,7 @@ import { OrderlistComponent } from './orderlist.component';
     SharedModule,
     OrderlistRoutingModule
   ],
-  declarations: [ OrderlistComponent ],
-  providers: [
-  ]
+  declarations: [ OrderlistComponent ]
 } )
 export class OrderlistModule {
 }

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from '../core/auth/authentication.service';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { Message } from 'primeng/api';
 

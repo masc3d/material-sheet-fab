@@ -10,7 +10,9 @@ import { ReportingService } from './reporting.service';
 import { Stop, Tour } from '../models/tour.model';
 import { roundDecimalsAsString } from '../math/roundDecimals';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class StoplistReportingService extends ReportingService {
 
   startPageNo: number;

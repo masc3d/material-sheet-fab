@@ -107,7 +107,8 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
                public translate: TranslateService,
                protected cd: ChangeDetectorRef,
                protected msgService: MsgService,
-               private roleGuard: RoleGuard ) {
+               private roleGuard: RoleGuard ,
+               private permissionCheck: PermissionCheck ) {
     super( translate, cd, msgService );
   }
 
@@ -175,11 +176,11 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
   }
 
   myself( user: User ): boolean {
-    return PermissionCheck.myself( user );
+    return this.permissionCheck.myself( user );
   }
 
   checkPermission( user: User ): boolean {
-    return PermissionCheck.hasLessPermissions( this.roleGuard.userRole, user.role );
+    return this.permissionCheck.hasLessPermissions( this.roleGuard.userRole, user.role );
   }
 
   private initialSort( users: User[] ): User[] {
@@ -202,7 +203,7 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
     const predicateMethod = this.roleGuard.isPoweruser() ? this.poweruserPredicate : this.userPredicate;
     return users
       .filter( ( user: User ) => predicateMethod( user, activeStationNo ) )
-      .filter( ( user: User ) => PermissionCheck.isAllowedRole( this.roleGuard.userRole, user.role ) );
+      .filter( ( user: User ) => this.permissionCheck.isAllowedRole( this.roleGuard.userRole, user.role ) );
   }
 
   private poweruserPredicate( user: User, activeStationNo ) {

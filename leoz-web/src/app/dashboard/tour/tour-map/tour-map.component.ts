@@ -35,6 +35,7 @@ import { MsgService } from '../../../shared/msg/msg.service';
         <yaga-icon [iconUrl]="iconUrl" [iconSize]="iconSize"></yaga-icon>
       </yaga-marker>
     </yaga-map>`,
+  providers: [ DateMomentjsPipe ],
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class TourMapComponent extends AbstractTranslateComponent implements OnInit {
