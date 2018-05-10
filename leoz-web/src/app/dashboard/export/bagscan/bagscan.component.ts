@@ -9,25 +9,20 @@ import {
 } from '@angular/core';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Observable } from 'rxjs/Observable';
-import { filter, takeUntil } from 'rxjs/operators';
-
-import { LazyLoadEvent, SelectItem } from 'primeng/api';
-import { ElectronService } from '../../../core/electron/electron.service';
-
-import { Exportlist } from '../exportlist.model';
-import { Package } from '../../../core/models/package.model';
+import { Observable } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { BagscanService } from './bagscan.service';
-import { BagIdChangeResponse } from './bag-id-change-response';
 import { KeyUpEventService } from '../../../core/key-up-event.service';
 import { SoundService } from '../../../core/sound.service';
-import { BagData } from './bagdata.model';
-import { PrintingService } from '../../../core/printing/printing.service';
-import { BagscanReportingService } from '../../../core/reporting/bagscan-reporting.service';
 import { TYPE_VALUABLE } from '../../../core/constants';
 import { MsgService } from '../../../shared/msg/msg.service';
+import { Loadinglist } from '../../../core/models/loadinglist.model';
+import { Exportparcel } from '../../../core/models/exportparcel.model';
+import { Exportorder } from '../../../core/models/exportorder.model';
+import { Bag } from '../../../core/models/bag.model';
+import { checkdigitInt25 } from '../../../core/math/checkdigitInt25';
 
 @Component( {
   selector: 'app-bagscan',
@@ -49,7 +44,6 @@ import { MsgService } from '../../../shared/msg/msg.service';
       background-color: yellow;
     }
   ` ]
-  // styles: [ '.ui-g-12 { border: 1px solid green; }' ]
 } )
 export class BagscanComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
 
@@ -60,11 +54,8 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
   @ViewChild( 'blueSealNo' ) blueSealNoField: ElementRef;
   @ViewChild( 'reasonDetails' ) reasonDetailsField: ElementRef;
 
-  public openPackages$: Observable<Package[]>;
-  lazyOpenPackages: Package[];
-  openPackagesArr: Package[];
-  activeBaglist: Exportlist;
-  activeBagData: BagData;
+  public openParcels$: Observable<Exportparcel[]>;
+  openParcels: Exportparcel[];
 
   openPackcount: number;
   loadedDiamondcount: number;
@@ -79,11 +70,11 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
   public shortScanMsg = '';
   styleShortScanMsg = { 'background-color': '#ffffff', 'color': '#000000' };
 
-  baglistItems: SelectItem[];
-  baglists: SelectItem[];
   bagscanForm: FormGroup;
   loading: boolean;
-  private bagIdChangedResp: BagIdChangeResponse;
+  countBagsToSendBackMsg = '';
+
+  bag: Bag;
 
   constructor( private fb: FormBuilder,
                private bagscanService: BagscanService,
@@ -91,23 +82,21 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
                protected cd: ChangeDetectorRef,
                protected msgService: MsgService,
                private keyUpService: KeyUpEventService,
-               private soundService: SoundService,
-               private reportingService: BagscanReportingService,
-               private printingService: PrintingService,
-               private electronService: ElectronService ) {
-    super( translate, cd, msgService, () => {
-      this.baglists = this.createBaglistItems( this.baglistItems );
-    } );
+               private soundService: SoundService
+               // private labelReportingService: LabelReportingService,
+               // private printingService: PrintingService,
+               // private electronService: ElectronService
+  ) {
+    super( translate, cd, msgService );
   }
 
   ngOnInit() {
     super.ngOnInit();
     this.loading = false;
-    // this.loading = true;
 
     this.displayEmergencySealBlock = false;
 
-    this.openPackages$ = this.bagscanService.openPackages$;
+    this.openParcels$ = this.bagscanService.openParcels$;
     this.openPackcount = 0;
     this.loadedDiamondcount = 0;
     this.loadedPackcount = 0;
@@ -115,46 +104,6 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     this.chargingLevel = 0;
     this.allPackagesCount = 0;
     this.chargingLevelStyle = 'chargeLvlRed';
-    this.setEmptyBagIdChangedResp();
-
-    this.openPackages$
-      .pipe(
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( ( packages: Package[] ) => {
-        this.openPackagesArr = packages;
-        this.openPackcount = this.openPackagesArr.length;
-      } );
-
-    this.bagscanService.allPackages$
-      .pipe(
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( ( packages: Package[] ) => {
-        const packagesLoaded = packages
-          .filter( ( p: Package ) => p.loadinglistNo > 0 )
-          .length;
-        this.chargingLevel = packages.length > 0
-          ? Math.round( (packagesLoaded / packages.length) * 100 )
-          : 0;
-        if (this.chargingLevel >= 0 && this.chargingLevel < 50) {
-          this.chargingLevelStyle = 'chargeLvlRed';
-        } else if (this.chargingLevel >= 50 && this.chargingLevel < 75) {
-          this.chargingLevelStyle = 'chargeLvlYellow';
-        } else {
-          this.chargingLevelStyle = 'chargeLvlGreen';
-        }
-      } );
-
-    this.bagscanService.loadlists$
-      .pipe(
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( ( selectItems: SelectItem[] ) => {
-        this.baglistItems = selectItems;
-        this.baglists = this.createBaglistItems( this.baglistItems );
-      } );
-
     this.bagscanForm = this.fb.group( {
       bagId: [ null ],
       backLabel: [ { value: '', disabled: true } ],
@@ -166,184 +115,134 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
       selectbaglist: [ null ],
     } );
 
-    this.bagscanService.activeLoadinglist$
+    this.keyUpService.onKeyUp( 'F2', this.ngUnsubscribe, this.startPacking, this );
+    this.keyUpService.onKeyUp( 'F3', this.ngUnsubscribe, this.clearFields, this );
+    // this.keyUpService.onKeyUp( 'F7', this.ngUnsubscribe, this.saveEmergencySeal, this );
+
+    this.setEmptyBag();
+
+    this.bagscanService.openParcels$
       .pipe(
         takeUntil( this.ngUnsubscribe )
       )
-      .subscribe( ( activeLoadinglist: Exportlist ) => {
-        // console.log('this.activeBaglist changed...', activeLoadinglist);
-        this.activeBaglist = activeLoadinglist;
+      .subscribe( ( parcels: Exportparcel[] ) => {
+        this.openParcels = parcels;
+        this.openPackcount = this.openParcels.length;
         this.calcStats();
+        this.cd.detectChanges();
       } );
 
-    this.bagscanService.activeBagData$
+    this.bagscanService.countBagsToSendBack$
       .pipe(
         takeUntil( this.ngUnsubscribe )
       )
-      .subscribe( ( activeBagData: BagData ) => {
-        this.activeBagData = activeBagData;
-        // fill and activate or deactivate Fields depending on BagData
-        if (this.activeBagData.bagId && this.activeBagData.backLabel && this.activeBagData.backSeal) {
-          this.bagscanForm.get( 'bagId' ).patchValue( this.activeBagData.bagId );
-          this.bagscanForm.get( 'backLabel' ).patchValue( this.activeBagData.backLabel );
-          this.bagscanForm.get( 'backSeal' ).patchValue( this.activeBagData.backSeal );
-          this.bagscanForm.get( 'bagId' ).disable();
-          this.bagscanForm.get( 'backLabel' ).disable();
-          this.bagscanForm.get( 'backSeal' ).disable();
-          this.bagscanForm.get( 'packageNo' ).enable();
-        } else {
-          this.bagscanForm.get( 'bagId' ).patchValue( '' );
-          this.bagscanForm.get( 'backLabel' ).patchValue( '' );
-          this.bagscanForm.get( 'backSeal' ).patchValue( '' );
-          this.bagscanForm.get( 'bagId' ).enable();
-          this.bagscanForm.get( 'backLabel' ).disable();
-          this.bagscanForm.get( 'backSeal' ).disable();
-          this.bagscanForm.get( 'packageNo' ).disable();
+      .subscribe( ( countBagsToSendBack: number ) => {
+        switch (countBagsToSendBack) {
+          case 0:
+            // do not display message at all
+            this.countBagsToSendBackMsg = '';
+            break;
+          case 1:
+            this.countBagsToSendBackMsg = this.translate.instant( 'bagCountSingleMsg' );
+            break;
+          default:
+            this.countBagsToSendBackMsg = this.translate.instant( 'bagCountMsgfield' )
+              .replace( /#BAGCOUNT#/, countBagsToSendBack.toString( 10 ) );
+            break;
         }
+        this.cd.detectChanges();
       } );
 
-    this.bagscanService.getAllPackages();
+    this.bagscanService.getOpenParcels();
+    this.bagscanService.countBagsToSendBack();
     this.bagIdField.nativeElement.focus();
-
-    this.registerKeyboardEvents();
   }
 
-  private setEmptyBagIdChangedResp() {
-    this.bagIdChangedResp = {
-      status: '',
+  private setEmptyBag() {
+    this.bag = <Bag>{
+      status: null,
       unitBackLabel: '',
       sealYellowLabel: ''
     };
   }
 
-  isValuable( pack: Package ) {
-    return pack.typeOfPackaging === TYPE_VALUABLE;
-  }
-
-  loadOpenPackagesLazy( event: LazyLoadEvent ) {
-    console.log( 'pre loadOpenPackagesLazy LazyLoadEvent: ', event );
-    console.log( 'this.openPackagesArr: ', this.openPackagesArr );
-    this.loading = true;
-    if (this.openPackagesArr.length > 0) {
-      const startIndex = event ? event.first : 0;
-      const rows = event ? event.rows : 20;
-      this.lazyOpenPackages = this.openPackagesArr.slice( startIndex, startIndex + rows );
-      console.log( 'this.lazyOpenPackages:', this.lazyOpenPackages );
-    }
-    this.loading = false;
-    this.cd.markForCheck();
-    console.log( 'post loadOpenPackagesLazy LazyLoadEvent: ', event );
-    // this.cd.detectChanges();
-  }
-
-  private registerKeyboardEvents() {
-    this.keyUpService.keyUpEvents$
-      .pipe(
-        filter( ( ev: KeyboardEvent ) => ev.key === 'F2' ),
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( () => this.startPacking() );
-    this.keyUpService.keyUpEvents$
-      .pipe(
-        filter( ( ev: KeyboardEvent ) => ev.key === 'F3' ),
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( () => this.clearFields() );
-    this.keyUpService.keyUpEvents$
-      .pipe(
-        filter( ( ev: KeyboardEvent ) => ev.key === 'F5' ),
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( () => this.finishBag() );
-    this.keyUpService.keyUpEvents$
-      .pipe(
-        filter( ( ev: KeyboardEvent ) => ev.key === 'F7' ),
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( () => this.saveEmergencySeal() );
-    // this.keyUpService.keyUpEvents$
-    //   .pipe(
-    //     filter( ( ev: KeyboardEvent ) => ev.key === 'F10' ),
-    //     takeUntil( this.ngUnsubscribe )
-    //   )
-    //   .subscribe( () => this.switchSeal() );
-  }
-
-  private createBaglistItems( selectItems: SelectItem[] ) {
-    return [
-      { label: this.translate.instant( 'baglist' ), value: null },
-      ...selectItems
-    ];
+  isValuable( parcel: Exportparcel ) {
+    return parcel.typeOfPackaging === TYPE_VALUABLE;
   }
 
   private calcStats() {
     // rot 0-50 gelb 51-75 grün 76-100
-    this.openPackcount = this.openPackagesArr.length;
-    this.loadedDiamondcount = this.activeBaglist.packages
-      .filter( ( p: Package ) => p.typeOfPackaging === TYPE_VALUABLE ).length;
-    this.loadedPackcount = this.activeBaglist.packages.length;
-    this.bagWeight = this.bagscanService.sumWeights( this.activeBaglist.packages );
-  }
-
-  public selectBaglist( selected: number ) {
-    if (selected) {
-      this.bagscanService.setActiveLoadinglist( selected );
-      // this.resetPayloadField();
-      // this.actionMsgListSubject.next( [ 'actionChangeLoadlist' ] );
-    }
+    this.openPackcount = this.openParcels.length;
+    const loadedParcels = this.bag.ordersToexport
+      ? this.bag.ordersToexport.map( ( order: Exportorder ) => order.parcels )
+        .reduce( ( a: Exportparcel[], b: Exportparcel[] ) => a.concat( b ), [] )
+      : <Exportparcel[]>[];
+    this.loadedDiamondcount = loadedParcels
+      .filter( ( p: Exportparcel ) => p.typeOfPackaging === TYPE_VALUABLE ).length;
+    this.loadedPackcount = loadedParcels.length;
+    this.bagWeight = this.bagscanService.sumWeights( loadedParcels );
   }
 
   startPacking(): void {
     if (this.bagscanForm.get( 'bagId' ).value.length > 0
       && this.bagscanForm.get( 'backLabel' ).value.length > 0
       && this.bagscanForm.get( 'backSeal' ).value.length > 0) {
-      this.bagscanService.newLoadlist();
-      this.bagscanForm.get( 'packageNo' ).enable();
-      this.packageNoField.nativeElement.focus();
+      if (!this.bag.loadinglistNo) {
+        this.bagscanService.newLoadlist()
+          .subscribe( ( loadinglist: Loadinglist ) => {
+            this.bag.loadinglistNo = loadinglist.loadinglistNo;
+            this.openScanField();
+          }, ( error ) => console.log( error ) );
+      } else {
+        this.openScanField();
+      }
     }
+  }
+
+  private openScanField() {
+    this.bagscanForm.get( 'packageNo' ).enable();
+    this.packageNoField.nativeElement.focus();
+    this.calcStats();
+    this.cd.detectChanges();
   }
 
   bagIdChanged(): void {
     this.bagscanService.validateBagId( this.bagscanForm.get( 'bagId' ).value )
-      .subscribe( ( response: BagIdChangeResponse ) => {
-          console.log( 'hier....', response );
-          this.bagIdChangedResp = response;
-          switch (response.status) {
-            case 'OPENED':
-              this.handleSuccess( 'valid bagId',
+      .subscribe( ( bag: Bag ) => {
+          this.bag = bag;
+          switch (bag.status) {
+            case Bag.Status.OPENED:
+              this.handleSuccess( 'default',
                 () => {
                   this.bagscanForm.get( 'bagId' ).disable();
                   this.bagscanForm.get( 'backLabel' ).enable();
                   this.backLabelField.nativeElement.focus();
+                  this.calcStats();
+                  this.cd.detectChanges();
                 } );
               break;
+            case Bag.Status.CLOSED_FROM_HUB:
+              this.handleError( 'bagClosedFromHub' );
+              this.setEmptyBag();
+              break;
+            case Bag.Status.CLOSED_FROM_STATION:
             default:
-              this.setEmptyBagIdChangedResp();
-              // unknown reponse status from REST
+              this.handleError( 'bagClosedFromStation' );
+              this.setEmptyBag();
               break;
           }
         },
         ( error: HttpErrorResponse ) => {
-          console.log( 'error', error );
-          this.setEmptyBagIdChangedResp();
-          switch (error.status) {
-            case 200:
-              break;
-            case 409:
-              console.log( '409' );
-              this.handleError( error.error.title );
-              break;
-            default:
-              break;
-          }
+          this.setEmptyBag();
+          this.handleError( error.error.title );
         } );
   }
 
   backLabelChanged(): void {
     // validate backLabel
-    if (this.bagscanForm.get( 'backLabel' ).value === this.bagIdChangedResp.unitBackLabel) {
+    if (this.bagscanForm.get( 'backLabel' ).value === this.bag.unitBackLabel) {
       console.log( 'pre this.handleSuccess......' );
-      this.handleSuccess( 'valid backLabel',
+      this.handleSuccess( 'default',
         () => {
           this.bagscanForm.get( 'backLabel' ).disable();
           this.bagscanForm.get( 'backSeal' ).enable();
@@ -357,8 +256,8 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
 
   backSealChanged(): void {
     // validate backSeal
-    if (this.bagscanForm.get( 'backSeal' ).value === this.bagIdChangedResp.sealYellowLabel) {
-      this.handleSuccess( 'valid backSeal',
+    if (this.bagscanForm.get( 'backSeal' ).value === this.bag.sealYellowLabel) {
+      this.handleSuccess( 'default',
         () => {
           this.bagscanForm.get( 'backSeal' ).disable();
           this.cd.markForCheck();
@@ -368,19 +267,43 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     }
   }
 
+  private padStart( inputString: string, targetLength: number, padString: string ): string {
+    while (inputString.length < targetLength) {
+      inputString = padString + inputString;
+    }
+    return inputString;
+  }
+
+  private addCheckdigit( someNo: number ): string {
+    const checkdigit = checkdigitInt25( `${someNo}` );
+    return this.padStart( `${someNo}${checkdigit}`, 12, '0' );
+  }
+
   scanPackToBag() {
     // Paketnummer scannen und mit allen Parametern an den Webservice übergeben
     this.bagscanService.scanPackToBag( this.bagscanForm.get( 'bagId' ).value,
       this.bagscanForm.get( 'backLabel' ).value,
       this.bagscanForm.get( 'packageNo' ).value,
-      this.activeBaglist.label,
+      this.addCheckdigit( this.bag.loadinglistNo ),
       this.bagscanForm.get( 'backSeal' ).value )
       .subscribe( ( response: HttpResponse<any> ) => {
-          console.log( 'hier....', response );
+          console.log( '........', response );
+          switch (response.status) {
+            case 200:
+              this.handleSuccess( response.body.title );
+              this.bagscanService.getOpenParcels();
+              this.packageNoField.nativeElement.focus();
+              this.bagscanForm.get( 'packageNo' ).patchValue( '' );
+              this.calcStats();
+              this.cd.detectChanges();
+              break;
+            default:
+              break;
+          }
           // bei Erfolg: Meldung leeren, grün, nur dieses Feld leeren, Packstückliste aktualisieren
         },
         ( error: HttpErrorResponse ) => {
-          console.log( 'error', error );
+          this.handleError( error.error.title );
           // bei Fehler: Fehlermeldung anzeigen, rot, nur dieses Feld leeren
         } );
   }
@@ -413,21 +336,11 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     }
   }
 
-  private handleSuccess( sucessType: string, callback ?: Function ) {
-    switch (sucessType) {
-      case 'valid bagId':
-        this.setSuccessStyle();
-        break;
-      case 'valid backLabel':
-        this.setSuccessStyle();
-        break;
-      case 'valid backSeal':
-        this.setSuccessStyle();
-        break;
-      default:
-        this.setSuccessStyle();
-        break;
+  private handleSuccess( sucessType: string, callback?: Function ) {
+    if (sucessType !== 'default') {
+      this.shortScanMsg = sucessType;
     }
+    this.setSuccessStyle();
     if (callback) {
       callback();
     }
@@ -441,47 +354,10 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
   }
 
   private handleError( errorType: string ) {
-    // switch (errorType) {
-    //   case 'BagId wrong check digit':
-    //     this.shortScanMsg = 'BagId wrong check digit'; // 'noLlNoSet';
-    //     break;
-    //   case 'noBagIDSet':
-    //     // Beschreibung....
-    //     this.shortScanMsg = 'noBagIDSet';
-    //     break;
-    //   case 'noBackLabelSet':
-    //     // Beschreibung....
-    //     this.shortScanMsg = 'noBackLabelSet';
-    //     break;
-    //   case 'noBackSealSet':
-    //     // Beschreibung....
-    //     this.shortScanMsg = 'noBackSealSet';
-    //     break;
-    //   case 'noSealActivation':
-    //     // Beschreibung....
-    //     this.shortScanMsg = 'noSealActivation';
-    //     break;
-    //   case 'noBlueSealNoSet':
-    //     // Beschreibung....
-    //     this.shortScanMsg = 'noBlueSealNoSet';
-    //     break;
-    //   case 'noReasonSet':
-    //     // Beschreibung....
-    //     this.shortScanMsg = 'noReasonSet';
-    //     break;
-    //   case 'not found':
-    //     // Beschreibung....
-    //     this.shortScanMsg = 'noDataInDatabase';
-    //     break;
-    //   default:
-    //     console.log( 'unhandled errorType' );
-    //     break;
-    // }
     this.soundService.play( 'critical' );
     this.shortScanMsg = errorType;
     this.styleShortScanMsg = { 'background-color': 'red', 'color': 'white' };
     this.cd.markForCheck();
-    console.log( errorType );
   }
 
   clearFields() {
@@ -496,6 +372,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     this.clearEmergencySealFields();
     this.displayEmergencySealBlock = false;
     this.bagIdField.nativeElement.focus();
+    this.cd.detectChanges();
   }
 
   private clearEmergencySealFields() {
@@ -503,15 +380,39 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     this.bagscanForm.get( 'reasonDetails' ).patchValue( '' );
     this.shortScanMsg = '';
     this.styleShortScanMsg = { 'background-color': 'white', 'color': 'white' };
+    this.cd.detectChanges();
   }
 
   refreshData() {
-    this.bagscanService.getAllPackages();
+    this.bagscanService.getOpenParcels();
   }
 
-  private finishBag() {
-    // if successful => this.clearFields()
-    console.log( 'finishBag' );
+  finishBag() {
+    if (this.bag.loadinglistNo) {
+      this.bagscanService.finishBag( this.bagscanForm.get( 'bagId' ).value,
+        this.bagscanForm.get( 'backLabel' ).value,
+        this.bagscanForm.get( 'packageNo' ).value,
+        this.addCheckdigit( this.bag.loadinglistNo ) )
+        .subscribe( ( response: HttpResponse<any> ) => {
+            this.handleSuccess( response.body && response.body.title
+              ? response.body.title
+              : 'bag closed' );
+            this.bagscanService.getOpenParcels();
+            this.packageNoField.nativeElement.focus();
+            this.bagscanForm.get( 'packageNo' ).patchValue( '' );
+            this.cd.detectChanges();
+            // bei Erfolg: Meldung leeren, grün, nur dieses Feld leeren, Packstückliste aktualisieren
+          },
+          ( error: HttpErrorResponse ) => {
+            this.handleError( error.error[ 'title' ] );
+            // bei Fehler: Fehlermeldung anzeigen, rot, nur dieses Feld leeren
+          } );
+      // if successful => this.clearFields()
+      this.clearFields()
+      console.log( 'finishBag' );
+    } else {
+      console.log( 'finishBag....no loadinglistNo' );
+    }
   }
 
   private switchSeal() {
@@ -534,16 +435,17 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     }
   }
 
-  generateLabel() {
-    if (this.electronService.isElectron()) {
-      const doc = this.reportingService.generateReports();
-      this.electronService.previewPDF( doc.output( 'datauristring' ) )
-    } else {
-      this.printingService.printReports(
-        this.reportingService.generateReports(),
-        'lbl.pdf', false );
-    }
-  }
+  // should be triggered if label checked and successfully scanned packageNo
+  // generateLabel() {
+  //   if (this.electronService.isElectron()) {
+  //     const doc = this.labelReportingService.generateReports();
+  //     this.electronService.previewPDF( doc.output( 'datauristring' ) )
+  //   } else {
+  //     this.printingService.printReports(
+  //       this.labelReportingService.generateReports(),
+  //       'lbl.pdf', false );
+  //   }
+  // }
 
 }
 

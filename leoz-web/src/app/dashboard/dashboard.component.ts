@@ -13,7 +13,7 @@ import { KeyUpEventService } from '../core/key-up-event.service';
 } )
 export class DashboardComponent {
 
-  private preventDefaultKeys = ['F2', 'F3', 'F5', 'F7', 'F10', 'F12'];
+  private preventDefaultKeys = ['F2', 'F3', 'F7', 'F10', 'F12'];
 
   constructor(private keyUpService: KeyUpEventService) {
   }

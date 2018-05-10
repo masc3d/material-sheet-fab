@@ -34,15 +34,7 @@ import { LoadinglistscanService } from './loadinglistscan.service';
     TabViewModule,
     LoadinglistscanRoutingModule
   ],
-  declarations: [ LoadinglistscanComponent ],
-  providers: [
-    DatePipe,
-    LoadinglistscanService
-    // use fake backend
-    // fakeBackendProvider,
-    // MockBackend,
-    // BaseRequestOptions
-  ]
+  declarations: [ LoadinglistscanComponent ]
 } )
 export class LoadinglistscanModule {
 }

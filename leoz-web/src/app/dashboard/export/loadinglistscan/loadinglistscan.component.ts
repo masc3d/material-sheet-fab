@@ -1,14 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable ,  BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
-import { SelectItem } from 'primeng/api';
-
-import { Exportlist } from '../exportlist.model';
-import { Package } from '../../../core/models/package.model';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { KeyUpEventService } from '../../../core/key-up-event.service';
@@ -16,13 +11,14 @@ import { SoundService } from '../../../core/sound.service';
 import { PrintingService } from '../../../core/printing/printing.service';
 import { LoadinglistReportingService } from '../../../core/reporting/loadinglist-reporting.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { LoadinglistReportHeader } from './loadinglist-report-header.model';
 import { BrowserCheck } from '../../../core/auth/browser-check';
 import { LoadinglistscanService } from './loadinglistscan.service';
 import { TYPE_VALUABLE } from '../../../core/constants';
 import { checkdigitInt25 } from '../../../core/math/checkdigitInt25';
 import { MsgService } from '../../../shared/msg/msg.service';
 import { roundDecimals } from '../../../core/math/roundDecimals';
+import { Loadinglist } from '../../../core/models/loadinglist.model';
+import { Exportparcel } from '../../../core/models/exportparcel.model';
 
 interface ScanMsg {
   packageId: string;
@@ -49,10 +45,8 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   styleScanMsgfieldBG = { 'background-color': '#ffffff', 'color': '#000000' };
 
   dateFormat: string;
-  loadlistItems: SelectItem[];
 
-  loadlists: SelectItem[];
-  private actionMsgListSubject = new BehaviorSubject<string[]>( [] );
+  private actionMsgListSubject = new BehaviorSubject<string[]>( [ 'noAction' ] );
   public actionMsgList$ = this.actionMsgListSubject.asObservable().pipe( distinctUntilChanged() );
   private actionMsgListTmp: string[];
 
@@ -60,29 +54,29 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   public scanMsgs$ = this.scanMsgsSubject.asObservable().pipe( distinctUntilChanged() );
   public shortScanMsg = '';
 
-  activeLoadinglist: Exportlist;
-  allLoadlists: Exportlist[];
+  activeLoadinglist: Loadinglist;
+  allLoadlists: Loadinglist[];
+  allLoadlistsWithEmptyFirstEntry: Loadinglist[];
   totalWeight: number;
   freeWeight: number;
   openPackcount: number;
   loadedPackcount: number;
   openWeight: number;
-  selectedPackages: Package[];
+  selectedParcels: Exportparcel[];
 
   loadinglistscanForm: FormGroup;
-  public openPackages$: Observable<Package[]>;
-  public loadedPackages$: Observable<Package[]>;
-  private openPackagesArr: Package[];
+  public openParcels$: Observable<Exportparcel[]>;
+  public loadedParcels$: Observable<Exportparcel[]>;
+  private loadedParcels: Exportparcel[];
   exportdate: any;
-  latestMarkedIndex: number;
-  latestDirection: string;
 
+  latestDirection: string;
   public scanProgress: number;
   public scanInProgress: boolean;
   private waitingForResults: number;
   private receivedResponses: number;
-  private actualScanMsgs: ScanMsg[];
 
+  private actualScanMsgs: ScanMsg[];
   notMicrodoof: boolean;
 
   constructor( private fb: FormBuilder,
@@ -97,7 +91,6 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
                private printingService: PrintingService,
                private browserCheck: BrowserCheck ) {
     super( translate, cd, msgService, () => {
-      this.loadlists = this.createLoadinglistItems( this.loadlistItems );
       this.exportdate = this.initExportdate();
     } );
   }
@@ -112,79 +105,18 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
     this.receivedResponses = 0;
     this.actualScanMsgs = [];
 
-    this.actionMsgListSubject.next( [ 'noAction' ] );
+    this.openParcels$ = this.loadinglistService.openParcels$;
+    this.loadedParcels$ = this.loadinglistService.loadedParcels$;
+    this.selectedParcels = [];
+
+    this.latestDirection = 'INIT';
+    this.totalWeight = null;
+    this.freeWeight = null;
+    this.openPackcount = null;
+    this.loadedPackcount = null;
+    this.openWeight = null;
 
     this.exportdate = this.initExportdate();
-
-    this.openPackages$ = this.loadinglistService.openPackages$;
-    this.loadedPackages$ = this.loadinglistService.loadedPackages$;
-    this.selectedPackages = [];
-    this.openPackagesArr = [];
-
-    this.latestMarkedIndex = -1;
-    this.latestDirection = 'INIT';
-
-    this.keyUpService.keyUpEvents$
-      .pipe(
-        filter( ( ev: KeyboardEvent ) => ev.key === 'F12' ),
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( () => this.markSinglePackage( 0 ) );
-
-    this.keyUpService.keyUpEvents$
-      .pipe(
-        filter( ( ev: KeyboardEvent ) => ev.key === '+' ),
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( () => this.scanPackNos() );
-
-    this.keyUpService.keyUpEvents$
-      .pipe(
-        filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowDown' && !ev.shiftKey ),
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( () => this.markSinglePackage( this.latestMarkedIndex + 1 ) );
-
-    this.keyUpService.keyUpEvents$
-      .pipe(
-        filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowUp' && !ev.shiftKey ),
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( () => this.markSinglePackage( this.latestMarkedIndex - 1 ) );
-
-    this.keyUpService.keyUpEvents$
-      .pipe(
-        filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowDown' && ev.shiftKey ),
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( () => this.markPackage( 'DOWN' ) );
-
-    this.keyUpService.keyUpEvents$
-      .pipe(
-        filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowUp' && ev.shiftKey ),
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( () => this.markPackage( 'UP' ) );
-
-
-    this.loadinglistService.openPackages$
-      .pipe(
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( ( packages: Package[] ) => {
-        this.openPackagesArr = packages;
-        this.openStats( packages );
-      } );
-
-    this.loadinglistService.loadlists$
-      .pipe(
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( ( selectItems: SelectItem[] ) => {
-        this.loadlistItems = selectItems;
-        this.loadlists = this.createLoadinglistItems( this.loadlistItems );
-      } );
-
 
     this.loadinglistscanForm = this.fb.group( {
       payload: [ null ],
@@ -192,26 +124,49 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
       scanfield: [ null ],
       loadlistnumber: [ { value: '', disabled: true } ],
       printlabel: [ null ],
-      basedon: [ null ]
+      basedon: [ 'actuallist' ]
     } );
+
+    this.keyUpService.onKeyUp( '+', this.ngUnsubscribe, this.scanPackNos, this );
+
+    this.loadinglistService.openParcels$
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
+      .subscribe( ( parcels: Exportparcel[] ) => {
+        this.openStats( parcels );
+      } );
 
     this.loadinglistService.activeLoadinglist$
       .pipe(
         takeUntil( this.ngUnsubscribe )
       )
-      .subscribe( ( activeLoadinglist: Exportlist ) => {
+      .subscribe( ( activeLoadinglist: Loadinglist ) => {
         this.activeLoadinglist = activeLoadinglist;
+        this.cd.detectChanges();
+      } );
 
+    this.loadinglistService.loadedParcels$
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
+      .subscribe( ( loadedParcels: Exportparcel[] ) => {
+        this.loadedParcels = loadedParcels;
         this.calculateWeights();
-        this.resetScanMsgs();
+        this.cd.detectChanges();
       } );
 
     this.loadinglistService.allLoadlists$
       .pipe(
         takeUntil( this.ngUnsubscribe )
       )
-      .subscribe( ( allLoadlists: Exportlist[] ) => {
+      .subscribe( ( allLoadlists: Loadinglist[] ) => {
         this.allLoadlists = allLoadlists;
+        this.allLoadlistsWithEmptyFirstEntry = [ <Loadinglist> {
+          label: null,
+          loadlistNo: null,
+          orders: []
+        }, ...allLoadlists ];
       } );
 
     this.actionMsgList$
@@ -222,23 +177,16 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
         this.actionMsgListTmp = actionMsgList;
       } );
 
-    this.totalWeight = null;
-    this.freeWeight = null;
-    this.openPackcount = null;
-    this.loadedPackcount = null;
-    this.openWeight = null;
-
-    this.loadinglistService.getAllPackages();
+    this.loadinglistService.getAllLoadinglists();
+    this.loadinglistService.getOpenParcels();
+    this.resetScanMsgs();
   }
 
-  isValuable( pack: Package ) {
-    return pack.typeOfPackaging === TYPE_VALUABLE;
+  isValuable( parcel: Exportparcel ) {
+    return parcel.typeOfPackaging === TYPE_VALUABLE;
   }
 
   private resetScanMsgs() {
-    // bei Auswahl neue Ladeliste oder Selektion einer bestehenden Ladeliste:
-    //    Feld Scan Nachrichten = leer und Grundfarbe
-    //    Feld unterhalb der Aktionen = leer und Grundfarbe
     this.actualScanMsgs = [ {
       packageId: '',
       type: 'neutral',
@@ -288,45 +236,13 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
     } );
   }
 
-  private markSinglePackage( index: number ) {
-    this.selectedPackages = [];
-    if (this.openPackagesArr[ index ]) {
-      this.latestMarkedIndex = index;
-      this.selectedPackages.push( this.openPackagesArr[ index ] );
-    }
-  }
-
-  private markPackage( direction: string ) {
-    let index = this.latestMarkedIndex;
-    if (this.latestDirection !== 'INIT' && this.latestDirection !== direction) {
-      // direcction changed
-    } else if (direction === 'UP') {
-      index -= 1;
-    } else {
-      index += 1;
-    }
-    if (this.openPackagesArr[ index ]) {
-      const actualPackage = this.openPackagesArr[ index ];
-      if (this.selectedPackages.includes( actualPackage )) {
-        const idx = this.selectedPackages.indexOf( actualPackage );
-        this.selectedPackages.splice( idx, 1 );
-      } else {
-        this.selectedPackages.push( this.openPackagesArr[ index ] );
-      }
-    }
-    this.latestMarkedIndex = index;
-    this.latestDirection = direction;
-  }
-
-  public onRowSelect( event ) {
-    this.latestMarkedIndex = this.openPackagesArr.indexOf( event.data );
-  }
-
   public newLoadlist() {
     this.loadinglistService.newLoadlist();
     this.resetPayloadField();
     this.loadinglistscanForm.get( 'selectloadlist' ).patchValue( null );
     this.actionMsgListSubject.next( [ 'actionNewLoadlist' ] );
+    this.resetScanMsgs();
+    this.loadinglistService.getLoadedParcels( null );
   }
 
   public changePayload() {
@@ -336,7 +252,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
 
   public scan( waitingForResults: number, scanFunction: Function ) {
     // check if loadlist is set
-    if (this.activeLoadinglist.loadlistNo) {
+    if (this.activeLoadinglist.loadinglistNo) {
       if (!this.scanInProgress) {
         // flag scan in progress with count of selected packages to wait for results
         this.scanProgress = 0;
@@ -358,9 +274,9 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
     }
   }
 
-  public scanPackSingle() {
+  public scanSingleParcel() {
     this.scan( 1,
-      () => this.scanPackNo( this.loadinglistscanForm.get( 'scanfield' ).value )
+      () => this.scanParcelNo( this.loadinglistscanForm.get( 'scanfield' ).value )
     );
   }
 
@@ -378,9 +294,9 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   }
 
   public scanPackNos() {
-    this.scan( this.selectedPackages.length,
-      () => this.selectedPackages.forEach(
-        ( pack: Package ) => this.scanPackNo( this.addCheckdigit( pack.parcelNo ) )
+    this.scan( this.selectedParcels.length,
+      () => this.selectedParcels.forEach(
+        ( parcel: Exportparcel ) => this.scanParcelNo( this.addCheckdigit( parcel.parcelNo ) )
       )
     );
   }
@@ -401,33 +317,37 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
     }
   }
 
-  private handleError( packageId: string, errorType: string ) {
+  private handleError( parcelNo: string, errorType: string ) {
     switch (errorType) {
       case 'invalid senddate':
         // Umbuchung funktioniert, zu testen: wenn ausgeliefert, .....
-        this.addScanMsg( packageId, 'error', 'red', '#ffffff', 'noScan',
+        this.addScanMsg( parcelNo, 'error', 'red', '#ffffff', 'noScan',
           'invalidSenddate',
           'critical' );
         break;
       case 'valore':
         // muss noch geprüft werden, wenn Webservice korrigiert ist
-        this.addScanMsg( packageId, 'error', 'red', '#ffffff', 'noScan',
+        this.addScanMsg( parcelNo, 'error', 'red', '#ffffff', 'noScan',
           'noValoreScan', 'critical' );
         break;
       default:
-        this.addScanMsg( packageId, 'error', 'red', '#ffffff', 'noScan',
+        this.addScanMsg( parcelNo, 'error', 'red', '#ffffff', 'noScan',
           errorType, 'critical' );
         break;
     }
   }
 
-  public scanPackNo( packageId: string ) {
-    this.loadinglistService.scanPack( packageId, this.activeLoadinglist.label )
+  public scanParcelNo( parcelNo: string ) {
+    this.loadinglistService.scanPack( parcelNo, this.activeLoadinglist.label )
       .subscribe( ( response: HttpResponse<any> ) => {
           console.log( 'response', response );
           switch (response.status) {
             case 200:
               this.handleSuccess( response.body.title );
+              this.loadinglistService.getOpenParcels();
+              this.loadinglistService.getLoadedParcels( this.activeLoadinglist.label );
+              this.loadinglistService.getAllLoadinglists();
+              this.calculateWeights();
               break;
             default:
               console.log( response );
@@ -439,7 +359,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
           switch (error.status) {
             case 400:
             case 404:
-              this.handleError( packageId, error.error[ 'title' ] );
+              this.handleError( parcelNo, error.error[ 'title' ] );
               break;
             default:
               console.log( error );
@@ -462,17 +382,17 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   }
 
   private calculateWeights() {
-    this.loadedPackcount = this.activeLoadinglist.packages.length;
-    this.totalWeight = this.loadinglistService.sumWeights( this.activeLoadinglist.packages );
+    this.loadedPackcount = this.loadedParcels.length;
+    this.totalWeight = this.loadinglistService.sumWeights( this.loadedParcels );
     this.freeWeight = this.loadinglistscanForm.get( 'payload' ).value
       ? roundDecimals( this.loadinglistscanForm.get( 'payload' ).value - this.totalWeight )
       : null;
     this.styleWeightExceeded = (this.freeWeight && this.freeWeight < 0) ? { 'color': 'red' } : {};
   }
 
-  private openStats( packages: Package[] ) {
-    this.openPackcount = packages.length;
-    this.openWeight = this.loadinglistService.sumWeights( packages );
+  private openStats( parcels: Exportparcel[] ) {
+    this.openPackcount = parcels.length;
+    this.openWeight = this.loadinglistService.sumWeights( parcels );
   }
 
   private initExportdate() {
@@ -481,18 +401,14 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
     return this.datePipe.transform( d, this.dateFormat );
   }
 
-  private createLoadinglistItems( selectItems: SelectItem[] ) {
-    return [
-      { label: this.translate.instant( 'loadlist' ), value: null },
-      ...selectItems
-    ];
-  }
-
-  public selectLoadlist( selected: number ) {
-    if (selected) {
-      this.loadinglistService.setActiveLoadinglist( selected, this.addCheckdigit( selected ) );
+  public selectLoadlist( loadinglist: Loadinglist ) {
+    if (loadinglist) {
+      this.loadinglistService.getLoadedParcels( loadinglist.label );
+      this.loadinglistService.setActiveLoadinglist( loadinglist );
       this.resetPayloadField();
       this.actionMsgListSubject.next( [ 'actionChangeLoadlist' ] );
+      this.resetScanMsgs();
+      this.calculateWeights();
     }
   }
 
@@ -513,13 +429,25 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   }
 
   reporting( saving: boolean ) {
-    const listsToPrint = this.loadinglistscanForm.get( 'basedon' ).value === 'alllists'
-      ? this.allLoadlists : [ this.activeLoadinglist ];
-    const llReportHeader = this.loadinglistService.reportHeaderData( this.activeLoadinglist );
-    const filename = 'll_' + listsToPrint.map( ( loadlist: Exportlist ) => loadlist.loadlistNo ).join( '_' );
-    this.printingService.printReports( this.reportingService
-        .generateReports( listsToPrint, llReportHeader ),
-      filename, saving );
+    if (this.loadinglistscanForm.get( 'basedon' ).value === 'alllists') {
+      this.loadinglistService.getAllLoadinglistsWithParcels()
+        .subscribe( ( loadinglists: Loadinglist[] ) => {
+          this.createReport(
+            loadinglists.filter( ( loadinglist: Loadinglist ) => loadinglist.loadinglistType === 'NORMAL' ),
+            saving );
+        } );
+    } else if (this.activeLoadinglist && this.activeLoadinglist.label.length > 0) {
+      this.loadinglistService.getLoadinglist( this.activeLoadinglist.label )
+        .subscribe( ( loadinglist: Loadinglist ) => {
+          this.createReport( [ loadinglist ], saving );
+        } );
+    }
   }
 
+  private createReport( loadinglists: Loadinglist[], saving: boolean ) {
+    const filename = 'll_' + loadinglists.map( ( loadlist: Loadinglist ) => loadlist.loadinglistNo ).join( '_' );
+    this.printingService.printReports( this.reportingService
+        .generateReports( this.loadinglistService, loadinglists ),
+      filename, saving );
+  }
 }

@@ -20,12 +20,14 @@
           </div>
           <div class="ui-g-12 ui-g-nopad">
             <div class="ui-g-12 ui-lg-4 ui-g-nopad">
-              <p-dropdown formControlName="selectloadlist" [options]="loadlists" [style]="{'width': '140px'}"
+              <p-dropdown formControlName="selectloadlist" [options]="allLoadlistsWithEmptyFirstEntry"
+                          optionLabel="loadinglistNo"
+                          [style]="{'width': '140px'}"
                           (onChange)="selectLoadlist($event.value)"></p-dropdown>
             </div>
             <div class="ui-g-12 ui-lg-4 ui-g-nopad">
               {{'loadlist' | translate}}:
-              {{activeLoadinglist.loadlistNo}}
+              {{activeLoadinglist.loadinglistNo}}
             </div>
             <div class="ui-g-12 ui-lg-4 ui-g-nopad"></div>
           </div>
@@ -43,10 +45,6 @@
             <div class="ui-g-12">
               <p-radioButton name="basedon" value="alllists" formControlName="basedon"
                              label="{{'alllists' | translate}}"></p-radioButton>
-            </div>
-            <div class="ui-g-12">
-              <p-radioButton name="basedon" value="selectedlist" formControlName="basedon"
-                             label="{{'selectedlist' | translate}}"></p-radioButton>
             </div>
             <div class="ui-g-12">
               <p-radioButton name="basedon" value="actuallist" formControlName="basedon"
@@ -75,7 +73,7 @@
 
       <div class="ui-g-12 ui-lg-8" style="padding: 0;">
         <p-fieldset legend="{{'scanfield' | translate}}">
-          <input #scanfield pInputText formControlName="scanfield" (change)="scanPackSingle()" class="bgYellow"
+          <input #scanfield pInputText formControlName="scanfield" (change)="scanSingleParcel()" class="bgYellow"
                  style="font-size: 40px; margin-bottom:5px; height: 100%">
         </p-fieldset>
       </div>
@@ -87,7 +85,7 @@
               {{'loadlistnumber' | translate}}:
             </div>
             <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-              {{activeLoadinglist.loadlistNo}}
+              {{activeLoadinglist.loadinglistNo}}
             </div>
           </div>
           <div class="ui-g-12 ui-g-nopad" style="padding-top: 2px">
@@ -138,7 +136,6 @@
           </div>
         </p-fieldset>
       </div>
-
       <div class="ui-g-12 ui-lg-8" style="padding:0;">
         <p-fieldset id="fieldsetPackages" legend="{{'packages' | translate}}">
           <p-tabView>
@@ -146,15 +143,15 @@
               <p style="text-align: center">
                 <p-progressBar *ngIf="scanInProgress; else infoTxt" [value]="scanProgress"></p-progressBar>
                 <ng-template #infoTxt>
-                  {{'notOnLoadlist' | translate}} {{openPackcount}} (F12)
+                  {{'notOnLoadlist' | translate}} {{openPackcount}}
                 </ng-template>
               </p>
-              <p-table [value]="openPackages$ | async" [responsive]="true"
+              <p-table [value]="openParcels$ | async" [responsive]="true"
                        [scrollable]="true" scrollHeight="250px"
-                       selectionMode="multiple" [(selection)]="selectedPackages" (onRowSelect)="onRowSelect($event)">
+                       selectionMode="multiple" [(selection)]="selectedParcels">
                 <ng-template pTemplate="header">
                   <tr>
-                    <th [pSortableColumn]="'parcelNo'">
+                    <th [pSortableColumn]="'parcelNo'" style="width:115px;">
                       {{'parcelno' | translate}}
                       <p-sortIcon [field]="'parcelNo'"></p-sortIcon>
                     </th>
@@ -162,17 +159,13 @@
                       {{'zip' | translate}}
                       <p-sortIcon [field]="'zip'"></p-sortIcon>
                     </th>
-                    <th [pSortableColumn]="'city'">
-                      {{'city' | translate}}
-                      <p-sortIcon [field]="'city'"></p-sortIcon>
+                    <th [pSortableColumn]="'realWeight'">
+                      {{'weight' | translate}}
+                      <p-sortIcon [field]="'realWeight'"></p-sortIcon>
                     </th>
                     <th [pSortableColumn]="'devliveryStation'">
                       {{'devliveryStation' | translate}}
                       <p-sortIcon [field]="'devliveryStation'"></p-sortIcon>
-                    </th>
-                    <th [pSortableColumn]="'loadinglistNo'">
-                      {{'loadinglist' | translate}}
-                      <p-sortIcon [field]="'loadinglistNo'"></p-sortIcon>
                     </th>
                     <th [pSortableColumn]="'typeOfPackaging'">
                       {{'valore' | translate}}
@@ -180,15 +173,12 @@
                     </th>
                   </tr>
                 </ng-template>
-
-
                 <ng-template pTemplate="body" let-package let-columns="columns" let-rowIndex="rowIndex">
                   <tr [pSelectableRow]="package" [pSelectableRowIndex]="rowIndex">
-                    <td>{{package.parcelNo}}</td>
+                    <td style="width:115px;">{{package.parcelNo}}</td>
                     <td>{{package.zip}}</td>
-                    <td>{{package.city}}</td>
+                    <td>{{package.realWeight}}</td>
                     <td>{{package.devliveryStation}}</td>
-                    <td>{{package.loadinglistNo}}</td>
                     <td>
                     <span *ngIf="isValuable(package); else noValuable">
                       {{ 'yes' | translate }}
@@ -210,31 +200,27 @@
             </p-tabPanel>
             <p-tabPanel header="{{'loaded' | translate}}">
               <p style="text-align: center">{{'onLoadlist' | translate}} {{loadedPackcount}}</p>
-
-              <p-table [value]="loadedPackages$ | async" [resizableColumns]="true" [responsive]="true">
+              <p-table [value]="loadedParcels$ | async" [responsive]="true"
+                       [scrollable]="true" scrollHeight="250px">
                 <ng-template pTemplate="header">
                   <tr>
-                    <th [pSortableColumn]="'parcelNo'" pResizableColumn>
+                    <th [pSortableColumn]="'parcelNo'" style="width:115px;">
                       {{'parcelno' | translate}}
                       <p-sortIcon [field]="'parcelNo'"></p-sortIcon>
                     </th>
-                    <th [pSortableColumn]="'zip'" pResizableColumn>
+                    <th [pSortableColumn]="'zip'">
                       {{'zip' | translate}}
                       <p-sortIcon [field]="'zip'"></p-sortIcon>
                     </th>
-                    <th [pSortableColumn]="'city'" pResizableColumn>
-                      {{'city' | translate}}
-                      <p-sortIcon [field]="'city'"></p-sortIcon>
+                    <th [pSortableColumn]="'realWeight'">
+                      {{'weight' | translate}}
+                      <p-sortIcon [field]="'realWeight'"></p-sortIcon>
                     </th>
-                    <th [pSortableColumn]="'devliveryStation'" pResizableColumn>
+                    <th [pSortableColumn]="'devliveryStation'">
                       {{'devliveryStation' | translate}}
                       <p-sortIcon [field]="'devliveryStation'"></p-sortIcon>
                     </th>
-                    <th [pSortableColumn]="'loadinglistNo'" pResizableColumn>
-                      {{'loadinglist' | translate}}
-                      <p-sortIcon [field]="'loadinglistNo'"></p-sortIcon>
-                    </th>
-                    <th [pSortableColumn]="'typeOfPackaging'" pResizableColumn>
+                    <th [pSortableColumn]="'typeOfPackaging'">
                       {{'valore' | translate}}
                       <p-sortIcon [field]="'typeOfPackaging'"></p-sortIcon>
                     </th>
@@ -242,11 +228,10 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-package>
                   <tr>
-                    <td>{{package.parcelNo}}</td>
+                    <td style="width:115px;">{{package.parcelNo}}</td>
                     <td>{{package.zip}}</td>
-                    <td>{{package.city}}</td>
+                    <td>{{package.realWeight}}</td>
                     <td>{{package.devliveryStation}}</td>
-                    <td>{{package.loadinglistNo}}</td>
                     <td>
                     <span *ngIf="isValuable(package); else noValuable">
                       {{ 'yes' | translate }}
@@ -265,32 +250,6 @@
                   </tr>
                 </ng-template>
               </p-table>
-
-
-            <!--
-
-
-              <p-dataTable [value]="loadedPackages$ | async" resizableColumns="true" responsive="true"
-                           [emptyMessage]="'noDataAvailable' | translate">
-                <p-column field="parcelNo" header="{{'parcelno' | translate}}" [sortable]="true"></p-column>
-                <p-column field="zip" header="{{'zip' | translate}}" [sortable]="true"></p-column>
-                <p-column field="city" header="{{'city' | translate}}" [sortable]="true"></p-column>
-                <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}"
-                          [sortable]="true"></p-column>
-                <p-column field="loadinglistNo" header="{{'loadinglist' | translate}}" [sortable]="true"></p-column>
-                <p-column field="typeOfPackaging" header="{{'valore' | translate}}" [sortable]="true">
-                  <ng-template let-package="rowData" pTemplate="body">
-                    <span *ngIf="isValuable(package); else noValuable">
-                      {{ 'yes' | translate }}
-                    </span>
-                    <ng-template #noValuable>
-                      {{ 'no' | translate }}
-                    </ng-template>
-                  </ng-template>
-                </p-column>
-              </p-dataTable>
-              -->
-
             </p-tabPanel>
           </p-tabView>
         </p-fieldset>

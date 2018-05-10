@@ -70,33 +70,48 @@
         </div>
         <div class="ui-g-12 ui-g-nopad inputField"
              style="background-color: #ffffff; width: calc(100% - 2px); padding: 5px 0 0 5px; margin-left: 5px;
-             height: 80px; margin-bottom:5px; color: red; overflow-y: scroll"
-             [innerHTML]="translate.instant( 'bagCountMsgfield' )">
+             height: 80px; margin-bottom:5px; color: red; overflow-y: scroll" [innerHTML]="countBagsToSendBackMsg">
         </div>
       </div>
 
       <div class="ui-g-12 ui-lg-6" style="padding: 0; border:1px solid darkgrey">
         <div class="ui-g-12 ui-g-nopad">
           <p style="text-align: center">{{'openOnBaglist' | translate}} {{openPackcount}}</p>
-          <p-table [value]="openPackages$ | async" [responsive]="true"
+          <p-table [value]="openParcels$ | async" [responsive]="true"
                    [scrollable]="true" scrollHeight="250px">
             <ng-template pTemplate="header">
               <tr>
-                <th>{{'parcelno' | translate}}</th>
-                <th>{{'zip' | translate}}</th>
-                <th>{{'weight' | translate}}</th>
-                <th>{{'devliveryStation' | translate}}</th>
-                <th>{{'valore' | translate}}</th>
+                <th [pSortableColumn]="'parcelNo'" style="width:115px;">
+                  {{'parcelno' | translate}}
+                  <p-sortIcon [field]="'parcelNo'"></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'zip'">
+                  {{'zip' | translate}}
+                  <p-sortIcon [field]="'zip'"></p-sortIcon>
+                </th>
+                <!--<th>{{'weight' | translate}}</th>-->
+                <th [pSortableColumn]="'realWeight'">
+                  {{'weight' | translate}}
+                  <p-sortIcon [field]="'realWeight'"></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'devliveryStation'">
+                  {{'devliveryStation' | translate}}
+                  <p-sortIcon [field]="'devliveryStation'"></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'typeOfPackaging'">
+                  {{'valore' | translate}}
+                  <p-sortIcon [field]="'typeOfPackaging'"></p-sortIcon>
+                </th>
               </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-package>
+            <ng-template pTemplate="body" let-parcel>
               <tr>
-                <td>{{package.parcelNo}}</td>
-                <td>{{package.zip}}</td>
-                <td>{{package.realWeight}}</td>
-                <td>{{package.devliveryStation}}</td>
+                <td style="width:115px;">{{parcel.parcelNo}}</td>
+                <td>{{parcel.zip}}</td>
+                <td>{{parcel.realWeight}}</td>
+                <td>{{parcel.devliveryStation}}</td>
                 <td>
-                    <span *ngIf="isValuable(package); else noValuable">
+                    <span *ngIf="isValuable(parcel); else noValuable">
                       {{ 'yes' | translate }}
                     </span>
                   <ng-template #noValuable>
@@ -120,7 +135,7 @@
         <div class="ui-g-12 ui-lg-8" style="padding: 0;">
           <div class="ui-g-12 ui-g-nopad">
             <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
-              <span>{{ 'llNo' | translate }}: {{ activeBaglist.loadlistNo }} </span>
+              <span>{{ 'llNo' | translate }}: {{ bag?.loadinglistNo }} </span>
             </div>
             <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
               <p-checkbox name="printlabel" value="printlabel" label="{{'printlabel' | translate}}"></p-checkbox>
@@ -157,7 +172,8 @@
             </div>
           </div>
           <div class="ui-g-12 ui-g-nopad">
-            <div class="ui-g-12 ui-lg-12 ui-g-nopad" style="margin-top: 2px; padding: 5px; color: red; font-weight: bold">
+            <div class="ui-g-12 ui-lg-12 ui-g-nopad"
+                 style="margin-top: 2px; padding: 5px; color: red; font-weight: bold">
               <span>{{ 'caution' | translate }}! {{ 'maxBagWeightReached' | translate }}</span>
             </div>
           </div>
@@ -173,7 +189,7 @@
 
         <div class="ui-g-12 ui-lg-4" style="padding: 0;">
           <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
-            <button pButton type="button" label="{{'completeProcessingF5' | translate}}"></button>
+            <button pButton type="button" (click)="finishBag()" label="{{'completeProcessing' | translate}}"></button>
           </div>
           <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
             <button pButton type="button" (click)="refreshData()" label="{{'update' | translate}}"></button>
@@ -183,13 +199,6 @@
             <!--<button pButton type="button" (click)="toggleVisibilitySeal()" label="{{'swapSealF10' | translate}}"></button>-->
           </div>
 
-          <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
-            <p-dropdown formControlName="selectbaglist" [options]="baglists" [style]="{'width': '125px'}"
-                        (onChange)="selectBaglist($event.value)"></p-dropdown>
-            <span (click)="generateLabel()">
-              <i class="fas fa-print fa-fw" aria-hidden="true"></i>
-            </span>
-          </div>
           <div class="ui-g-12 ui-g-nopad" [ngClass]="chargingLevelStyle"
                style="width: 125px;  margin-top: 2px; margin-left: 6px; padding: 5px; text-align: center">
             {{chargingLevel}}%
@@ -217,16 +226,16 @@
             <div class="ui-g-12 ui-lg-6" style="padding: 0;">
               <div class="ui-g-12 ui-lg-12 ui-g-nopad">
                 <div style="margin-top: 2px; padding: 5px">
-                    <span>{{ 'reason' | translate }}:</span>
+                  <span>{{ 'reason' | translate }}:</span>
                 </div>
               </div>
               <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px; font-weight: bold">
-                <button pButton type="button" label="{{'saveF7' | translate}}" (click) = "saveEmergencySeal()"></button>
+                <button pButton type="button" label="{{'saveF7' | translate}}" (click)="saveEmergencySeal()"></button>
               </div>
             </div>
             <div class="ui-g-12 ui-lg-6" style="margin-top: 2px; padding: 5px">
               <textarea #reasonDetails pInputTextarea formControlName="reasonDetails"
-                    style="height: 69px; margin-bottom:5px; width:calc(98% - 2px)">
+                        style="height: 69px; margin-bottom:5px; width:calc(98% - 2px)">
               </textarea>
             </div>
           </div>

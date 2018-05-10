@@ -3,12 +3,14 @@ import { Injectable } from '@angular/core';
 import * as moment from 'moment';
 import * as jsPDF from 'jspdf';
 
-import { Exportlist } from '../../dashboard/export/exportlist.model';
 import { LoadinglistReportHeader } from '../../dashboard/export/loadinglistscan/loadinglist-report-header.model';
-import { Package } from '../models/package.model';
 import { Report } from './report.model';
 import { ReportPart } from './report-part.model';
 import { ReportingService } from './reporting.service';
+import { Loadinglist } from '../models/loadinglist.model';
+import { Exportparcel } from '../models/exportparcel.model';
+import { Exportorder } from '../models/exportorder.model';
+import { LoadinglistscanService } from '../../dashboard/export/loadinglistscan/loadinglistscan.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,11 +20,20 @@ export class LoadinglistReportingService extends ReportingService {
   startPageNo: number;
   doc: jsPDF;
 
-  generateReports( listsToPrint: Exportlist[], llReportHeader: LoadinglistReportHeader ): jsPDF {
+  generateReports( scanService: LoadinglistscanService, listsToPrint: Loadinglist[] ): jsPDF {
     const reports: Report[] = [];
     this.doc = new jsPDF();
     this.startPageNo = 1;
-    listsToPrint.forEach( ( listToPrint: Exportlist ) => {
+    listsToPrint.forEach( ( listToPrint: Loadinglist ) => {
+      const llReportHeader: LoadinglistReportHeader = scanService.reportHeaderData( listToPrint );
+      const allParcels = listToPrint.orders
+        ? listToPrint.orders
+          .map( ( order: Exportorder ) =>
+            order.parcels
+              .map( ( parcel: Exportparcel ) => <Exportparcel> { deliveryStation: order.deliveryStation, ...parcel }
+            ) )
+          .reduce( ( a: Exportparcel[], b: Exportparcel[] ) => a.concat( b ), [] )
+        : <Exportparcel[]>[];
       const reportHeaderRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
           doc.addImage( Report.logoImgData, Report.logoImgType, offsetX + 140, offsetY, 53, 19 );
           doc.setFontSize( 16 );
@@ -107,7 +118,7 @@ export class LoadinglistReportingService extends ReportingService {
               totalPackagesToTransport: this.translate.instant( 'totalPackagesToTransport' ),
             } ),
           null,
-          this.buildPageContent( listToPrint ),
+          this.buildPageContent( allParcels ),
           new ReportPart( 23, pageFooterRenderFunction, {
             printingDate: this.translate.instant( 'printingDate' ),
             printing_Date_Long: moment().format( this.dateFormatLong ),
@@ -135,16 +146,16 @@ export class LoadinglistReportingService extends ReportingService {
     this.startPageNo += report.totalPages;
   }
 
-  private buildPageContent( loadinglist: Exportlist ): ReportPart[] {
+  private buildPageContent( parcels: Exportparcel[] ): ReportPart[] {
     const pageContents: ReportPart[] = [];
-    const groupedPackages = {};
-    for (const p of loadinglist.packages) {
-      this.groupBy( groupedPackages, p, 'devliveryStation' )
-    }
+    const groupedParcels = {};
+    parcels.forEach(
+      ( parcel: Exportparcel ) => this.groupBy( groupedParcels, parcel, 'deliveryStation' )
+    );
 
-    for (const deliveryStation in groupedPackages) {
-      if (groupedPackages.hasOwnProperty( deliveryStation )) {
-        const packages = groupedPackages[ deliveryStation ];
+    for (const deliveryStation in groupedParcels) {
+      if (groupedParcels.hasOwnProperty( deliveryStation )) {
+        const packages = groupedParcels[ deliveryStation ];
         const stationPart = this.createStationPart( deliveryStation, packages );
         pageContents.push( stationPart );
       }
@@ -152,21 +163,21 @@ export class LoadinglistReportingService extends ReportingService {
     return pageContents;
   }
 
-  private groupBy( groupedPackages: Object,
-                   p: Package,
+  private groupBy( groupedParcels: Object,
+                   parcel: Exportparcel,
                    fieldName: string ): void {
-    const tmp = groupedPackages[ p[ fieldName ] ] ? groupedPackages[ p[ fieldName ] ] : [];
-    tmp.push( p );
-    groupedPackages[ p[ fieldName ] ] = tmp;
+    const tmp = groupedParcels[ parcel[ fieldName ] ] ? groupedParcels[ parcel[ fieldName ] ] : [];
+    tmp.push( parcel );
+    groupedParcels[ parcel[ fieldName ] ] = tmp;
   }
 
-  private createStationPart( deliveryStation: string, packages: Package[] ): ReportPart {
+  private createStationPart( deliveryStation: string, parcels: Exportparcel[] ): ReportPart {
     const calcHeight = function ( packCount: number ) {
         return 8 + (4 * Math.ceil( packCount / 5 ));
       },
       stationPartRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
         const station: string = data.station,
-          packs: Package[] = data.packs;
+          parcelz: Exportparcel[] = data.packs;
         let packageCounter = 0;
 
         doc.setFontSize( 8 );
@@ -175,12 +186,12 @@ export class LoadinglistReportingService extends ReportingService {
 
         doc.setFontType( 'normal' );
         offsetY += 4;
-        packs.forEach( ( p: Package ) => {
+        parcelz.forEach( ( parcel: Exportparcel ) => {
           const offsetXFactor = packageCounter % 5,
             innerOffsetX = 37;
-          doc.text( `${p.parcelNo}`, offsetX + (innerOffsetX * offsetXFactor), offsetY );
+          doc.text( `${parcel.parcelNo}`, offsetX + (innerOffsetX * offsetXFactor), offsetY );
           doc.text( `Kg:`, offsetX + 20 + (innerOffsetX * offsetXFactor), offsetY );
-          doc.text( `${p.realWeight}`, offsetX + 25 + (innerOffsetX * offsetXFactor), offsetY );
+          doc.text( `${parcel.realWeight}`, offsetX + 25 + (innerOffsetX * offsetXFactor), offsetY );
           packageCounter += 1;
           if (packageCounter % 5 === 0) {
             offsetY += 4;
@@ -188,7 +199,7 @@ export class LoadinglistReportingService extends ReportingService {
         } );
         return doc;
       },
-      stationPartData = { station: deliveryStation, packs: packages };
-    return new ReportPart( calcHeight( packages.length ), stationPartRenderFunction, stationPartData );
+      stationPartData = { station: deliveryStation, packs: parcels };
+    return new ReportPart( calcHeight( parcels.length ), stationPartRenderFunction, stationPartData );
   }
 }

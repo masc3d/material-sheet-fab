@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as jsPDF from 'jspdf';
-import ioBarcode from 'io-barcode';
+import * as ioBarcode from 'io-barcode';
 
 import { Report } from './report.model';
 import { ReportPart } from './report-part.model';
@@ -8,8 +8,10 @@ import { ReportPart } from './report-part.model';
 import { ReportingService } from './reporting.service';
 import { checkdigitInt25 } from '../math/checkdigitInt25';
 
-@Injectable()
-export class BagscanReportingService extends ReportingService {
+@Injectable({
+  providedIn: 'root',
+})
+export class LabelReportingService extends ReportingService {
 
   generateReports(): jsPDF {
     // generate barcode hardcoded
