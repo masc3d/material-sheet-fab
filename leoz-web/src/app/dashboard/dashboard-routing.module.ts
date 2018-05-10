@@ -67,6 +67,12 @@ export const routes = [
         loadChildren: 'app/dashboard/settings/printer/printer.module#PrinterModule'
       },
       {
+        path: 'changepassword',
+        canActivate: [ AuthenticationGuard,
+          RoleGuard ],
+        loadChildren: 'app/dashboard/settings/changepassword/changepassword.module#ChangepasswordModule'
+      },
+      {
         path: 'stateofshipments',
         canActivate: [ AuthenticationGuard,
           RoleGuard ],

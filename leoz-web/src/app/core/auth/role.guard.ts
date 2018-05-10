@@ -11,7 +11,8 @@ export class RoleGuard implements CanActivate {
   private allowedRoutes = {
     'CUSTOMER': [],
     'ADMIN': [],
-    'DRIVER': [ 'tour' ],
+    'DRIVER': [ 'tour',
+      'changepassword' ],
     'USER': [
       'user',
       'favourites',
@@ -21,6 +22,7 @@ export class RoleGuard implements CanActivate {
       'importscan',
       'touroptimizing',
       'stateofshipments',
+      'changepassword',
       'order'],
     'POWERUSER': [
       'user',
@@ -31,6 +33,7 @@ export class RoleGuard implements CanActivate {
       'importscan',
       'touroptimizing',
       'stateofshipments',
+      'changepassword',
       'order' ],
   };
 
