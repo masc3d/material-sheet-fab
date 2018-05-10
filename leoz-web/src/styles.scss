@@ -342,6 +342,10 @@ input {
   margin-bottom: 30px;
 }
 
+.bgTabContent {
+  background-color: #efefef8c !important;
+}
+
 a {
   text-decoration: none !important;
   &:hover,
@@ -404,8 +408,9 @@ p-tabview > div > ul {
 }
 
 p-tabpanel > div {
-  // border: 1px solid darkgrey !important;
   padding: 5px !important;
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
 }
 
 .shadow {
@@ -650,13 +655,13 @@ p-tabpanel > div {
   padding: 5px;
 }
 
-p-tabView.orderForm li > a,
+p-tabView li > a,
 p-tabMenu li > a {
   background-color: $button-blue; // #555f90;
   color: white !important;
 }
 
-p-tabView.orderForm li > a:hover,
+p-tabView li > a:hover,
 p-tabMenu li > a:hover {
   background-color: $button-blue; // #555f90;
   color: lightgray !important;
@@ -730,7 +735,20 @@ input[pinputtext] {
 .colorRed {
   color: #ff0000 !important;
 }
+.colorGreen {
+  color: #00a200 !important;
+}
 .colorYellow {
   color: #ff9818 !important;
   font-weight: bold !important;
+}
+
+.ui-paginator .ui-paginator-page.ui-state-active {
+  background: #186ba0 !important;
+}
+
+.ui-radiobutton-box.ui-state-active {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #212121;
 }
