@@ -23,9 +23,9 @@ import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.view_actionoverlay.view.*
-import kotlinx.android.synthetic.main.view_actionoverlay_sheet.view.*
-import kotlinx.android.synthetic.main.view_actionoverlay_sheet_item.view.*
+import kotlinx.android.synthetic.main.sx_view_actionoverlay.view.*
+import kotlinx.android.synthetic.main.sx_view_actionoverlay_sheet.view.*
+import kotlinx.android.synthetic.main.sx_view_actionoverlay_sheet_item.view.*
 import org.jetbrains.anko.itemsSequence
 import org.jetbrains.anko.layoutInflater
 import org.slf4j.LoggerFactory
@@ -187,7 +187,7 @@ class ActionOverlayView : RelativeLayout {
     private var materialSheetFabs = mutableMapOf<Int, SheetFab>()
 
     private fun init() {
-        inflate(this.context, R.layout.view_actionoverlay, this)
+        inflate(this.context, R.layout.sx_view_actionoverlay, this)
     }
 
     /**
@@ -268,7 +268,7 @@ class ActionOverlayView : RelativeLayout {
                                 fab = animatedFab
 
                                 val sheet = this.context.layoutInflater.inflate(
-                                        R.layout.view_actionoverlay_sheet,
+                                        R.layout.sx_view_actionoverlay_sheet,
                                         this.uxActionOverlaySheetContainer,
                                         false)
 
@@ -315,7 +315,7 @@ class ActionOverlayView : RelativeLayout {
                                         .forEach { menuItem ->
 
                                             val sheetItem = this.context.layoutInflater.inflate(
-                                                    R.layout.view_actionoverlay_sheet_item,
+                                                    R.layout.sx_view_actionoverlay_sheet_item,
                                                     sheet.uxActionOverlaySheetItemContainer,
                                                     false)
 

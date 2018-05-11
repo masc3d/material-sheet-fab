@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         android:weightSum="2"
         android:layout_gravity="right"
-        android:paddingRight="@dimen/horizontal_margin">
+        android:paddingRight="@dimen/medium_margin">
 
         <FrameLayout
             android:layout_width="match_parent"
