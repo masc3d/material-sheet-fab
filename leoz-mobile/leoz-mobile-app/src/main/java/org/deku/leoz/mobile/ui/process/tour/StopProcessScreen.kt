@@ -142,6 +142,10 @@ class StopProcessScreen :
     private var currentDamagedParcel: ParcelEntity? = null
     //endregion
 
+    /** Indicates if delay button should be visible */
+    val isReportDelayActionAvailable: Boolean
+        get() = !this.tourStop.canClose && this.debugSettings.enabled
+
     /** Active merge dialog */
     private var mergeDialog: MaterialDialog? = null
         set(value) {
@@ -391,7 +395,7 @@ class StopProcessScreen :
                         colorRes = R.color.colorGrey,
                         iconRes = R.drawable.ic_appointment_at_risk,
                         iconTintRes = android.R.color.white,
-                        visible = !this.tourStop.canClose
+                        visible = this.isReportDelayActionAvailable
                 )
         )
         //endregion
@@ -760,7 +764,7 @@ class StopProcessScreen :
 
                         first { it.id == R.id.action_report_delay }
                                 .also {
-                                    it.visible = !tourStop.canClose
+                                    it.visible = this@StopProcessScreen.isReportDelayActionAvailable
                                 }
                     }
                 }

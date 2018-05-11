@@ -34,10 +34,14 @@ import org.deku.leoz.mobile.model.entity.hasValidPhoneNumber
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
-import org.deku.leoz.model.*
+import org.deku.leoz.model.DekuUnitNumber
+import org.deku.leoz.model.DelayedAppointmentReason
+import org.deku.leoz.model.ParcelService
+import org.deku.leoz.model.UnitNumber
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
@@ -47,8 +51,8 @@ import sx.android.Device
 import sx.android.aidc.*
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThreadUntilEvent
-import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
+import sx.android.ui.flexibleadapter.VmItem
 
 class StopDetailsScreen
     :
@@ -66,6 +70,8 @@ class StopDetailsScreen
     }
 
     private val listener by listenerDelegate<Listener>()
+
+    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val feedback: Feedback by Kodein.global.lazy.instance()
@@ -96,7 +102,16 @@ class StopDetailsScreen
     })
     private val adapter get() = flexibleAdapterInstance.get()
 
+    /** Reported delay in minutes */
     private var delayMinutes: Int = 0
+
+    /** Indicates if report delay should be available */
+    private val isReportDelayActionAvailable
+        get() = this.debugSettings.enabled
+
+    /** Indicates if add stop note action should be available */
+    private val isAddStopNoteActionAvailable
+        get() = this.debugSettings.enabled
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,13 +122,8 @@ class StopDetailsScreen
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
 
-    val serviceSection by lazy {
-
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? =
-    // Inflate the layout for this fragment
             inflater.inflate(R.layout.screen_tour_stop_detail, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -239,7 +249,10 @@ class StopDetailsScreen
             adapter.expand(it)
         }
 
-        val stopNoteMenu = this.activity.inflateMenu(R.menu.menu_delivery_stop_add_information)
+        val stopNoteMenu = this.activity.inflateMenu(R.menu.menu_delivery_stop_add_information).also {
+            it.findItem(R.id.action_report_delay).setVisible(this.isReportDelayActionAvailable)
+            it.findItem(R.id.action_add_stop_note).setVisible(this.isAddStopNoteActionAvailable)
+        }
 
         this.actionItems = listOf(
                 ActionItem(
