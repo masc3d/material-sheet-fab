@@ -6,4 +6,10 @@
     <dimen name="horizontal_large_margin">12dp</dimen>
     <dimen name="horizontal_xlarge_margin">20dp</dimen>
     <dimen name="vertical_large_margin">12dp</dimen>
+
+    <!-- Margins -->
+    <dimen name="small_margin">4dp</dimen>
+    <dimen name="margin">8dp</dimen>
+    <dimen name="medium_margin">12dp</dimen>
+    <dimen name="large_margin">16dp</dimen>
 </resources>

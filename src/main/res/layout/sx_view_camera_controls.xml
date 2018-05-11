@@ -41,7 +41,7 @@
                 android:layout_marginLeft="@dimen/horizontal_margin"
                 android:layout_marginRight="@dimen/horizontal_margin" />
 
-            <sx.android.view.CircleButton
+            <sx.android.ui.view.CircleButton
                 android:id="@+id/snapshotButton"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
