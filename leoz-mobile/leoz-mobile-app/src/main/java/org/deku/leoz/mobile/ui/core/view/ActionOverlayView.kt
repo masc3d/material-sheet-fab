@@ -240,7 +240,12 @@ class ActionOverlayView : RelativeLayout {
 
             this.materialSheetFabs.clear()
 
-            val visibleItems = this.items.filter { it.visible }
+            val visibleItems = this.items.filter {
+                if (it.menu == null)
+                    it.visible
+                else
+                    it.visible && it.menu.itemsSequence().any { it.isVisible }
+            }
 
             visibleItems
                     .filter { it.alignEnd }
@@ -317,7 +322,7 @@ class ActionOverlayView : RelativeLayout {
 
                                             sheetItem.uxActionOverlaySheetItemIcon.setImageDrawable(
                                                     menuItem.icon
-                                                            // Set default icon if applicable
+                                                    // Set default icon if applicable
                                                             ?: (if (this.defaultIcon != 0) ContextCompat.getDrawable(context, this.defaultIcon) else null)
                                             )
 
