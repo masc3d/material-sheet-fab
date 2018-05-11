@@ -1,4 +1,4 @@
-package sx.android.view;
+package sx.android.ui.view;
 
 import android.app.Activity;
 import android.content.Context;

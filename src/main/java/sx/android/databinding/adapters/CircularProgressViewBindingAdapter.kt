@@ -1,7 +1,7 @@
 package sx.android.databinding.adapters
 
 import android.databinding.BindingAdapter
-import sx.android.view.CircularProgressView
+import sx.android.ui.view.CircularProgressView
 
 /**
  * Created by masc on 07.05.18.
