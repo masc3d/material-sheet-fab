@@ -80,6 +80,7 @@ import sx.android.*
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
+import sx.android.design.widget.isExpanded
 import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
 import sx.android.rx.observeOnMainThreadUntilEvent
@@ -584,8 +585,6 @@ abstract class Activity : BaseActivity(),
         when (id) {
             R.id.action_aidc_camera -> {
                 this.cameraAidcFragmentVisible = !this.cameraAidcFragmentVisible
-                if (!this.cameraAidcFragmentVisible)
-                    this.uxAppBarLayout.setExpanded(false, true)
             }
 
             R.id.action_aidc_keyboard -> {
@@ -875,6 +874,9 @@ abstract class Activity : BaseActivity(),
         checkLocationSettings()
     }
 
+    /** Indicates if app bar was expanded before showing aidc fragment */
+    private var wasExpandedBeforeAidc = false
+
     private val cameraAidcFragment: AidcCameraFragment?
         get() = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName) as? AidcCameraFragment
 
@@ -904,6 +906,9 @@ abstract class Activity : BaseActivity(),
                                     iconTintRes = AIDC_ACTION_ITEM_TINT
                             )
                     )
+
+                    this.wasExpandedBeforeAidc = this.uxAppBarLayout.isExpanded
+                    this.uxAppBarLayout.setExpanded(false, true)
                 }
 
                 false -> {
@@ -939,6 +944,11 @@ abstract class Activity : BaseActivity(),
 
                         if (screenFragment != null)
                             this.actionItems = screenFragment.actionItems
+
+                        if (this.wasExpandedBeforeAidc) {
+                            this.uxAppBarLayout.setExpanded(true, true)
+                            this.wasExpandedBeforeAidc = false
+                        }
                     }
                 }
             }
