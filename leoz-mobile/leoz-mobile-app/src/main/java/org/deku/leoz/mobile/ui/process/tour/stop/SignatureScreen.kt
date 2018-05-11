@@ -26,7 +26,7 @@ import org.deku.leoz.mobile.resetLocale
 import org.deku.leoz.mobile.setLocale
 import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.core.ScreenFragment
-import org.deku.leoz.mobile.ui.core.view.ActionItem
+import sx.android.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.CounterViewModel
 import org.slf4j.LoggerFactory
 

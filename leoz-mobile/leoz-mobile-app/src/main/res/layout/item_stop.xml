@@ -305,7 +305,7 @@
                                     android:textColor="@{safeUnbox(stop.countdownColor)}"
                                     />
 
-                                <sx.android.view.ClockView
+                                <sx.android.ui.view.ClockView
                                     android:id="@+id/uxAppointmentClock"
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
@@ -380,7 +380,7 @@
 
                             </LinearLayout>
 
-                            <sx.android.view.BadgeTextView
+                            <sx.android.ui.view.BadgeTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="end"

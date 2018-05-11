@@ -42,7 +42,7 @@ import org.deku.leoz.mobile.settings.TourSettings
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.extension.inflateMenu
-import org.deku.leoz.mobile.ui.core.view.ActionItem
+import sx.android.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.process.tour.StopDetailsScreen
 import org.deku.leoz.mobile.ui.vm.StopListStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.StopViewModel

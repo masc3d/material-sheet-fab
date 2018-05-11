@@ -36,7 +36,7 @@ import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.ui.core.ScreenFragment
-import org.deku.leoz.mobile.ui.core.view.ActionItem
+import sx.android.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.DelayedAppointmentReason

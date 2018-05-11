@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.ui.core.view
+package sx.android.ui.view
 
 import android.content.Context
 import android.support.design.widget.FloatingActionButton
@@ -10,7 +10,7 @@ import android.view.animation.Interpolator
 import android.view.animation.ScaleAnimation
 
 import com.gordonwong.materialsheetfab.AnimatedFab
-import org.deku.leoz.mobile.R
+import sx.android.R
 
 /**
  * Floating action button for use with material-sheet-fab
@@ -88,7 +88,7 @@ class AnimatedFloatingActionButton : FloatingActionButton, AnimatedFab {
     }
 
     private val interpolator: Interpolator
-        get() = AnimationUtils.loadInterpolator(context, R.interpolator.msf_interpolator)
+        get() = AnimationUtils.loadInterpolator(context, com.gordonwong.materialsheetfab.R.interpolator.msf_interpolator)
 
     companion object {
         private val FAB_ANIM_DURATION = 200

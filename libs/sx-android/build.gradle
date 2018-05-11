@@ -96,6 +96,7 @@ kapt {
 dependencies {
     implementation(
             project(":sx-common"),
+            project(':material-sheet-fab'),
 
             fileTree(dir: 'libs', include: ['*.jar']),
 
@@ -104,6 +105,8 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Anko
+            "org.jetbrains.anko:anko-commons:$v_anko",
+            "org.jetbrains.anko:anko-sdk25:$v_anko",
             "org.jetbrains.anko:anko-sqlite:$v_anko",
 
             // Android support libs
@@ -111,6 +114,7 @@ dependencies {
             "com.android.support:appcompat-v7:$v_android_support",
             "com.android.support:support-v4:$v_android_support",
             "com.android.support:design:$v_android_support",
+            "com.android.support:cardview-v7:$v_android_support",
 
             // rx
             "io.reactivex.rxjava2:rxjava:2.1.13",

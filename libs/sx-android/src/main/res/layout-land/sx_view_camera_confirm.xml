@@ -7,7 +7,7 @@
     <view
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="sx.android.view.AsyncImageView"
+        class="sx.android.ui.view.AsyncImageView"
         android:id="@+id/pictureImageView"
         android:scaleType="centerCrop" />
 
@@ -24,7 +24,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <sx.android.view.CircleButton
+            <sx.android.ui.view.CircleButton
                 android:id="@+id/okButton"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
@@ -45,7 +45,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <sx.android.view.CircleButton
+            <sx.android.ui.view.CircleButton
                 android:id="@+id/cancelButton"
                 android:layout_width="72dp"
                 android:layout_height="72dp"

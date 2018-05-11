@@ -21,7 +21,7 @@
         app:animatedVisibility="@{safeUnbox(mqStatistics.isVisible) ? View.VISIBLE : View.GONE}"
         >
 
-        <sx.android.view.BadgeTextView
+        <sx.android.ui.view.BadgeTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{mqStatistics.mainCount, default = 60}"

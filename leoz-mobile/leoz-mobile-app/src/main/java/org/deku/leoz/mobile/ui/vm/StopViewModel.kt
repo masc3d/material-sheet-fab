@@ -17,6 +17,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.model.ParcelService
+import org.jetbrains.anko.layoutInflater
 import org.slf4j.LoggerFactory
 import org.threeten.bp.temporal.ChronoUnit
 import sx.android.databinding.toField

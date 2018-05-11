@@ -17,7 +17,6 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.combineLatest
-import io.reactivex.rxkotlin.merge
 import kotlinx.android.synthetic.main.screen_tour_stop_recipient.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
@@ -28,17 +27,15 @@ import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.TourStop
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
-import org.deku.leoz.mobile.ui.core.view.ActionItem
+import sx.android.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.ServiceViewModel
 import org.deku.leoz.model.EventDeliveredReason
-import org.deku.leoz.model.ParcelService
 import org.deku.leoz.model.SalutationType
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toObservable
 import sx.android.hideSoftInput
 import sx.android.showSoftInput
-import sx.log.slf4j.trace
 import sx.rx.just
 
 /**

@@ -32,7 +32,7 @@ import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
-import org.deku.leoz.mobile.ui.core.view.ActionItem
+import sx.android.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.process.tour.stop.DamagedParcelCameraScreen
 import org.deku.leoz.mobile.ui.vm.CounterViewModel
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel

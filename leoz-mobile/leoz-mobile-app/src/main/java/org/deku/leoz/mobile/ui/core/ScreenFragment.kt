@@ -8,13 +8,10 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.neovisionaries.i18n.CountryCode
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.settings.RemoteSettings
 import org.deku.leoz.mobile.dev.SyntheticInput
-import org.deku.leoz.mobile.resetLocale
-import org.deku.leoz.mobile.setLocale
-import org.deku.leoz.mobile.ui.core.view.ActionItem
+import sx.android.ui.view.ActionItem
 import sx.rx.ObservableRxProperty
 
 /**

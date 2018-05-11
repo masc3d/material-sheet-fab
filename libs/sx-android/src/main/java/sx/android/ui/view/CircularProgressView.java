@@ -1,4 +1,4 @@
-package sx.android.view;
+package sx.android.ui.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

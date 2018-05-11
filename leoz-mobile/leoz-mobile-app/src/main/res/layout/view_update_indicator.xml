@@ -21,7 +21,7 @@
         app:animatedVisibility="@{safeUnbox(updateService.isVisible) ? View.VISIBLE : View.GONE}"
         >
 
-        <sx.android.view.CircularProgressView
+        <sx.android.ui.view.CircularProgressView
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center"

@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.ui.core.view
+package sx.android.ui.view
 
 import android.content.Context
 import android.support.annotation.ColorRes
@@ -26,12 +26,11 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.view_actionoverlay.view.*
 import kotlinx.android.synthetic.main.view_actionoverlay_sheet.view.*
 import kotlinx.android.synthetic.main.view_actionoverlay_sheet_item.view.*
-import org.deku.leoz.mobile.R
 import org.jetbrains.anko.itemsSequence
 import org.jetbrains.anko.layoutInflater
 import org.slf4j.LoggerFactory
+import sx.android.R
 import sx.android.rx.observeOnMainThread
-import sx.android.view.setIconTintRes
 import java.util.concurrent.TimeUnit
 
 /**
@@ -228,7 +227,7 @@ class ActionOverlayView : RelativeLayout {
 
     fun update() {
         val updateImpl = {
-            TransitionManager.beginDelayedTransition(uxActionOverlayContainer, Explode().apply {
+            TransitionManager.beginDelayedTransition(this.uxActionOverlayContainer, Explode().apply {
                 duration = 200
             })
 

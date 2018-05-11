@@ -15,7 +15,7 @@ import org.deku.leoz.model.ParcelService
 import org.jetbrains.anko.imageResource
 import org.slf4j.LoggerFactory
 import sx.android.convertDpToPx
-import sx.android.view.setIconTint
+import sx.android.ui.view.setIconTint
 import java.util.*
 
 /**

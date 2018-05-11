@@ -16,12 +16,11 @@ import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_camera.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.device.Sounds
-import org.deku.leoz.mobile.ui.core.view.ActionItem
+import sx.android.ui.view.ActionItem
 import org.jetbrains.anko.imageBitmap
 import org.slf4j.LoggerFactory
 import sx.android.Device
 import sx.android.aidc.CameraAidcReader
-import sx.android.rx.observeOnMainThread
 import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.rx.ObservableRxProperty
 import sx.rx.subscribeOn

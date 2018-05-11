@@ -61,7 +61,7 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <sx.android.view.BadgeTextView
+            <sx.android.ui.view.BadgeTextView
                 android:id="@+id/uxCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
                 />
 
-            <sx.android.view.BadgeTextView
+            <sx.android.ui.view.BadgeTextView
                 android:id="@+id/uxCount2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

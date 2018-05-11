@@ -48,7 +48,7 @@ import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.extension.inflateMenu
-import org.deku.leoz.mobile.ui.core.view.ActionItem
+import sx.android.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.core.with
 import org.deku.leoz.mobile.ui.process.TourScreen
 import org.deku.leoz.mobile.ui.process.tour.stop.*

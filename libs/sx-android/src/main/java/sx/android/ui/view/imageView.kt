@@ -1,12 +1,10 @@
-package sx.android.view
+package sx.android.ui.view
 
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.ViewCompat
-import android.support.v4.widget.ImageViewCompat
 import android.widget.ImageView
 
 /**

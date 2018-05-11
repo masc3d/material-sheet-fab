@@ -86,7 +86,7 @@
                     android:gravity="center_vertical"
                     >
 
-                    <sx.android.view.ClockView
+                    <sx.android.ui.view.ClockView
                         android:id="@+id/uxAppointmentClock"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
@@ -96,7 +96,7 @@
                         app:minute="@{safeUnbox(stats.clockMinutes)}"
                         />
 
-                    <sx.android.view.BadgeTextView
+                    <sx.android.ui.view.BadgeTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/small_margin"
@@ -107,7 +107,7 @@
                         android:visibility="@{safeUnbox(stats.appointmentUpcomingCountVisible) ? View.VISIBLE : View.GONE}"
                         />
 
-                    <sx.android.view.BadgeTextView
+                    <sx.android.ui.view.BadgeTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/small_margin"
@@ -118,7 +118,7 @@
                         android:visibility="@{safeUnbox(stats.appointmentSoonCountVisible) ? View.VISIBLE : View.GONE}"
                         />
 
-                    <sx.android.view.BadgeTextView
+                    <sx.android.ui.view.BadgeTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/small_margin"

@@ -12,19 +12,19 @@
 
     <ImageView
         android:id="@+id/uxActionOverlaySheetItemIcon"
-        style="@style/AppTheme.ActionOverlay.ImageView"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginStart="@dimen/medium_margin"
         android:layout_marginEnd="@dimen/medium_margin"
         android:layout_gravity="center_vertical"
-        android:src="@drawable/ic_bug"
         android:contentDescription="TODO"/>
 
     <TextView
         android:id="@+id/uxActionOverlaySheetItemTitle"
+        android:textAppearance="@style/ActionOverlay.TextAppearance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/large_margin"
-        android:textAppearance="@style/AppTheme.ActionOverlay.TextAppearance"
         android:text="Action"
         android:layout_gravity="center_vertical"
         tools:ignore="HardcodedText"/>

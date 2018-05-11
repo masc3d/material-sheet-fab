@@ -67,8 +67,8 @@ import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.settings.RemoteSettings
 import org.deku.leoz.mobile.ui.MainActivity
 import org.deku.leoz.mobile.ui.StartupActivity
-import org.deku.leoz.mobile.ui.core.view.ActionItem
-import org.deku.leoz.mobile.ui.core.view.ActionOverlayView
+import sx.android.ui.view.ActionItem
+import sx.android.ui.view.ActionOverlayView
 import org.deku.leoz.mobile.ui.vm.ConnectivityViewModel
 import org.deku.leoz.mobile.ui.vm.MqStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel
@@ -84,8 +84,8 @@ import sx.android.design.widget.isExpanded
 import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
 import sx.android.rx.observeOnMainThreadUntilEvent
-import sx.android.view.setIconTint
-import sx.android.view.setIconTintRes
+import sx.android.ui.view.setIconTint
+import sx.android.ui.view.setIconTintRes
 import sx.log.slf4j.trace
 import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel

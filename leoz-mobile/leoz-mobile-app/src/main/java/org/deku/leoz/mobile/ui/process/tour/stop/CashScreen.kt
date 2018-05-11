@@ -20,7 +20,7 @@ import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.TourStop
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
-import org.deku.leoz.mobile.ui.core.view.ActionItem
+import sx.android.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.OrderTaskViewModel
 import org.deku.leoz.mobile.ui.vm.SectionViewModel
 import org.jetbrains.anko.inputMethodManager
