@@ -1,4 +1,4 @@
-package sx.android
+package sx.android.graphics
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -6,8 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.util.DisplayMetrics
-import android.util.TypedValue
+import android.graphics.drawable.TransitionDrawable
 
 /** Convert dp to pixels */
 fun Context.convertDpToPx(dp: Float): Int =
@@ -72,6 +71,23 @@ fun Drawable.toBitmap(): Bitmap {
     drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight())
     drawable.draw(canvas)
     return bitmap
+}
+
+/**
+ * Create a cross fade transition drawable
+ */
+fun Drawable.withTransitionTo(drawable: Drawable, durationMillis: Int): TransitionDrawable {
+    val old = this
+    val new = drawable
+
+    return TransitionDrawable(listOf(
+            old,
+            new
+    ).toTypedArray())
+            .also {
+                it.isCrossFadeEnabled = true
+                it.startTransition(durationMillis)
+            }
 }
 
 /**

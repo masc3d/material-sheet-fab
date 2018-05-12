@@ -1,4 +1,4 @@
-package sx.android
+package sx.android.content
 
 import android.accounts.AccountManager
 import android.app.ActivityManager

@@ -1,4 +1,4 @@
-package sx.android
+package sx.android.content
 
 import android.content.Context
 import android.graphics.Color

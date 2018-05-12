@@ -1,4 +1,4 @@
-package sx.android
+package sx.android.view
 
 import android.view.inputmethod.InputMethodManager
 

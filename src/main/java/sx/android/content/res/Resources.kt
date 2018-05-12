@@ -1,4 +1,4 @@
-package sx.android
+package sx.android.content.res
 
 import android.content.res.Resources
 import android.support.annotation.AnyRes
