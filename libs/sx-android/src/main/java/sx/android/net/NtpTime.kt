@@ -1,4 +1,4 @@
-package sx.android
+package sx.android.net
 
 import android.content.Context
 import com.instacart.library.truetime.TrueTimeRx

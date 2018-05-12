@@ -17,7 +17,7 @@ import org.eclipse.paho.client.mqttv3.MqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import org.slf4j.LoggerFactory
-import sx.android.Connectivity
+import sx.android.net.Connectivity
 import sx.android.mqtt.MqttSqlitePersistence
 import sx.android.rx.observeOnMainThread
 import sx.log.slf4j.debug

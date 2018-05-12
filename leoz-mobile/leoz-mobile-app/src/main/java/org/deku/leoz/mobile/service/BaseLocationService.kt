@@ -20,7 +20,6 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.google.android.gms.location.LocationRequest
-import com.patloew.rxlocation.RxLocation
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.R
@@ -32,8 +31,8 @@ import org.deku.leoz.mobile.ui.StartupActivity
 import org.deku.leoz.service.internal.LocationServiceV2
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
-import sx.android.getDrawableCompat
-import sx.android.toBitmap
+import sx.android.content.getDrawableCompat
+import sx.android.graphics.toBitmap
 import sx.mq.mqtt.channel
 import java.util.*
 import java.util.concurrent.TimeUnit

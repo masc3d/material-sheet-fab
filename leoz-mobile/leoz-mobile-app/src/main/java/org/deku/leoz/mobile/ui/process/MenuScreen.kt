@@ -20,8 +20,8 @@ import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
-import sx.android.getDrawableCompat
-import sx.android.getLayoutInflater
+import sx.android.content.getDrawableCompat
+import sx.android.content.getLayoutInflater
 
 /**
  * Delivery main fragment

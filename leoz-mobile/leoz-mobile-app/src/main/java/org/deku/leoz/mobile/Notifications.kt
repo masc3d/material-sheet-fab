@@ -3,13 +3,12 @@ package org.deku.leoz.mobile
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import org.deku.leoz.mobile.ui.StartupActivity
-import sx.android.getDrawableCompat
-import sx.android.toBitmap
+import sx.android.content.getDrawableCompat
+import sx.android.graphics.toBitmap
 
 /**
  * Created by prangenberg on 08.11.17.

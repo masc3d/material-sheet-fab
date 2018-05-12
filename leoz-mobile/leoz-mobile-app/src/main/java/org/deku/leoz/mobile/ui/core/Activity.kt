@@ -5,7 +5,6 @@ import android.content.pm.ActivityInfo
 import android.databinding.DataBindingUtil
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.TransitionDrawable
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
@@ -49,8 +48,6 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 import org.deku.leoz.MimeType
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
-import org.deku.leoz.mobile.BuildConfig
-import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
@@ -67,8 +64,6 @@ import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.settings.RemoteSettings
 import org.deku.leoz.mobile.ui.MainActivity
 import org.deku.leoz.mobile.ui.StartupActivity
-import sx.android.ui.view.ActionItem
-import sx.android.ui.view.ActionOverlayView
 import org.deku.leoz.mobile.ui.vm.ConnectivityViewModel
 import org.deku.leoz.mobile.ui.vm.MqStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel
@@ -76,14 +71,21 @@ import org.jetbrains.anko.backgroundColor
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.aidc.SymbologyType
-import sx.android.*
+import sx.android.ApplicationStateMonitor
+import sx.android.Device
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
+import sx.android.content.res.getResourceEntryNameOrNull
 import sx.android.design.widget.isExpanded
 import sx.android.fragment.util.withTransaction
+import sx.android.graphics.withTransitionTo
+import sx.android.net.Connectivity
+import sx.android.net.NtpTime
 import sx.android.rx.observeOnMainThread
 import sx.android.rx.observeOnMainThreadUntilEvent
+import sx.android.ui.view.ActionItem
+import sx.android.ui.view.ActionOverlayView
 import sx.android.ui.view.setIconTint
 import sx.android.ui.view.setIconTintRes
 import sx.log.slf4j.trace
@@ -268,14 +270,10 @@ abstract class Activity : BaseActivity(),
                     val oldDrawable = if (field != null) field else defaultDrawable
                     val newDrawable = if (value != null) value else defaultDrawable
 
-                    val drawable = TransitionDrawable(listOf(
-                            oldDrawable,
-                            newDrawable
-                    ).toTypedArray())
+                    this@Activity.uxHeaderImageView.setImageDrawable(
+                            oldDrawable?.withTransitionTo(newDrawable, 500)
+                    )
 
-                    this@Activity.uxHeaderImageView.setImageDrawable(drawable)
-                    drawable.isCrossFadeEnabled = true
-                    drawable.startTransition(500)
                 } else {
                     // Don't animate when drawable is set initially
                     this@Activity.uxHeaderImageView.setImageDrawable(value)

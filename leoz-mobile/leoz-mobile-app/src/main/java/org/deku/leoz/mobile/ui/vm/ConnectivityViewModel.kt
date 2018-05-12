@@ -4,9 +4,8 @@ import android.databinding.BaseObservable
 import android.databinding.ObservableField
 import android.net.NetworkInfo
 import org.slf4j.LoggerFactory
-import sx.android.Connectivity
+import sx.android.net.Connectivity
 import sx.android.databinding.toField
-import sx.log.slf4j.trace
 
 /**
  * Connectivity view model

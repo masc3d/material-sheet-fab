@@ -18,7 +18,7 @@ import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.rest.RestClientFactory
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
-import sx.android.Connectivity
+import sx.android.net.Connectivity
 import sx.android.rx.observeOnMainThread
 import sx.rx.ObservableRxProperty
 import sx.security.*

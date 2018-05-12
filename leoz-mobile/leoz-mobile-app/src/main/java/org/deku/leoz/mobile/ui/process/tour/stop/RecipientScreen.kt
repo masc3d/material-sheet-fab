@@ -34,8 +34,8 @@ import org.deku.leoz.model.SalutationType
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toObservable
-import sx.android.hideSoftInput
-import sx.android.showSoftInput
+import sx.android.view.hideSoftInput
+import sx.android.view.showSoftInput
 import sx.rx.just
 
 /**

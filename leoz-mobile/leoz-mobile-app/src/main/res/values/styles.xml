@@ -127,4 +127,13 @@
 
     <style name="AppTheme.TextAppearance.AppointmentSmall" parent="TextAppearance.AppCompat.Body2">
     </style>
+
+    <style name="AppTheme.ToggleImageButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:padding">6dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="tint">@color/colorLightGrey</item>
+        <item name="background">@android:color/transparent</item>
+        <item name="selectedBackground">@color/colorPrimary</item>
+        <item name="selectedTint">@android:color/white</item>
+    </style>
 </resources>

@@ -26,7 +26,7 @@ import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.ui.core.Fragment
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
-import sx.android.hideSoftInput
+import sx.android.view.hideSoftInput
 import sx.rx.just
 import java.util.concurrent.TimeUnit
 import javax.mail.internet.AddressException

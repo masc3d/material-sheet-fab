@@ -26,8 +26,8 @@ import org.deku.leoz.mobile.ui.vm.SectionViewModel
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
-import sx.android.hideSoftInput
-import sx.android.showSoftInput
+import sx.android.view.hideSoftInput
+import sx.android.view.showSoftInput
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import java.text.NumberFormat

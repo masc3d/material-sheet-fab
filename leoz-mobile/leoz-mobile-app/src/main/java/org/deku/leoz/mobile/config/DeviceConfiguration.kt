@@ -10,7 +10,7 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.identity.MobileIdentityFactory
 import org.deku.leoz.mobile.Storage
 import org.deku.leoz.mobile.device.*
-import sx.android.Connectivity
+import sx.android.net.Connectivity
 import sx.android.Device
 
 /**

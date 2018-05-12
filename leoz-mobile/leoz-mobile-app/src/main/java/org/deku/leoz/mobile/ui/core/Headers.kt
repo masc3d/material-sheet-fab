@@ -10,7 +10,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.mobile.R
-import sx.android.copyWithOpacity
+import sx.android.graphics.copyWithOpacity
 
 /**
  * Header drawable factory

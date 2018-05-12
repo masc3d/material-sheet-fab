@@ -5,7 +5,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import org.deku.leoz.mobile.settings.RemoteSettings
 import sx.android.Device
-import sx.android.NtpTime
+import sx.android.net.NtpTime
 
 /**
  * Created by prangenberg on 04.11.17.
@@ -17,7 +17,7 @@ class TimeConfiguration {
 
         var module = Kodein.Module {
             bind<NtpTime>() with eagerSingleton {
-                sx.android.NtpTime(
+                NtpTime(
                         context = instance(),
                         ntpHost = if (device.isM2MConnected) remoteSettings.ntp.hostInternal else remoteSettings.host,
                         maxRetryCount = 100,

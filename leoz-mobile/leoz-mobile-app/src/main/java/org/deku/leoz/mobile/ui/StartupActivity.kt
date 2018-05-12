@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -23,7 +22,6 @@ import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.*
-import org.deku.leoz.mobile.settings.LocationSettings
 import org.deku.leoz.mobile.settings.RemoteSettings
 import org.deku.leoz.mobile.ui.core.BaseActivity
 import org.deku.leoz.mobile.ui.core.extension.showErrorAlert
@@ -32,7 +30,7 @@ import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.android.Device
-import sx.android.NtpTime
+import sx.android.net.NtpTime
 import sx.android.aidc.AidcReader
 import sx.android.rx.observeOnMainThread
 import sx.mq.mqtt.MqttDispatcher
