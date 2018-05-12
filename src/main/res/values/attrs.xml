@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="CircleButton">
-        <attr name="cb_color" format="color" />
-        <attr name="cb_outerColor" format="color" />
-        <attr name="cb_pressedRingWidth" format="dimension" />
-        <attr name="cb_outerRingWidth" format="dimension" />
-        <attr name="cb_outerRingMargin" format="dimension" />
+        <attr name="cb_color" format="color"/>
+        <attr name="cb_outerColor" format="color"/>
+        <attr name="cb_pressedRingWidth" format="dimension"/>
+        <attr name="cb_outerRingWidth" format="dimension"/>
+        <attr name="cb_outerRingMargin" format="dimension"/>
     </declare-styleable>
 
     <declare-styleable name="BadgeTextView">
-        <attr name="android:background" />
-        <attr name="mbtv_border_width" format="dimension" />
-        <attr name="mbtv_border_color" format="color" />
-        <attr name="mbtv_border_alpha" format="float" />
+        <attr name="android:background"/>
+        <attr name="mbtv_border_width" format="dimension"/>
+        <attr name="mbtv_border_color" format="color"/>
+        <attr name="mbtv_border_alpha" format="float"/>
         <attr name="mbtv_type" format="enum">
             <enum name="shadow_gradual" value="1"/>
             <enum name="shadow_alpha" value="2"/>
@@ -20,22 +20,30 @@
     </declare-styleable>
 
     <declare-styleable name="ClockView">
-        <attr name="color" format="color" />
-        <attr name="hour" format="integer" />
-        <attr name="minute" format="integer" />
+        <attr name="color" format="color"/>
+        <attr name="hour" format="integer"/>
+        <attr name="minute" format="integer"/>
     </declare-styleable>
 
     <declare-styleable name="CircularProgressView">
-        <attr name="cpv_progress" format="float" />
-        <attr name="cpv_maxProgress" format="float" />
-        <attr name="cpv_animDuration" format="integer" />
-        <attr name="cpv_animSwoopDuration" format="integer" />
-        <attr name="cpv_animSyncDuration" format="integer" />
+        <attr name="cpv_progress" format="float"/>
+        <attr name="cpv_maxProgress" format="float"/>
+        <attr name="cpv_animDuration" format="integer"/>
+        <attr name="cpv_animSwoopDuration" format="integer"/>
+        <attr name="cpv_animSyncDuration" format="integer"/>
         <attr name="cpv_color" format="color"/>
         <attr name="cpv_thickness" format="dimension"/>
-        <attr name="cpv_indeterminate" format="boolean" />
-        <attr name="cpv_animAutostart" format="boolean" />
-        <attr name="cpv_animSteps" format="integer" />
-        <attr name="cpv_startAngle" format="float" />
+        <attr name="cpv_indeterminate" format="boolean"/>
+        <attr name="cpv_animAutostart" format="boolean"/>
+        <attr name="cpv_animSteps" format="integer"/>
+        <attr name="cpv_startAngle" format="float"/>
+    </declare-styleable>
+
+    <declare-styleable name="ToggleImageButton">
+        <attr name="background" format="reference"/>
+        <attr name="tint" format="color"/>
+        <attr name="selectedBackground" format="reference"/>
+        <attr name="selectedTint" format="color"/>
+        <attr name="android:checked" format="boolean"/>
     </declare-styleable>
 </resources>
