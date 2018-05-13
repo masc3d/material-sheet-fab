@@ -1,4 +1,4 @@
-package sx.android
+package sx.android.net
 
 import java.net.ConnectException
 import java.net.SocketTimeoutException

@@ -1,4 +1,4 @@
-package sx.android
+package sx.android.hardware
 
 /**
  * Camera accessor with caching support
