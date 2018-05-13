@@ -16,12 +16,14 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.device.Feedback
+import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.core.Activity
 import org.deku.leoz.mobile.ui.process.LoginFragment
 import org.deku.leoz.mobile.ui.process.MainScreen
+import org.deku.leoz.model.VehicleType
 import sx.android.rx.observeOnMainThread
 import sx.android.rx.observeOnMainThreadUntilEvent
 
@@ -50,7 +52,7 @@ class MainActivity
             )
 
             if (this.login.authenticatedUser != null) {
-                this.onLoginSuccessful()
+                this.onLoginSuccessful(this.login.authenticatedUser!!)
             }
         }
     }
@@ -120,7 +122,10 @@ class MainActivity
     }
 
     //region LoginFragment listener
-    override fun onLoginSuccessful() {
+    override fun onLoginSuccessful(user: User) {
+        // Persistently update user to store vehicle type
+        this.db.store.update(user).blockingGet()
+
         this.startActivity(
                 Intent(applicationContext, TourActivity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))

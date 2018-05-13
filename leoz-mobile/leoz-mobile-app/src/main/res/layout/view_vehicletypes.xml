@@ -14,8 +14,9 @@
         >
 
         <sx.android.ui.view.ToggleGroup
+            android:id="@+id/uxVehicleTypes"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="42dp"
             android:divider="@drawable/divider_button_group"
             android:orientation="horizontal"
             android:showDividers="middle"
@@ -23,6 +24,7 @@
 
             <sx.android.ui.view.ToggleImageButton
                 style="@style/AppTheme.ToggleImageButton"
+                android:id="@+id/uxVan"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -31,6 +33,7 @@
 
             <sx.android.ui.view.ToggleImageButton
                 style="@style/AppTheme.ToggleImageButton"
+                android:id="@+id/uxTruck"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -39,6 +42,7 @@
 
             <sx.android.ui.view.ToggleImageButton
                 style="@style/AppTheme.ToggleImageButton"
+                android:id="@+id/uxCar"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -47,6 +51,7 @@
 
             <sx.android.ui.view.ToggleImageButton
                 style="@style/AppTheme.ToggleImageButton"
+                android:id="@+id/uxBike"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

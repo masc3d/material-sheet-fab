@@ -20,10 +20,12 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_login.*
+import kotlinx.android.synthetic.main.view_vehicletypes.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.ui.core.Fragment
+import org.deku.leoz.model.VehicleType
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
 import sx.android.view.hideSoftInput
@@ -47,7 +49,7 @@ class LoginFragment : Fragment<Any>() {
         fun onLoginPending() {}
 
         fun onLoginFailed() {}
-        fun onLoginSuccessful() {}
+        fun onLoginSuccessful(user: User) {}
 
         fun onPrivacyRejected() {}
     }
@@ -81,6 +83,8 @@ class LoginFragment : Fragment<Any>() {
         RxTextView.textChanges(uxPassword).subscribe {
             this.uxPasswordLayout.error = null
         }
+
+        this.uxVehicleTypes.selected = this.uxVan
     }
 
     override fun onResume() {
@@ -88,7 +92,7 @@ class LoginFragment : Fragment<Any>() {
 
         data class State(
                 val pending: Boolean = false,
-                val result: User? = null
+                val user: User? = null
         ) {
             val isComplete get() = this.pending == false
         }
@@ -127,7 +131,7 @@ class LoginFragment : Fragment<Any>() {
                     )
                             .map {
                                 // Map success result to state
-                                State(pending = false, result = it)
+                                State(pending = false, user = it)
                             }
                             // Merge delayed pending state
                             .mergeWith(Observable
@@ -160,11 +164,24 @@ class LoginFragment : Fragment<Any>() {
                 .retry()
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
+                .subscribe { state ->
                     when {
-                        it.isComplete -> {
-                            log.info("Login successful $it")
-                            this.listener?.onLoginSuccessful()
+                        state.isComplete -> {
+                            log.info("Login successful $state")
+
+                            if (state.user == null) throw IllegalStateException()
+
+                            state.user.vehicleType = when (this.uxVehicleTypes.selected) {
+                                uxVan -> VehicleType.VAN
+                                uxTruck -> VehicleType.TRUCK
+                                uxBike -> VehicleType.BIKE
+                                uxCar -> VehicleType.CAR
+                                else -> throw IllegalArgumentException("Unsupported vehicle tpye")
+                            }
+
+                            this.listener?.onLoginSuccessful(
+                                    user = state.user
+                            )
                         }
                         else -> {
                             this.listener?.onLoginPending()
