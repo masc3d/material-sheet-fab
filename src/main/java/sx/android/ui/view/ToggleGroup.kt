@@ -8,6 +8,7 @@ import android.widget.Checkable
 import android.widget.CompoundButton
 import android.widget.LinearLayout
 import org.slf4j.LoggerFactory
+import sx.rx.ObservableRxProperty
 
 
 /**
@@ -39,16 +40,21 @@ class ToggleGroup : LinearLayout {
     private fun init(attrs: AttributeSet) {}
 
     interface OnCheckedChangeListener {
-        fun onCheckedChanged(group: ToggleGroup, @IdRes checkedId: Int)
+        fun onCheckedChanged(group: ToggleGroup, item: Checkable?)
     }
 
     var onCheckedChangeListener: OnCheckedChangeListener? = null
 
-    private var selected: Checkable? = null
+    val selectedProperty = ObservableRxProperty<Checkable?>(null)
+    var selected by selectedProperty
+
+    init {
+        this.selectedProperty.subscribe {
+            it.value?.isChecked = true
+        }
+    }
 
     private fun onCheckedChanged(item: Checkable, isChecked: Boolean) {
-        val view = item as View
-
         when (isChecked) {
             true -> {
                 if (selected != item) {
@@ -56,7 +62,7 @@ class ToggleGroup : LinearLayout {
                     selected = item
                     previousSelection?.isChecked = false
 
-                    this.onCheckedChangeListener?.onCheckedChanged(this, view.id)
+                    this.onCheckedChangeListener?.onCheckedChanged(this, item)
                 }
             }
             false -> {
