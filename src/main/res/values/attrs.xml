@@ -46,4 +46,5 @@
         <attr name="selectedTint" format="color"/>
         <attr name="android:checked" format="boolean"/>
     </declare-styleable>
+
 </resources>

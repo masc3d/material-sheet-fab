@@ -1,4 +1,4 @@
-package sx.android
+package sx.android.app
 
 import android.annotation.SuppressLint
 import android.content.Context

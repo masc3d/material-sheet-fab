@@ -2,11 +2,14 @@ package sx.android.graphics
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
+import android.util.Base64
+import java.io.ByteArrayOutputStream
 
 /** Convert dp to pixels */
 fun Context.convertDpToPx(dp: Float): Int =
@@ -104,4 +107,18 @@ fun Bitmap.copyWithOpacity(alpha: Double): Bitmap {
     canvas.drawBitmap(this, 0F, 0F, paint)
 
     return transBitmap
+}
+
+/**
+ * Created by phpr on 13.07.2017.
+ */
+fun Bitmap.toBase64(compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality: Int = 100): String {
+    val byteArrayOS = ByteArrayOutputStream()
+    this.compress(compressFormat, quality, byteArrayOS)
+    return Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT)
+}
+
+fun String.parseBase64Bitmap(): Bitmap {
+    val decoded = Base64.decode(this, 0)
+    return BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
 }

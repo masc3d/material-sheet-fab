@@ -15,7 +15,7 @@ import android.widget.ViewSwitcher;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import sx.android.Camera;
+import sx.android.hardware.Camera;
 import sx.android.Function;
 import sx.android.R;
 import sx.android.event.FragmentEventDispatcher;
