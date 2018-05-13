@@ -47,9 +47,9 @@ import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
 import sx.aidc.SymbologyType
-import sx.android.Device
+import sx.android.hardware.Device
 import sx.android.aidc.*
-import sx.android.inflateMenu
+import sx.android.app.inflateMenu
 import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmItem

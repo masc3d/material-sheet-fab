@@ -3,19 +3,23 @@ package sx.android.ui.view
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.support.annotation.ColorInt
-import android.support.transition.TransitionManager
 import android.util.AttributeSet
 import android.widget.Checkable
-import android.widget.CompoundButton
 import android.widget.ImageButton
 import org.slf4j.LoggerFactory
 import sx.android.R
 import sx.android.content.res.getColorOrNull
 import sx.android.content.res.use
+import sx.android.graphics.withTransitionTo
 
 
 /**
  * Toggle image button
+ *
+ * REMARK: it would have been cleaner to derive from `CompoundButton` as it generalizes
+ * `OnCheckedChangeListener`, however the feature/compat support from `ImageView` is more complex
+ * to replicate.
+ *
  * Created by masc on 12.05.18.
  */
 class ToggleImageButton : ImageButton, Checkable {
@@ -31,13 +35,17 @@ class ToggleImageButton : ImageButton, Checkable {
         init(attrs)
     }
 
+    /** Unselected icon tint */
     @ColorInt
     private var unselectedTint: Int? = null
 
+    /** Unselected background */
     private var unselectedBackground: Drawable? = null
 
+    /** Selected backgruond */
     var selectedBackground: Drawable? = null
 
+    /** Selected icon tint */
     @ColorInt
     var selectedTint: Int? = null
 
@@ -47,6 +55,7 @@ class ToggleImageButton : ImageButton, Checkable {
 
     var onCheckedChangeListener: OnCheckedChangeListener? = null
 
+    /** View initialization */
     private fun init(attrs: AttributeSet) {
         context.obtainStyledAttributes(attrs, R.styleable.ToggleImageButton).use { types ->
             val checked = types.getBoolean(R.styleable.ToggleImageButton_android_checked, false)
@@ -61,6 +70,7 @@ class ToggleImageButton : ImageButton, Checkable {
         }
     }
 
+    //region Checkable
     override fun isChecked(): Boolean = isSelected
 
     override fun setChecked(checked: Boolean) {
@@ -68,11 +78,11 @@ class ToggleImageButton : ImageButton, Checkable {
 
         when (checked) {
             true -> {
-                this.selectedBackground?.also { this.background = it }
+                this.selectedBackground?.also { this.background = this.unselectedBackground?.withTransitionTo(it, 100) }
                 this.selectedTint?.also { this.setIconTint(it) }
             }
             false -> {
-                this.background = this.unselectedBackground
+                this.unselectedBackground?.also { this.background = this.selectedBackground?.withTransitionTo(it, 100) }
                 this.unselectedTint?.also { this.setIconTint(it) }
             }
         }
@@ -83,6 +93,7 @@ class ToggleImageButton : ImageButton, Checkable {
     override fun toggle() {
         setChecked(!isChecked)
     }
+    //endregion
 
     override fun performClick(): Boolean {
         toggle()

@@ -7,14 +7,12 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
-import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.Diagnostics
 import org.deku.leoz.mobile.settings.UserSettings
 import org.deku.leoz.mobile.model.process.Login
-import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
-import sx.android.ApplicationStateMonitor
+import sx.android.app.ApplicationStateMonitor
 import sx.android.IdleTimer
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.Timer

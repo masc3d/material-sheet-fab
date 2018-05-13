@@ -19,7 +19,7 @@ import org.deku.leoz.mobile.device.Sounds
 import sx.android.ui.view.ActionItem
 import org.jetbrains.anko.imageBitmap
 import org.slf4j.LoggerFactory
-import sx.android.Device
+import sx.android.hardware.Device
 import sx.android.aidc.CameraAidcReader
 import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.rx.ObservableRxProperty

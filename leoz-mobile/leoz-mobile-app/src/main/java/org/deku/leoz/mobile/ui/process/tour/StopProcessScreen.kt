@@ -60,7 +60,7 @@ import sx.LazyInstance
 import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
-import sx.android.inflateMenu
+import sx.android.app.inflateMenu
 import sx.android.rx.observeOnMainThread
 import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.rx.observeOnMainThreadWithLifecycle

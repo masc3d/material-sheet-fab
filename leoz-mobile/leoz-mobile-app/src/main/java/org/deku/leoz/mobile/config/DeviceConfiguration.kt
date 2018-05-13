@@ -11,7 +11,7 @@ import org.deku.leoz.identity.MobileIdentityFactory
 import org.deku.leoz.mobile.Storage
 import org.deku.leoz.mobile.device.*
 import sx.android.net.Connectivity
-import sx.android.Device
+import sx.android.hardware.Device
 
 /**
  * Device related configuration

@@ -71,8 +71,8 @@ import org.jetbrains.anko.backgroundColor
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.aidc.SymbologyType
-import sx.android.ApplicationStateMonitor
-import sx.android.Device
+import sx.android.app.ApplicationStateMonitor
+import sx.android.hardware.Device
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader

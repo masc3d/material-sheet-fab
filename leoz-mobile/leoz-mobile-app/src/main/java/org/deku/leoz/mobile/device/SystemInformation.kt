@@ -1,7 +1,7 @@
 package org.deku.leoz.mobile.device
 
 import org.deku.leoz.mobile.Application
-import sx.android.Device
+import sx.android.hardware.Device
 import sx.io.serialization.Serializable
 
 /**

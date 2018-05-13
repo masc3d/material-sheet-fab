@@ -7,7 +7,7 @@ import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.core.Activity
 import org.slf4j.Logger
-import sx.android.isConnectivityProblem
+import sx.android.net.isConnectivityProblem
 import sx.android.rx.observeOnMainThread
 import sx.rx.toHotReplay
 

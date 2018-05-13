@@ -29,7 +29,7 @@ import org.deku.leoz.service.internal.NodeServiceV1
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
-import sx.android.Device
+import sx.android.hardware.Device
 import sx.android.net.NtpTime
 import sx.android.aidc.AidcReader
 import sx.android.rx.observeOnMainThread

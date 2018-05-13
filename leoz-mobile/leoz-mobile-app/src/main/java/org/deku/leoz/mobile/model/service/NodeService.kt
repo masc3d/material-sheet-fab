@@ -8,7 +8,7 @@ import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.device.SystemInformation
 import org.deku.leoz.mobile.device.create
 import org.deku.leoz.service.internal.NodeServiceV1
-import sx.android.Device
+import sx.android.hardware.Device
 
 fun NodeServiceV1.Info.Companion.create(application: Application, identity: Identity, device: Device): NodeServiceV1.Info {
     return NodeServiceV1.Info(

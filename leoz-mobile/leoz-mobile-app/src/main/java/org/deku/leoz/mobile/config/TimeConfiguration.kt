@@ -4,7 +4,7 @@ import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import org.deku.leoz.mobile.settings.RemoteSettings
-import sx.android.Device
+import sx.android.hardware.Device
 import sx.android.net.NtpTime
 
 /**
