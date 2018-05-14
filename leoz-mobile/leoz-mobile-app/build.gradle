@@ -264,9 +264,9 @@ dependencies {
             "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
 
             // Requery
-            "io.requery:requery:$v_requery",
-            "io.requery:requery-kotlin:$v_requery",
-            "io.requery:requery-android:$v_requery",
+            "com.github.masc3d.requery:requery:$v_requery",
+            "com.github.masc3d.requery:requery-kotlin:$v_requery",
+            "com.github.masc3d.requery:requery-android:$v_requery",
             "io.requery:sqlite-android:3.23.1",
 
             "javax.transaction:jta:1.1",

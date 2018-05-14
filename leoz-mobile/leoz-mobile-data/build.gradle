@@ -82,8 +82,8 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Requery
-            "io.requery:requery:$v_requery",
-            "io.requery:requery-kotlin:$v_requery",
+            "com.github.masc3d.requery:requery:$v_requery",
+            "com.github.masc3d.requery:requery-kotlin:$v_requery",
 
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
@@ -91,7 +91,7 @@ dependencies {
     )
 
     kapt(
-            "io.requery:requery-processor:$v_requery",
+            "com.github.masc3d.requery:requery-processor:$v_requery"
     )
 
     testImplementation(
