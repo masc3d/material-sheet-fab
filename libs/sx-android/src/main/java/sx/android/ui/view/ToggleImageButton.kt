@@ -35,12 +35,12 @@ class ToggleImageButton : ImageButton, Checkable {
         init(attrs)
     }
 
+    /** Unselected background */
+    private var unselectedBackground: Drawable? = null
+
     /** Unselected icon tint */
     @ColorInt
     private var unselectedTint: Int? = null
-
-    /** Unselected background */
-    private var unselectedBackground: Drawable? = null
 
     /** Selected backgruond */
     var selectedBackground: Drawable? = null
@@ -66,28 +66,42 @@ class ToggleImageButton : ImageButton, Checkable {
             this.selectedTint = types.getColorOrNull(R.styleable.ToggleImageButton_selectedTint)
             this.selectedBackground = types.getDrawable(R.styleable.ToggleImageButton_selectedBackground)
 
-            setChecked(checked)
+            types.getBoolean(R.styleable.ToggleImageButton_android_checked, false).also {
+                setChecked(checked = it, force = true)
+            }
         }
     }
 
     //region Checkable
     override fun isChecked(): Boolean = isSelected
 
-    override fun setChecked(checked: Boolean) {
-        isSelected = checked
+    private fun setChecked(checked: Boolean, force: Boolean) {
+        val animate = !this.isInEditMode
 
-        when (checked) {
-            true -> {
-                this.selectedBackground?.also { this.background = this.unselectedBackground?.withTransitionTo(it, 100) }
-                this.selectedTint?.also { this.setIconTint(it) }
+        if (checked != isSelected || force || this.isInEditMode) {
+            isSelected = checked
+
+            when (checked) {
+                true -> {
+                    this.background = selectedBackground?.let {
+                        if (animate) unselectedBackground?.withTransitionTo(it, 100) else selectedBackground
+                    }
+                    this.selectedTint?.also { this.setIconTint(it) }
+                }
+                false -> {
+                    this.background = unselectedBackground?.let {
+                        if (animate) selectedBackground?.withTransitionTo(it, 100) else unselectedBackground
+                    }
+                    this.unselectedTint?.also { this.setIconTint(it) }
+                }
             }
-            false -> {
-                this.unselectedBackground?.also { this.background = this.selectedBackground?.withTransitionTo(it, 100) }
-                this.unselectedTint?.also { this.setIconTint(it) }
-            }
+
+            onCheckedChangeListener?.onCheckedChanged(this, checked)
         }
+    }
 
-        onCheckedChangeListener?.onCheckedChanged(this, checked)
+    override fun setChecked(checked: Boolean) {
+        this.setChecked(checked = checked, force = false)
     }
 
     override fun toggle() {
