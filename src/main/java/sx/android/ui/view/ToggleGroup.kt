@@ -16,14 +16,6 @@ import sx.rx.ObservableRxProperty
  * Supports `ToggleImageButton` and all `CompoundButton` derivates.
  * Created by masc on 12.05.18.
  */
-
-// TODO: dabinding support (following setup is yet untesed)
-//@BindingMethods(
-//        BindingMethod(
-//                type = ToggleGroup::class,
-//                attribute = "onCheckedChanged", method = "setOnCheckedChangedListener"
-//        )
-//)
 class ToggleGroup : LinearLayout {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -46,6 +38,7 @@ class ToggleGroup : LinearLayout {
     var onCheckedChangeListener: OnCheckedChangeListener? = null
 
     val selectedProperty = ObservableRxProperty<Checkable?>(null)
+    /** Currently selected item */
     var selected by selectedProperty
 
     init {
@@ -55,6 +48,7 @@ class ToggleGroup : LinearLayout {
     }
 
     private fun onCheckedChanged(item: Checkable, isChecked: Boolean) {
+        val view = item as View
         when (isChecked) {
             true -> {
                 if (selected != item) {
