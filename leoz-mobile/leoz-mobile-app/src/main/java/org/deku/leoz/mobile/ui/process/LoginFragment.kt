@@ -169,15 +169,11 @@ class LoginFragment : Fragment<Any>() {
                         state.isComplete -> {
                             log.info("Login successful $state")
 
-                            if (state.user == null) throw IllegalStateException()
+                            if (state.user == null)
+                                throw IllegalStateException("No user")
 
-                            state.user.vehicleType = when (this.uxVehicleTypes.selected) {
-                                uxVan -> VehicleType.VAN
-                                uxTruck -> VehicleType.TRUCK
-                                uxBike -> VehicleType.BIKE
-                                uxCar -> VehicleType.CAR
-                                else -> throw IllegalArgumentException("Unsupported vehicle tpye")
-                            }
+                            state.user.vehicleType = this.uxVehicleTypePicker.selected
+                                ?: throw IllegalStateException("No vehicle type")
 
                             this.listener?.onLoginSuccessful(
                                     user = state.user

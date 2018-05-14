@@ -29,6 +29,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:src="@drawable/ic_van"
+                android:checked="true"
                 />
 
             <sx.android.ui.view.ToggleImageButton

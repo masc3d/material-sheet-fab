@@ -11,12 +11,14 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include
-            layout="@layout/view_vehicletypes"
+        <org.deku.leoz.mobile.ui.process.VehicleTypePicker
+            android:id="@+id/uxVehicleTypePicker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/medium_margin"
-            />
+            android:layout_marginBottom="@dimen/large_margin"
+            >
+
+        </org.deku.leoz.mobile.ui.process.VehicleTypePicker>
 
         <LinearLayout
             android:layout_width="match_parent"
