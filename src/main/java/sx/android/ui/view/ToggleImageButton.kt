@@ -11,6 +11,7 @@ import sx.android.R
 import sx.android.content.res.getColorOrNull
 import sx.android.content.res.use
 import sx.android.graphics.withTransitionTo
+import sx.log.slf4j.trace
 
 
 /**
@@ -76,7 +77,7 @@ class ToggleImageButton : ImageButton, Checkable {
     override fun isChecked(): Boolean = isSelected
 
     private fun setChecked(checked: Boolean, force: Boolean) {
-        val animate = !this.isInEditMode
+        val animate = !this.isInEditMode && !force
 
         if (checked != isSelected || force || this.isInEditMode) {
             isSelected = checked
