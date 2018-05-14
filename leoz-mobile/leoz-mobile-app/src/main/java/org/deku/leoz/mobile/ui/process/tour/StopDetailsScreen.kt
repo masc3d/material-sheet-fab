@@ -4,6 +4,7 @@ import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -21,6 +22,7 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.SelectableAdapter
 import io.reactivex.Observable
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_tour_stop_detail.*
 import org.deku.leoz.mobile.BR
@@ -36,23 +38,22 @@ import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.ui.core.ScreenFragment
-import sx.android.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.DelayedAppointmentReason
 import org.deku.leoz.model.ParcelService
 import org.deku.leoz.model.UnitNumber
-import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
 import sx.aidc.SymbologyType
-import sx.android.hardware.Device
 import sx.android.aidc.*
 import sx.android.app.inflateMenu
+import sx.android.hardware.Device
 import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmItem
+import sx.android.ui.view.ActionItem
 
 class StopDetailsScreen
     :
@@ -60,10 +61,8 @@ class StopDetailsScreen
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    @org.parceler.Parcel(org.parceler.Parcel.Serialization.BEAN)
-    class Parameters @ParcelConstructor constructor(
-            var stopId: Int
-    )
+    @Parcelize
+    data class Parameters(var stopId: Int) : Parcelable
 
     interface Listener {
         fun onStopDetailUnitNumberInput(unitNumber: UnitNumber)

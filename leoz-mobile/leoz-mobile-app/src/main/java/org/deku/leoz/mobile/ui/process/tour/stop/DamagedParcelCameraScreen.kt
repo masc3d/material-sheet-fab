@@ -1,20 +1,20 @@
 package org.deku.leoz.mobile.ui.process.tour.stop
 
 import android.databinding.DataBindingUtil
+import android.os.Parcelable
 import android.view.View
 import android.view.ViewGroup
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.item_parcel_card.view.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemParcelCardBinding
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
-import org.parceler.Parcel
-import org.parceler.ParcelConstructor
 
 /**
  * Damaged parcel camera screen
@@ -24,10 +24,8 @@ class DamagedParcelCameraScreen : BaseCameraScreen<DamagedParcelCameraScreen.Par
 
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
-    @Parcel(Parcel.Serialization.BEAN)
-    class Parameters @ParcelConstructor constructor(
-            var parcelId: Long
-    )
+    @Parcelize
+    data class Parameters (var parcelId: Long): Parcelable
 
     override fun createOverlayView(viewGroup: ViewGroup): View? {
         val binding = DataBindingUtil.inflate<ItemParcelCardBinding>(

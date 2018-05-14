@@ -1,12 +1,12 @@
 package org.deku.leoz.mobile.ui.process.tour.stop
 
+import android.os.Parcelable
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.screen_tour_stop_sign_on_paper.view.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.core.BaseCameraScreen
-import org.parceler.Parcel
-import org.parceler.ParcelConstructor
 
 /**
  * Signature on paper camera screen
@@ -14,10 +14,8 @@ import org.parceler.ParcelConstructor
  */
 class SignOnPaperCameraScreen : BaseCameraScreen<SignOnPaperCameraScreen.Parameters>() {
 
-    @Parcel(Parcel.Serialization.BEAN)
-    class Parameters @ParcelConstructor constructor(
-            var name: String
-    )
+    @Parcelize
+    data class Parameters (var name: String): Parcelable
     
     init {
         this.allowMultiplePictures = false

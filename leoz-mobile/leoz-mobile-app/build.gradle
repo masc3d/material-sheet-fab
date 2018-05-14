@@ -172,6 +172,10 @@ kapt {
     useBuildCache = true
 }
 
+androidExtensions {
+    experimental = true
+}
+
 dexcount {
     format = "list"
     includeClasses = false
@@ -425,10 +429,6 @@ dependencies {
             "com.android.support:support-annotations:$v_android_support",
             "com.android.support.test:runner:$v_android_test",
             "com.android.support.test:rules:$v_android_test",
-    )
-
-    kapt(
-            "org.parceler:parceler:$v_parceler",
     )
 }
 

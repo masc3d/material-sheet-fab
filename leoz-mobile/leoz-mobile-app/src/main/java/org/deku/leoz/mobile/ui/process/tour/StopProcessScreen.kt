@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.os.Parcelable
 import android.support.v4.app.FragmentManager
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -25,6 +26,7 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_tour_stop_process.*
 import org.deku.leoz.mobile.BR
@@ -48,13 +50,11 @@ import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.extension.inflateMenu
-import sx.android.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.core.with
 import org.deku.leoz.mobile.ui.process.TourScreen
 import org.deku.leoz.mobile.ui.process.tour.stop.*
 import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.*
-import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
@@ -67,6 +67,7 @@ import sx.android.rx.observeOnMainThreadWithLifecycle
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.materialdialogs.addAll
+import sx.android.ui.view.ActionItem
 import sx.format.format
 import java.util.concurrent.TimeUnit
 
@@ -81,10 +82,8 @@ class StopProcessScreen :
         CashScreen.Listener {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    @org.parceler.Parcel(org.parceler.Parcel.Serialization.BEAN)
-    class Parameters @ParcelConstructor constructor(
-            var stopId: Int
-    )
+    @Parcelize
+    data class Parameters(var stopId: Int) : Parcelable
 
     /**
      * Created by masc on 10.07.17.
