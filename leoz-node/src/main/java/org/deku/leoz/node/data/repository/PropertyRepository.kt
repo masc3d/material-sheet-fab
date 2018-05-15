@@ -80,11 +80,11 @@ fun <T> PropertyRepository.loadObject(cls: Class<T>): T {
         val record = this.findById(a.key.value).orElse(null)
         return if (record != null) jsonObjectMapper
                 .readerFor(cls)
-                .readValue(record.value) else cls.newInstance()
+                .readValue(record.value) else cls.getDeclaredConstructor().newInstance()
     } catch (e: InstantiationException) {
         throw e
     } catch (e: Exception) {
         LoggerFactory.getLogger(this.javaClass).error(e.message, e)
-        return cls.newInstance()
+        return cls.getDeclaredConstructor().newInstance()
     }
 }

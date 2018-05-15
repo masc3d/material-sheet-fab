@@ -34,7 +34,7 @@ class ProtobufSerializer : Serializer() {
 
         @Suppress("UNCHECKED_CAST")
         val c = Class.forName(po.clazz) as Class<Any>
-        val obj = c.newInstance()
+        val obj = c.getDeclaredConstructor().newInstance()
         ProtobufIOUtil.mergeFrom<Any>(po.data, obj, RuntimeSchema.getSchema<Any>(c))
         return obj
     }

@@ -68,7 +68,7 @@ class NamedQuery<R, P>(
      */
     init {
         // Create params instance
-        this.params = this.paramsType.newInstance()
+        this.params = this.paramsType.getDeclaredConstructor().newInstance()
 
         // Introspect bean and create meta infos from it
         this.paramTypeBeanInfo = Introspector.getBeanInfo(paramsType)
