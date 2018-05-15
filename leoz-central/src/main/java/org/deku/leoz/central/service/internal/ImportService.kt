@@ -73,9 +73,44 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
         }.filter { it.parcels.count() > 0 }
     }
 
+    override fun getImportedParcelsByStationNo(stationNo: Int, deliveryDate: Date?): List<ImportService.Order> {
+        val orders = if (deliveryDate != null) parcelRepository.findOrdersToImportByStation(stationNo, deliveryDate.toLocalDate()) else parcelRepository.findOrdersToImportByStation(station = stationNo)
+        if (orders.count() == 0)
+            throw RestProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = ImportService.ResponseMsg.NO_ORDERS_FOUND.value //"No orders found"
+            )
+        val allParcels = parcelRepository.findImportedParcelsByOrderids(orders
+                .map { it.orderid.toLong() }
+                .toList()
+        )
+                .groupBy { it.orderid }
+
+        if (allParcels.count() == 0)
+            throw RestProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = ImportService.ResponseMsg.NO_PARCELS_FOUND.value //"No parcels found"
+            )
+
+
+        return orders.map {
+            it.toOrderToImport().also { order ->
+                order.parcels = allParcels
+                        .getOrDefault(order.orderId.toDouble(), listOf())
+                        .map { it.toParcelToImport() }
+            }
+        }.filter { it.parcels.count() > 0 }
+    }
+
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    override fun import(scanCode: String, stationNo: Int): ImportService.Parcel {
-        val parcel = getParcel(scanCode, stationNo)
+    override fun import(scanCode: String, stationNo: Int): ImportService.Order {
+        val parcelOrder = getParcel(scanCode, stationNo)
+        if (parcelOrder.parcels.count() == 0) {
+            throw RestProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = ImportService.ResponseMsg.PARCEL_NOT_FOUND.value)
+        }
+        val parcel = parcelOrder.parcels[0]
         statusRepository.createIfNotExists(parcel.parcelNo, Date(), Event.IMPORT_RECEIVE, Reason.NORMAL, importServiceInfotext, stationNo.toString())
         val unitRecord = parcelRepository.findParcelByUnitNumber(parcel.parcelNo)
         unitRecord ?: throw RestProblem(
@@ -88,8 +123,14 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
     }
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    override fun setProperties(parcel: ImportService.Parcel): ImportService.Parcel {
-        val parcelOriginal = getParcel(parcel.parcelNo)
+    override fun setProperties(parcel: ImportService.Parcel): ImportService.Order {
+        val parcelOriginalOrder = getParcel(parcel.parcelNo)
+        if (parcelOriginalOrder.parcels.count() == 0) {
+            throw RestProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = ImportService.ResponseMsg.PARCEL_NOT_FOUND.value)
+        }
+        val parcelOriginal = parcelOriginalOrder.parcels[0]
         val unitRecord = parcelRepository.findParcelByUnitNumber(parcel.parcelNo)
         unitRecord ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
@@ -166,7 +207,7 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
         val parcelLength = parcel.length ?: 0
         val parcelWidth = parcel.width ?: 0
         val parcelHeight = parcel.height ?: 0
-        var parcelEffWeight:Double
+        var parcelEffWeight: Double
         var orderSumWeight = orderRecord.gewichtgesamt ?: 0.0
         if (parcelWeight > 0 && parcelWeight != parcelOriginal.realWeight) {
             parcelWeightChanged = true
@@ -266,7 +307,7 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
 
     }
 
-    override fun getParcel(scanCode: String, stationNo: Int): ImportService.Parcel {
+    override fun getParcel(scanCode: String, stationNo: Int): ImportService.Order {
 
         val un = DekuUnitNumber.parseLabel(scanCode)
         var dekuNo: Long?
@@ -309,7 +350,7 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
 
     }
 
-    private fun getParcel(dekuNo: Long): ImportService.Parcel {
+    private fun getParcel(dekuNo: Long): ImportService.Order {
         val unitRecord = parcelRepository.findParcelByUnitNumber(dekuNo)
         unitRecord ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
@@ -330,6 +371,8 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
         parcelImport.isWrongRouted = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), Event.DELIVERY_FAIL.creator.toString(), Event.DELIVERY_FAIL.concatId, Reason.WRONG_ROUTING.oldValue)
         parcelImport.isWrongLoaded = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), Event.DELIVERY_FAIL.creator.toString(), Event.DELIVERY_FAIL.concatId, Reason.WRONG_LOADED.oldValue)
 
-        return parcelImport
+        val parcelList = mutableListOf<ImportService.Parcel>()
+        parcelList.add(parcelImport)
+        return orderRecord.toOrderToImport().also { it.parcels = parcelList }
     }
 }

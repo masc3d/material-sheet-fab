@@ -253,6 +253,30 @@ class JooqParcelRepository {
                         .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
     }
+    fun findNotImportedParcelsByOrderids(orderIds: List<Long>):List<TblauftragcolliesRecord>{
+        return dsl.fetch(
+                Tables.TBLAUFTRAGCOLLIES,
+                Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
+                        .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                        .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+                        .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGDEPOT2.isNull)
+                        .and(Tables.TBLAUFTRAGCOLLIES.DTAUSGANGHUP3.isNotNull)
+        )
+    }
+
+    fun findImportedParcelsByOrderids(orderIds: List<Long>):List<TblauftragcolliesRecord>{
+        return dsl.fetch(
+                Tables.TBLAUFTRAGCOLLIES,
+                Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
+                        .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                        .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+                        .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGDEPOT2.isNotNull)
+
+        )
+    }
+
     fun findParcelsNotDeliveredNotLoadedByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
 
         return dsl.fetch(
@@ -462,10 +486,12 @@ fun TblauftragcolliesRecord.toParcelToImport(): ImportService.Parcel {
             length = this.laenge.toInt(),
             width = this.breite.toInt(),
             height = this.hoehe.toInt(),
-            dateOfStationIn = this.dteingangdepot2?.toTimestamp()?.toSqlDate(),
+            dateOfStationIn = this.dteingangdepot2?.toSqlDate(),
             cReference = this.creferenz,
             tourNo = this.tournr2,
-            isDamaged = this.isDamaged != 0
+            isDamaged = this.isDamaged != 0,
+            dateOfStationOut = this.dtausgangdepot2?.toSqlDate(),
+            dateOfHubOut = this.dtausganghup3?.toSqlDate()
     )
 
     return parcel

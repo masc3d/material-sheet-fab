@@ -70,7 +70,11 @@ interface ImportService {
             @get:ApiModelProperty(example = "true", required = false, value = "Is wrong station")
             var isWrongLoaded: Boolean? = null,
             @get:ApiModelProperty(example = "true", required = false, value = "Is wrong routed")
-            var isWrongRouted: Boolean? = null
+            var isWrongRouted: Boolean? = null,
+            @get:ApiModelProperty(example = "null", required = false, value = "Station export scan")
+            var dateOfStationOut: Date? = null,
+            @get:ApiModelProperty(example = "null", required = false, value = "Hub export scan")
+            var dateOfHubOut: Date? = null
     )
 
     enum class ResponseMsg(val value: String) {
@@ -90,6 +94,13 @@ interface ImportService {
             @QueryParam(DELIVERY_DATE) @ApiParam(value = "Delivery date", example = "08/09/2017", required = false) deliveryDate: Date? = null
     ): List<Order>
 
+    @GET
+    @Path("/station/{$STATION_NO}/imported/order")
+    @ApiOperation(value = "Get imported parcels", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getImportedParcelsByStationNo(
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @QueryParam(DELIVERY_DATE) @ApiParam(value = "Delivery date", example = "08/09/2017", required = false) deliveryDate: Date? = null
+    ): List<Order>
 
     @PATCH
     @Path("/")
@@ -97,7 +108,7 @@ interface ImportService {
     fun import(
             @QueryParam(SCANCODE) @ApiParam(value = "Parcel number or creference", required = true) scanCode: String = "",
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
-    ): Parcel
+    ): Order
 
     @PATCH
     @Path("/set-properties")
@@ -105,7 +116,7 @@ interface ImportService {
     fun setProperties(
             @ApiParam(value = "Parcel") parcel: Parcel
 
-    ): Parcel
+    ): Order
 
     @GET
     @Path("/{$SCANCODE}")
@@ -113,5 +124,5 @@ interface ImportService {
     fun getParcel(
             @PathParam(SCANCODE) @ApiParam(value = "Parcel number or creference", required = true) scanCode: String = "",
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
-    ): Parcel
+    ): Order
 }
