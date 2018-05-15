@@ -5,6 +5,7 @@ import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.TourRouteMeta
 import org.deku.leoz.model.TourStopRouteMeta
+import org.deku.leoz.model.VehicleType
 import org.deku.leoz.service.entity.Message
 import org.deku.leoz.time.ShortDate
 import org.deku.leoz.service.internal.entity.Address
@@ -237,6 +238,8 @@ interface TourServiceV1 {
             var orders: List<OrderService.Order>? = null,
             @ApiModelProperty(position = 80, required = true, value = "Tour stop list")
             var stops: List<Stop>? = null,
+            @ApiModelProperty(position = 85, required = false, value = "Vehicle type of this tour")
+            var vehicleType: VehicleType? = null,
             @ApiModelProperty(position = 90, required = false, value = "Last optimization time")
             var optimized: Date? = null,
             @ApiModelProperty(position = 100, required = true, value = "Creation date")

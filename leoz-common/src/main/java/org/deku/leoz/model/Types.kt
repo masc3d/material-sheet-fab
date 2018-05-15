@@ -362,10 +362,15 @@ enum class UserPreferenceKey {
  * Enumeration for possible types of vehicles, provided by the mobile app.
  */
 enum class VehicleType(val value: String) {
-    BIKE("BIKE"),
-    CAR("CAR"),
-    VAN("VAN"),
-    TRUCK("TRUCK")
+    BIKE("bike"),
+    CAR("car"),
+    VAN("van"),
+    TRUCK("truck");
+
+    companion object {
+        val valueMap by lazy { VehicleType.values().associateBy(VehicleType::value) }
+    }
+
 }
 
 enum class Event(val value: Int, val creator: Char, val concatId: Int) {

@@ -14,6 +14,7 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.model.TaskType
 import org.deku.leoz.model.TourRouteMeta
 import org.deku.leoz.model.TourStopRouteMeta
+import org.deku.leoz.model.VehicleType
 import org.deku.leoz.node.data.jpa.QTadTour.tadTour
 import org.deku.leoz.node.data.jpa.QTadTourEntry.tadTourEntry
 import org.deku.leoz.node.data.jpa.TadTour
@@ -188,6 +189,7 @@ class TourServiceV1
                             r.customId = tour.customId
                             r.optimized = tour.optimized?.toTimestamp()
                             r.date = ShortDate(date).toString()
+                            r.vehicleType = tour.vehicleType?.value
 
                             r.modified = now
 
@@ -1036,6 +1038,7 @@ class TourServiceV1
                 customId = tourRecord.customId,
                 created = tourRecord.created,
                 date = ShortDate(tourRecord.date),
+                vehicleType = VehicleType.valueMap.get(tourRecord.vehicleType),
                 optimized = tourRecord.optimized,
                 orders = orders.let { if (it.count() > 0) it else null },
                 route = tourRecord.routeMeta?.let {

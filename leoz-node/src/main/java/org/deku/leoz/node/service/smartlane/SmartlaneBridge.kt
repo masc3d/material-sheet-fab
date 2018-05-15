@@ -707,6 +707,7 @@ class SmartlaneBridge {
                 customId = customId,
                 parentId = parentId,
                 date = tourDate.toShortDate(),
+                vehicleType = vehicleType,
                 optimized = Date(),
                 stops = stops,
                 orders = orders,
