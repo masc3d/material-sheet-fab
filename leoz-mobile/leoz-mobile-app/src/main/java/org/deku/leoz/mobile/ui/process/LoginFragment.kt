@@ -84,7 +84,7 @@ class LoginFragment : Fragment<Any>() {
             this.uxPasswordLayout.error = null
         }
 
-        this.uxVehicleTypes.selected = this.uxVan
+        this.uxVehicleTypePicker.selected = VehicleType.BIKE
     }
 
     override fun onResume() {
