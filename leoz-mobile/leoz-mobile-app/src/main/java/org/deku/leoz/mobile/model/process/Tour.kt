@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.merge
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
@@ -27,7 +28,6 @@ import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.log.slf4j.trace
-import sx.log.slf4j.warn
 import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.requery.ObservableTupleQuery
@@ -344,8 +344,17 @@ class Tour : CompositeDisposableSupplier {
 
     init {
         // Send tour update when pending stops change
-        this.pendingStops.map { it.value }
-                .subscribe { parcels ->
+        listOf(
+                // Fire tour update when user logs in
+                this.login.authenticatedUserProperty
+                        .filter { it.value != null }
+                        .map { this.pendingStops.get() },
+
+                // or pending stops change
+                this.pendingStops.map { it.value }
+        )
+                .merge()
+                .subscribe { stops ->
                     log.trace("Sending tour update")
 
                     // Send tour update
@@ -353,7 +362,7 @@ class Tour : CompositeDisposableSupplier {
                             nodeUid = identity.uid.value,
                             userId = login.authenticatedUser?.id?.toLong() ?: 0,
                             vehicleType = login.authenticatedUser?.vehicleType,
-                            stops = parcels.map { stop ->
+                            stops = stops.map { stop ->
                                 TourServiceV1.Stop(
                                         tasks = stop.tasks.map {
                                             TourServiceV1.Task(

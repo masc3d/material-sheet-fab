@@ -127,7 +127,8 @@ class LoginFragment : Fragment<Any>() {
                 .switchMap {
                     login.authenticate(
                             email = uxMailaddress.text.toString(),
-                            password = uxPassword.text.toString()
+                            password = uxPassword.text.toString(),
+                            vehicleType = this.uxVehicleTypePicker.selected!!
                     )
                             .map {
                                 // Map success result to state
@@ -171,9 +172,6 @@ class LoginFragment : Fragment<Any>() {
 
                             if (state.user == null)
                                 throw IllegalStateException("No user")
-
-                            state.user.vehicleType = this.uxVehicleTypePicker.selected
-                                ?: throw IllegalStateException("No vehicle type")
 
                             this.listener?.onLoginSuccessful(
                                     user = state.user

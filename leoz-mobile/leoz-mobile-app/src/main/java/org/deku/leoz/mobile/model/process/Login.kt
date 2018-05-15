@@ -15,6 +15,7 @@ import org.deku.leoz.mobile.model.entity.create
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
+import org.deku.leoz.model.VehicleType
 import org.deku.leoz.rest.RestClientFactory
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
@@ -120,7 +121,7 @@ class Login {
      * @param password User password
      * @return Hot observable
      */
-    fun authenticate(email: String, password: String): Observable<User> {
+    fun authenticate(email: String, password: String, vehicleType: VehicleType): Observable<User> {
 
         // Authorization task
         val task = Observable.fromCallable {
@@ -151,6 +152,7 @@ class Login {
                         id = authResponse.user?.id!!,
                         email = email,
                         password = hashedPassword,
+                        vehicleType = vehicleType,
                         apiKey = encryptApiKey(authResponse.key),
                         host = restConfiguration.host
                 )
@@ -174,6 +176,8 @@ class Login {
 
                 if (user == null)
                     throw NoSuchElementException("User [${email}] not found, offline login not applicable")
+
+                user.vehicleType = vehicleType
 
                 return user
             }

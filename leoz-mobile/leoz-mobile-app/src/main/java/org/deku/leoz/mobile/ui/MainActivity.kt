@@ -123,9 +123,6 @@ class MainActivity
 
     //region LoginFragment listener
     override fun onLoginSuccessful(user: User) {
-        // Persistently update user to store vehicle type
-        this.db.store.update(user).blockingGet()
-
         this.startActivity(
                 Intent(applicationContext, TourActivity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
