@@ -352,6 +352,7 @@ class Tour : CompositeDisposableSupplier {
                     TourServiceV1.TourUpdate(tour = TourServiceV1.Tour(
                             nodeUid = identity.uid.value,
                             userId = login.authenticatedUser?.id?.toLong() ?: 0,
+                            vehicleType = login.authenticatedUser?.vehicleType,
                             stops = parcels.map { stop ->
                                 TourServiceV1.Stop(
                                         tasks = stop.tasks.map {
