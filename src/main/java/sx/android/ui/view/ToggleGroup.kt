@@ -48,7 +48,6 @@ class ToggleGroup : LinearLayout {
     }
 
     private fun onCheckedChanged(item: Checkable, isChecked: Boolean) {
-        val view = item as View
         when (isChecked) {
             true -> {
                 if (selected != item) {
@@ -68,6 +67,9 @@ class ToggleGroup : LinearLayout {
     }
 
     override fun onViewAdded(child: View?) {
+        if (child is Checkable)
+            child.isChecked = false
+
         when {
             child is ToggleImageButton -> {
                 child.onCheckedChangeListener = object : ToggleImageButton.OnCheckedChangeListener {
