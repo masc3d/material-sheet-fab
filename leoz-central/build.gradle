@@ -113,7 +113,7 @@ dependencies {
             "org.jooq:jooq:$v_jooq",
 
             // JDBC connection pooling
-            "org.apache.commons:commons-dbcp2:2.2.0",
+            "org.apache.commons:commons-dbcp2:2.3.0",
 
             // For SVG image conversions
             dependencies.create("org.apache.xmlgraphics:batik-transcoder:$v_batik") {
