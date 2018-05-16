@@ -7,7 +7,7 @@ import io.reactivex.Observer
 import io.reactivex.subjects.BehaviorSubject
 
 /** Bindable field update container */
-class FieldUpdate<T>(val value: T)
+data class FieldUpdate<T>(val value: T)
 
 /**
  * Base observable for android data binding with support for rx observable fields.
