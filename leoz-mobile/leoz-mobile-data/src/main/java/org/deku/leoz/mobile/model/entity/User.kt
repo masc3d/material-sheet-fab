@@ -29,9 +29,14 @@ abstract class User : BaseRxObservable(), Persistable, Observable {
 
     /** The current user's vehicle type. Defaults to CAR */
     @get:Bindable
-    @get:Column(nullable = false)
-    abstract var vehicleType: VehicleType
-    val vehicleTypeProperty by lazy { ObservableRxField(BR.vehicleType, { this.vehicleType}) }
+    @get:Column
+    abstract var vehicleType: VehicleType?
+    val vehicleTypeProperty by lazy { ObservableRxField(BR.vehicleType, { this.vehicleType }) }
+
+    @get:Bindable
+    @get:Column
+    abstract var stationNo: Int?
+    val stationNoProperty by lazy { ObservableRxField(BR.stationNo, { this.stationNo }) }
 
     @get:Column
     abstract var lastLoginTime: Date?
@@ -46,7 +51,7 @@ fun User.Companion.create(
         email: String,
         password: String,
         apiKey: String,
-        vehicleType: VehicleType = VehicleType.CAR,
+        vehicleType: VehicleType? = null,
         host: String? = null
 ): UserEntity {
     return UserEntity().also {

@@ -122,7 +122,7 @@ class MainActivity
     }
 
     //region LoginFragment listener
-    override fun onLoginSuccessful(user: User, vehicleType: VehicleType) {
+    override fun onLoginSuccessful(user: User, vehicleType: VehicleType?) {
         user.vehicleType = vehicleType
         db.store.update(user).blockingGet()
 

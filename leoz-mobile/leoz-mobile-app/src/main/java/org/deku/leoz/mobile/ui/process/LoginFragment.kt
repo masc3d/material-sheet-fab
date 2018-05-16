@@ -49,7 +49,7 @@ class LoginFragment : Fragment<Any>() {
         fun onLoginPending() {}
 
         fun onLoginFailed() {}
-        fun onLoginSuccessful(user: User, vehicleType: VehicleType) {}
+        fun onLoginSuccessful(user: User, vehicleType: VehicleType?) {}
 
         fun onPrivacyRejected() {}
     }
@@ -174,7 +174,7 @@ class LoginFragment : Fragment<Any>() {
 
                             this.listener?.onLoginSuccessful(
                                     user = state.user,
-                                    vehicleType = uxVehicleTypePicker.selected!!
+                                    vehicleType = uxVehicleTypePicker.selected
                             )
                         }
                         else -> {

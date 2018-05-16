@@ -342,6 +342,18 @@ class Tour : CompositeDisposableSupplier {
 
     val closedStops = this.closedStopsQuery.result
 
+    /** Create tour update message */
+    private fun createTourUpdate(): TourServiceV1.TourUpdate {
+        return TourServiceV1.TourUpdate(
+                tour = TourServiceV1.Tour(
+                        nodeUid = identity.uid.value,
+                        userId = login.authenticatedUser?.id?.toLong() ?: 0,
+                        vehicleType = login.authenticatedUser?.vehicleType,
+                        stationNo = login.authenticatedUser?.stationNo?.toLong()
+                )
+        )
+    }
+
     init {
         // Send tour update when pending stops change
         listOf(
@@ -349,44 +361,56 @@ class Tour : CompositeDisposableSupplier {
                 this.login.authenticatedUserProperty
                         .filter { it.value != null }
                         .switchMap {
-                            it.value!!.vehicleTypeProperty
-                        }
-                        .map { this.pendingStops.get() },
+                            listOf(
+                                    it.value!!.vehicleTypeProperty
+                                            .distinctUntilChanged()
+                                            .map {
+                                        log.trace { "Vehicle type changed [${it.value}]" }
+                                        createTourUpdate()
+                                    },
+                                    it.value!!.stationNoProperty
+                                            .distinctUntilChanged()
+                                            .map {
+                                        log.trace { "Station no changed [${it.value}]" }
+                                        createTourUpdate()
+                                    }
+                            )
+                                    .merge()
+                        },
 
                 // or pending stops change
-                this.pendingStops.map { it.value }
+                this.pendingStops.map {
+                    log.trace { "Pending stops changed"}
+                    val stops = it.value
+
+                    createTourUpdate().also {
+                        it.tour?.stops = stops.map { stop ->
+                            TourServiceV1.Stop(
+                                    tasks = stop.tasks.map {
+                                        TourServiceV1.Task(
+                                                orderId = it.order.id,
+                                                appointmentStart = it.appointmentStart,
+                                                appointmentEnd = it.appointmentEnd,
+                                                taskType = when (it.type) {
+                                                    OrderTask.TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
+                                                    OrderTask.TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
+                                                }
+                                        )
+                                    }
+                            )
+                        }
+                    }
+                }
         )
                 .merge()
-                .subscribe { stops ->
+                .subscribe { tourUpdate ->
                     log.trace("Sending tour update")
 
-                    // Send tour update
-                    TourServiceV1.TourUpdate(tour = TourServiceV1.Tour(
-                            nodeUid = identity.uid.value,
-                            userId = login.authenticatedUser?.id?.toLong() ?: 0,
-                            vehicleType = login.authenticatedUser?.vehicleType,
-                            stops = stops.map { stop ->
-                                TourServiceV1.Stop(
-                                        tasks = stop.tasks.map {
-                                            TourServiceV1.Task(
-                                                    orderId = it.order.id,
-                                                    appointmentStart = it.appointmentStart,
-                                                    appointmentEnd = it.appointmentEnd,
-                                                    taskType = when (it.type) {
-                                                        OrderTask.TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
-                                                        OrderTask.TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
-                                                    }
-                                            )
-                                        }
-                                )
-                            }
-                    )).also {
-                        this.mqttEndpoints.central.main.channel().sendAsync(it)
-                                .subscribeOn(Schedulers.io())
-                                .subscribeBy(onError = {
-                                    log.error("Error sending tour update [${it.message}]", it)
-                                })
-                    }
+                    this.mqttEndpoints.central.main.channel().sendAsync(tourUpdate)
+                            .subscribeOn(Schedulers.io())
+                            .subscribeBy(onError = {
+                                log.error("Error sending tour update [${it.message}]", it)
+                            })
                 }
                 .bind(this)
     }
