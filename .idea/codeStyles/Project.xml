@@ -10,6 +10,7 @@
       <option name="JD_PRESERVE_LINE_FEEDS" value="true" />
     </JavaCodeStyleSettings>
     <SqlCodeStyleSettings>
+      <option name="KEYWORD_CASE" value="0" />
       <option name="IDENTIFIER_CASE" value="1" />
     </SqlCodeStyleSettings>
     <XML>
