@@ -49,7 +49,7 @@ class LoginFragment : Fragment<Any>() {
         fun onLoginPending() {}
 
         fun onLoginFailed() {}
-        fun onLoginSuccessful(user: User) {}
+        fun onLoginSuccessful(user: User, vehicleType: VehicleType) {}
 
         fun onPrivacyRejected() {}
     }
@@ -127,8 +127,7 @@ class LoginFragment : Fragment<Any>() {
                 .switchMap {
                     login.authenticate(
                             email = uxMailaddress.text.toString(),
-                            password = uxPassword.text.toString(),
-                            vehicleType = this.uxVehicleTypePicker.selected!!
+                            password = uxPassword.text.toString()
                     )
                             .map {
                                 // Map success result to state
@@ -174,7 +173,8 @@ class LoginFragment : Fragment<Any>() {
                                 throw IllegalStateException("No user")
 
                             this.listener?.onLoginSuccessful(
-                                    user = state.user
+                                    user = state.user,
+                                    vehicleType = uxVehicleTypePicker.selected!!
                             )
                         }
                         else -> {

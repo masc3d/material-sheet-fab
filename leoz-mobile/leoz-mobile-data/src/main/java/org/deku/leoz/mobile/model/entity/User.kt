@@ -1,7 +1,9 @@
 package org.deku.leoz.mobile.model.entity
 
+import android.databinding.Bindable
 import android.databinding.Observable
 import io.requery.*
+import org.deku.leoz.mobile.data.BR
 import org.deku.leoz.model.VehicleType
 import sx.android.databinding.BaseRxObservable
 import java.util.*
@@ -26,8 +28,10 @@ abstract class User : BaseRxObservable(), Persistable, Observable {
     abstract var apiKey: String
 
     /** The current user's vehicle type. Defaults to CAR */
+    @get:Bindable
     @get:Column(nullable = false)
     abstract var vehicleType: VehicleType
+    val vehicleTypeProperty by lazy { ObservableRxField(BR.vehicleType, { this.vehicleType}) }
 
     @get:Column
     abstract var lastLoginTime: Date?

@@ -9,7 +9,6 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
-import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import org.deku.leoz.mobile.Database
@@ -24,7 +23,6 @@ import org.deku.leoz.mobile.ui.core.Activity
 import org.deku.leoz.mobile.ui.process.LoginFragment
 import org.deku.leoz.mobile.ui.process.MainScreen
 import org.deku.leoz.model.VehicleType
-import sx.android.rx.observeOnMainThread
 import sx.android.rx.observeOnMainThreadUntilEvent
 
 class MainActivity
@@ -51,8 +49,10 @@ class MainActivity
                     addToBackStack = false
             )
 
-            if (this.login.authenticatedUser != null) {
-                this.onLoginSuccessful(this.login.authenticatedUser!!)
+            this.login.authenticatedUser?.also {
+                this.onLoginSuccessful(
+                        it,
+                        it.vehicleType)
             }
         }
     }
@@ -122,7 +122,10 @@ class MainActivity
     }
 
     //region LoginFragment listener
-    override fun onLoginSuccessful(user: User) {
+    override fun onLoginSuccessful(user: User, vehicleType: VehicleType) {
+        user.vehicleType = vehicleType
+        db.store.update(user).blockingGet()
+
         this.startActivity(
                 Intent(applicationContext, TourActivity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))

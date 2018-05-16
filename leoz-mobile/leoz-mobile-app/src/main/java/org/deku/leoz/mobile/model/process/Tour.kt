@@ -348,6 +348,9 @@ class Tour : CompositeDisposableSupplier {
                 // Fire tour update when user logs in
                 this.login.authenticatedUserProperty
                         .filter { it.value != null }
+                        .switchMap {
+                            it.value!!.vehicleTypeProperty
+                        }
                         .map { this.pendingStops.get() },
 
                 // or pending stops change

@@ -121,7 +121,7 @@ class Login {
      * @param password User password
      * @return Hot observable
      */
-    fun authenticate(email: String, password: String, vehicleType: VehicleType): Observable<User> {
+    fun authenticate(email: String, password: String): Observable<User> {
 
         // Authorization task
         val task = Observable.fromCallable {
@@ -152,7 +152,6 @@ class Login {
                         id = authResponse.user?.id!!,
                         email = email,
                         password = hashedPassword,
-                        vehicleType = vehicleType,
                         apiKey = encryptApiKey(authResponse.key),
                         host = restConfiguration.host
                 )
@@ -176,8 +175,6 @@ class Login {
 
                 if (user == null)
                     throw NoSuchElementException("User [${email}] not found, offline login not applicable")
-
-                user.vehicleType = vehicleType
 
                 return user
             }
