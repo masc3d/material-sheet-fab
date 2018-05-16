@@ -83,7 +83,7 @@ class TourServiceV1
     private lateinit var stationRepo: StationRepository
     @Inject
     private lateinit var stationContractRepo: StationContractRepository
-    
+
     @Inject
     private lateinit var userService: org.deku.leoz.service.internal.UserService
     @Inject
@@ -212,75 +212,77 @@ class TourServiceV1
                         //endregion
 
                         //region Update tour entry records
-                        val stops = tour.stops ?: listOf()
+                        val stops = tour.stops
 
-                        val tourEntryIds = stops.flatMap { it.tasks }.map { it.id }
+                        if (stops != null) {
+                            val tourEntryIds = stops.flatMap { it.tasks }.map { it.id }
 
-                        val entryRecords = if (tourExists)
-                            tourEntryRepo.findAll(
-                                    tadTourEntry.tourUid.eq(UUID.fromString(tour.uid)),
-                                    tadTourEntry.position.asc(),
-                                    tadTourEntry.id.asc())
-                                    .toMutableList()
-                        else
-                            mutableListOf()
+                            val entryRecords = if (tourExists)
+                                tourEntryRepo.findAll(
+                                        tadTourEntry.tourUid.eq(UUID.fromString(tour.uid)),
+                                        tadTourEntry.position.asc(),
+                                        tadTourEntry.id.asc())
+                                        .toMutableList()
+                            else
+                                mutableListOf()
 
-                        if (entryRecords.count() > 0) {
-                            // Delete existing tour entries which are not referenced in updated tour
-                            val toDelete = entryRecords
-                                    .filter { !tourEntryIds.contains(it.id) }
+                            if (entryRecords.count() > 0) {
+                                // Delete existing tour entries which are not referenced in updated tour
+                                val toDelete = entryRecords
+                                        .filter { !tourEntryIds.contains(it.id) }
 
-                            if (toDelete.count() > 0) {
-                                entryRecords.removeAll(toDelete)
-                                tourEntryRepo.deleteAll(toDelete)
-                            }
-                        }
-
-                        stops.forEachIndexed { stopIndex, stop ->
-                            val newPosition = (stopIndex + 1).toDouble()
-
-                            val route = stop.route?.let {
-                                this.objectMapper.writeValueAsString(it)
+                                if (toDelete.count() > 0) {
+                                    entryRecords.removeAll(toDelete)
+                                    tourEntryRepo.deleteAll(toDelete)
+                                }
                             }
 
-                            // Create and update tour entries
-                            stop.tasks.forEachIndexed { taskIndex, task ->
-                                val taskExists = tourExists && task.uid != null
+                            stops.forEachIndexed { stopIndex, stop ->
+                                val newPosition = (stopIndex + 1).toDouble()
 
-                                val entryRecord = if (taskExists)
-                                    entryRecords.first { it.uid == UUID.fromString(task.uid) }
-                                else
-                                    TadTourEntry().also { r ->
-                                        r.tourUid = tourRecord.uid
-                                        r.uid = UUID.randomUUID()
-                                    }
-
-                                entryRecord.also { r ->
-                                    r.position = newPosition
-                                    r.orderId = task.orderId
-                                    r.orderTaskType = when (task.taskType) {
-                                        Task.Type.DELIVERY -> TaskType.DELIVERY.value
-                                        Task.Type.PICKUP -> TaskType.DELIVERY.value
-                                    }
-
-                                    // Set appointments with replaced tour date
-                                    r.appointmentFrom = task.appointmentStart?.replaceDate(date)?.toTimestamp()
-                                    r.appointmentTo = task.appointmentEnd?.replaceDate(date)?.toTimestamp()
-
-                                    r.timestamp = now
-
-                                    if (taskIndex == 0)
-                                        r.routeMeta = route
+                                val route = stop.route?.let {
+                                    this.objectMapper.writeValueAsString(it)
                                 }
 
-                                if (taskExists) {
-                                    em.merge(entryRecord)
-                                } else {
-                                    em.persist(entryRecord)
-                                    em.flush()
+                                // Create and update tour entries
+                                stop.tasks.forEachIndexed { taskIndex, task ->
+                                    val taskExists = tourExists && task.uid != null
 
-                                    task.id = entryRecord.id
-                                    task.uid = entryRecord.uid.toString()
+                                    val entryRecord = if (taskExists)
+                                        entryRecords.first { it.uid == UUID.fromString(task.uid) }
+                                    else
+                                        TadTourEntry().also { r ->
+                                            r.tourUid = tourRecord.uid
+                                            r.uid = UUID.randomUUID()
+                                        }
+
+                                    entryRecord.also { r ->
+                                        r.position = newPosition
+                                        r.orderId = task.orderId
+                                        r.orderTaskType = when (task.taskType) {
+                                            Task.Type.DELIVERY -> TaskType.DELIVERY.value
+                                            Task.Type.PICKUP -> TaskType.DELIVERY.value
+                                        }
+
+                                        // Set appointments with replaced tour date
+                                        r.appointmentFrom = task.appointmentStart?.replaceDate(date)?.toTimestamp()
+                                        r.appointmentTo = task.appointmentEnd?.replaceDate(date)?.toTimestamp()
+
+                                        r.timestamp = now
+
+                                        if (taskIndex == 0)
+                                            r.routeMeta = route
+                                    }
+
+                                    if (taskExists) {
+                                        em.merge(entryRecord)
+                                    } else {
+                                        em.persist(entryRecord)
+                                        em.flush()
+
+                                        task.id = entryRecord.id
+                                        task.uid = entryRecord.uid.toString()
+                                    }
                                 }
                             }
                         }

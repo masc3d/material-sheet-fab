@@ -234,9 +234,9 @@ interface TourServiceV1 {
             var customId: String? = null,
             @ApiModelProperty(position = 60, required = true, value = "Tour date")
             var date: ShortDate? = null,
-            @ApiModelProperty(position = 70, required = true, value = "Orders referenced by this tour")
+            @ApiModelProperty(position = 70, required = false, value = "Orders referenced by this tour")
             var orders: List<OrderService.Order>? = null,
-            @ApiModelProperty(position = 80, required = true, value = "Tour stop list")
+            @ApiModelProperty(position = 80, required = false, value = "Tour stop list")
             var stops: List<Stop>? = null,
             @ApiModelProperty(position = 85, required = false, value = "Vehicle type of this tour")
             var vehicleType: VehicleType? = null,
