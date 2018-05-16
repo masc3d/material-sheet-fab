@@ -359,28 +359,25 @@ class Tour : CompositeDisposableSupplier {
         listOf(
                 // Fire tour update when user logs in
                 this.login.authenticatedUserProperty
+                        // No need to send update when user logs out
                         .filter { it.value != null }
                         .switchMap {
+                            // Create tour update message when any of those properties change
                             listOf(
                                     it.value!!.vehicleTypeProperty
                                             .distinctUntilChanged()
-                                            .map {
-                                        log.trace { "Vehicle type changed [${it.value}]" }
-                                        createTourUpdate()
-                                    },
+                                            .doOnNext { log.trace { "Vehicle type changed [${it.value}]" } },
                                     it.value!!.stationNoProperty
                                             .distinctUntilChanged()
-                                            .map {
-                                        log.trace { "Station no changed [${it.value}]" }
-                                        createTourUpdate()
-                                    }
+                                            .doOnNext { log.trace { "Station no changed [${it.value}]" } }
                             )
                                     .merge()
+                                    .map { createTourUpdate() }
                         },
 
-                // or pending stops change
+                // Or pending stops change
                 this.pendingStops.map {
-                    log.trace { "Pending stops changed"}
+                    log.trace { "Pending stops changed" }
                     val stops = it.value
 
                     createTourUpdate().also {
