@@ -20,7 +20,6 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_login.*
-import kotlinx.android.synthetic.main.view_vehicletypes.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.process.Login
@@ -148,7 +147,10 @@ class LoginFragment : Fragment<Any>() {
                                 .switchMap {
                                     when (it) {
                                         true -> state.just()
-                                        false -> Observable.empty()
+                                        false -> {
+                                            this.listener?.onLoginFailed()
+                                            Observable.empty()
+                                        }
                                     }
                                 }
                         else -> state.just()

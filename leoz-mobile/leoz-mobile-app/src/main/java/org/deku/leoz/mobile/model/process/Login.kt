@@ -15,12 +15,13 @@ import org.deku.leoz.mobile.model.entity.create
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
-import org.deku.leoz.model.VehicleType
 import org.deku.leoz.rest.RestClientFactory
 import org.deku.leoz.service.internal.AuthorizationService
+import org.deku.leoz.service.internal.UserService
 import org.slf4j.LoggerFactory
 import sx.android.net.Connectivity
 import sx.android.rx.observeOnMainThread
+import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
 import sx.security.*
 import sx.text.parseHex
@@ -224,26 +225,27 @@ class Login {
             user
         }
                 .observeOnMainThread()
-                .doOnNext {
-                    // Store authenticated user in property
-                    this.authenticatedUser = it
-
-                    // TODO uncomment when message will be processed in backend (leoz-central version > 0.193-SNAPSHOT)
-//                    mqttChannels.central.transient.channel().send(
-//                            message = UserService.DataProtectionActivity(
-//                                    scope = UserService.DataProtectionActivity.Scope.MOBILE,
-//                                    userId = it.id,
-//                                    ts_activity = it.lastLoginTime ?: Date(),
-//                                    confirmed = true,
-//                                    policyVersion = 0
-//                            )
-//                    )
-                }
                 .toHotIoObservable(this.log)
 
         // Return task to consumer for optionally subscribing to running authentication task as well
         return task
     }
+
+    private fun sendPrivacyPolicyConfirmation() {
+        val user = this.authenticatedUser ?: return
+
+        // TODO uncomment when message will be processed in backend (leoz-central version > 0.193-SNAPSHOT)
+        mqttChannels.central.transient.channel().send(
+                message = UserService.DataProtectionActivity(
+                        scope = UserService.DataProtectionActivity.Scope.MOBILE,
+                        userId = user.id,
+                        ts_activity = user.lastLoginTime ?: Date(),
+                        confirmed = true,
+                        policyVersion = 0
+                )
+        )
+    }
+
 
     fun logout() {
         this.authenticatedUser = null

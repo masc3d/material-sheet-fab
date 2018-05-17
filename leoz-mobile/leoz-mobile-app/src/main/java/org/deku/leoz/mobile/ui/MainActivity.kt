@@ -123,8 +123,12 @@ class MainActivity
 
     //region LoginFragment listener
     override fun onLoginSuccessful(user: User, vehicleType: VehicleType?) {
+        this.loginPendingDialog.dismiss()
+
         user.vehicleType = vehicleType
         db.store.update(user).blockingGet()
+
+        login.authenticatedUser = user
 
         this.startActivity(
                 Intent(applicationContext, TourActivity::class.java)
