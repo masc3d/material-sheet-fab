@@ -33,6 +33,9 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
     @get:Column(name = "order_", nullable = false)
     abstract var order: Order
 
+    @get:Column
+    abstract var stationNo: Int?
+
     @get:Lazy
     @get:Column(nullable = false)
     @get:ForeignKey
@@ -58,6 +61,7 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
 fun OrderTask.Companion.create(
         type: OrderTask.TaskType,
         address: Address,
+        stationNo: Int,
         appointmentStart: Date?,
         appointmentEnd: Date?,
         isFixedAppointment: Boolean,
@@ -67,6 +71,7 @@ fun OrderTask.Companion.create(
     return OrderTaskEntity().also {
         it.type = type
         it.address = address
+        it.stationNo = stationNo
         it.appointmentStart = appointmentStart
         it.appointmentEnd = appointmentEnd
         it.isFixedAppointment = isFixedAppointment

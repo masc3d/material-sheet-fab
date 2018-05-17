@@ -4,12 +4,15 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.gojuno.koptional.toOptional
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.merge
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import io.requery.query.Tuple
+import io.requery.query.function.Count
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.log.user
@@ -116,6 +119,23 @@ class Tour : CompositeDisposableSupplier {
                     .get(),
             transform = { it.get<Long>(0) }
     ).bind(this)
+
+    /** Query aggregating order task to determine primary station no */
+    private val primaryStationNo = ObservableQuery<Tuple>(
+            name = "Order task station no aggregation",
+            query = db.store.select(OrderTaskEntity.STATION_NO, Count.count(OrderTaskEntity.ID))
+                    .where(OrderTaskEntity.TYPE.eq(OrderTask.TaskType.DELIVERY))
+                    .groupBy(OrderTaskEntity.STATION_NO)
+                    .get()
+    )
+            .bind(this)
+            .result
+            .map {
+                // Sort descending by count and filter first station no
+                it.value.sortedByDescending { it.get<Int>(1) }
+                        .firstOrNull()?.get<Int>(0)
+                        .toOptional()
+            }
     //endregion
 
     /**
@@ -355,6 +375,15 @@ class Tour : CompositeDisposableSupplier {
     }
 
     init {
+        // Set the user's station no based on aggregated order tasks
+        this.primaryStationNo
+                .subscribe {stationNo ->
+                    login.authenticatedUser?.also { user ->
+                        user.stationNo = stationNo.toNullable()
+                        db.store.update(user).blockingGet()
+                    }
+                }
+
         // Send tour update when pending stops change
         listOf(
                 // Fire tour update when user logs in

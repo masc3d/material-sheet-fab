@@ -23,6 +23,7 @@ fun OrderService.Order.toOrder(
             deliveryTask = OrderTask.create(
                     type = OrderTask.TaskType.DELIVERY,
                     address = this.deliveryAddress.toAddress(),
+                    stationNo = this.deliveryStation,
                     isFixedAppointment = this.deliveryAppointment.notBeforeStart,
                     appointmentStart = this.deliveryAppointment.dateStart?.replaceDate(now),
                     appointmentEnd = this.deliveryAppointment.dateEnd?.replaceDate(now),
@@ -32,6 +33,7 @@ fun OrderService.Order.toOrder(
             pickupTask = OrderTask.create(
                     type = OrderTask.TaskType.PICKUP,
                     address = this.pickupAddress.toAddress(),
+                    stationNo = this.pickupStation,
                     isFixedAppointment = this.pickupAppointment.notBeforeStart,
                     appointmentStart = this.pickupAppointment.dateStart?.replaceDate(now),
                     appointmentEnd = this.pickupAppointment.dateEnd?.replaceDate(now),
