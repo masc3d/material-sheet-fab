@@ -3,6 +3,7 @@ package org.deku.leoz.central.service.internal
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.ParcelServiceConfiguration
 import org.deku.leoz.central.config.PersistenceConfiguration
+import org.deku.leoz.central.data.isJooqAccessException
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.toUInteger
@@ -709,7 +710,8 @@ class ParcelProcessingService {
                 it.store()
 
             } catch (e: Throwable) {
-                log.error("Parcel processing failed for [${it.id}]: ${e.message}", e)
+                val message = "Parcel processing failed for [${it.id}]: ${e.message}"
+                if (e.isJooqAccessException()) log.error(message) else log.error(message, e)
             }
         }
     }
