@@ -4,7 +4,6 @@ import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.io.serialization.Serializer
 import sx.reflect.allGenericInterfaces
-import java.lang.reflect.ParameterizedType
 import java.util.*
 
 /**
@@ -71,17 +70,19 @@ abstract class MqListener
         // Lookup MqHandler interface
         val handlerInterface = delegate.javaClass.allGenericInterfaces
                 .first {
-                    it is ParameterizedType && it.rawType == MqHandler::class.java
-                } as ParameterizedType
+                    it.parameterizedType?.rawType == MqHandler::class.java
+                }
 
         // The generic interface parameter (=message type)
-        val handlerMessageType = handlerInterface.actualTypeArguments.get(0) as Class<*>
+        val handlerMessageType = handlerInterface.parameterizedType?.actualTypeArguments?.get(0) as Class<*>
 
         // Locate interface method for checking types annotation
-        val interfaceType = handlerInterface.rawType as Class<*>
+        val interfaceType = handlerInterface.parameterizedType?.rawType as Class<*>
         interfaceType.methods.forEach { interfaceMethod ->
-            val method = delegate.javaClass.getMethod(interfaceMethod.name, *interfaceMethod.parameterTypes)
+            // Lookup method of implementing type
+            val method = handlerInterface.implementingType.getMethod(interfaceMethod.name, *interfaceMethod.parameterTypes)
 
+            // Extract types from annotation
             val typesAnnotation = method.getAnnotation(MqHandler.Types::class.java)
             if (typesAnnotation != null) {
                 messageTypes.addAll(typesAnnotation.types.map { it.java })
@@ -89,7 +90,8 @@ abstract class MqListener
         }
 
         if (messageTypes.isEmpty()) {
-            // No message types specified, using generic type from Handler interface (except for Object/Any)
+            // No message types specified via `MqHandler.Types`
+            // Using generic type from Handler interface (except for Object/Any)
             if (handlerMessageType != Any::class.java)
                 messageTypes.add(handlerMessageType)
         }
