@@ -16,7 +16,9 @@ import java.util.*
 abstract class MqListener
     :
         Disposable {
+
     protected val log = LoggerFactory.getLogger(this.javaClass)
+
     /** Object message handler delegates  */
     private val handlerDelegates = HashMap<Class<*>, MqHandler<Any?>>()
 
@@ -52,10 +54,7 @@ abstract class MqListener
      * @param e Error
      */
     protected open fun onError(e: Throwable) {
-        when (e) {
-            is HandlingException -> log.error(e.message)
-            else -> log.error(e.message, e)
-        }
+        log.error(e.message)
     }
 
     /**
