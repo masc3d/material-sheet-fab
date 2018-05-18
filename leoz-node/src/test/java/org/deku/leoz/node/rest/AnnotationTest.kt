@@ -55,6 +55,18 @@ class AnnotationTest {
         override fun dumpDeliveryLists(stationNo: Int?, from: ShortDate?, to: ShortDate?): Response {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
+
+        override fun dumpTours(): Response {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun dumpOrders(parcelNos: List<String>?, withStatus: Boolean): Response {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun dumpLoadedOrders(nodeUidShort: String, loadingDate: ShortDate): Response {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
     }
 
     @Test
