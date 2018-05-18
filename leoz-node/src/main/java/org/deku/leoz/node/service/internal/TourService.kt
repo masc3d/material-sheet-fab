@@ -934,16 +934,12 @@ class TourServiceV1
             return
         }
 
-        try {
-            // Set tour date to message timestamp (nodes may not provide this)
-            tour.date = ShortDate(message.timestamp)
+        // Set tour date to message timestamp (nodes may not provide this)
+        tour.date = ShortDate(message.timestamp)
 
-            // Update tour
-            this.put(listOf(tour))
+        // Update tour
+        this.put(listOf(tour))
 
-        } catch (e: Throwable) {
-            log.error(e.message, e)
-        }
     }
     //endregion
 
