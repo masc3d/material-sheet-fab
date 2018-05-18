@@ -36,6 +36,8 @@ class MqServiceConfiguration {
     private lateinit var deliveryListService: DeliveryListService
     @Inject
     private lateinit var tourService: TourServiceV1
+    @Inject
+    private lateinit var userService: UserService
 
     /**
      * Central queue message handlers
@@ -47,7 +49,8 @@ class MqServiceConfiguration {
                 fileService,
                 nodeService,
                 parcelService,
-                tourService
+                tourService,
+                userService
         )
     }
 

@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserPreferenceKey
+import org.deku.leoz.service.entity.Message
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
 import java.util.*
@@ -30,8 +31,8 @@ interface UserService {
         const val DEBITOR_NR = "debitor-nr"
         //const val DEBITOR_NO = "debitor-no"
         //const val Rest.AUTH_APIKEY_NAME = "x-api-key"
-        const val OLD_PASSWORD="old-password"
-        const val NEW_PASSWORD="new-password"
+        const val OLD_PASSWORD = "old-password"
+        const val NEW_PASSWORD = "new-password"
     }
 
     /**
@@ -109,14 +110,18 @@ interface UserService {
         }
     }
 
-    @Serializable(0x226a3e74f8e3)
-    data class DataProtectionActivity(
-            val scope: DataProtectionActivity.Scope,
-            val userId: Int,
-            val ts_activity: Date,
-            val confirmed: Boolean,
-            val policyVersion: Int
-    ) {
+    /**
+     * Message sent when users react to privacy policy
+     */
+    @Serializable(0xf29079e74bf8ef)
+    data class PrivacyPolicyActivity(
+            val scope: PrivacyPolicyActivity.Scope? = null,
+            val userEmail: String? = null,
+            val confirmed: Boolean = false,
+            val policyVersion: Int = 0,
+            val timestamp: Date = Date()
+    ) : Message() {
+
         enum class Scope {
             MOBILE
         }
@@ -202,5 +207,5 @@ interface UserService {
     @GET
     @Path("/id")
     @ApiOperation(value = "Get user id(s) by debitor id")
-    fun getIdsByDebitor(@QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id",required = true) debitorId: Int): List<Int>
+    fun getIdsByDebitor(@QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id", required = true) debitorId: Int): List<Int>
 }

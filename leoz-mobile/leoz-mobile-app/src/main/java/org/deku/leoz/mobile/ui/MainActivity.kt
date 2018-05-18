@@ -130,6 +130,8 @@ class MainActivity
 
         login.authenticatedUser = user
 
+        login.sendPrivacyPolicyConfirmation()
+
         this.startActivity(
                 Intent(applicationContext, TourActivity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))

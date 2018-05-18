@@ -46,7 +46,7 @@ class Login {
     private val sharedPrefs: SharedPreferences by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
-    private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
+    private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
     private val restConfiguration: RestClientFactory by Kodein.global.lazy.instance()
@@ -231,15 +231,15 @@ class Login {
         return task
     }
 
-    private fun sendPrivacyPolicyConfirmation() {
+    fun sendPrivacyPolicyConfirmation() {
         val user = this.authenticatedUser ?: return
 
         // TODO uncomment when message will be processed in backend (leoz-central version > 0.193-SNAPSHOT)
-        mqttChannels.central.transient.channel().send(
-                message = UserService.DataProtectionActivity(
-                        scope = UserService.DataProtectionActivity.Scope.MOBILE,
-                        userId = user.id,
-                        ts_activity = user.lastLoginTime ?: Date(),
+        mqttEndpoints.central.main.channel().send(
+                message = UserService.PrivacyPolicyActivity(
+                        scope = UserService.PrivacyPolicyActivity.Scope.MOBILE,
+                        userEmail = user.email,
+                        timestamp= user.lastLoginTime ?: Date(),
                         confirmed = true,
                         policyVersion = 0
                 )

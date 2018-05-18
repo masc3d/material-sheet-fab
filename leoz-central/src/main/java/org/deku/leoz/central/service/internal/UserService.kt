@@ -488,16 +488,20 @@ class UserService :
     }
 
     @MqHandler.Types(
-            UserService.DataProtectionActivity::class
+            UserService.PrivacyPolicyActivity::class
     )
     override fun onMessage(message: Any, replyChannel: MqChannel?) {
         when (message) {
-            is UserService.DataProtectionActivity -> {
-                try {
-                    userRepository.logUserActivity(userId = message.userId, activity = UserActivity.DATA_PROTECTION_POLICY_ACCEPTED, date = message.ts_activity)
-                } catch (e: Exception) {
-                    log.error(e.message, e)
-                }
+            is UserService.PrivacyPolicyActivity -> {
+//                try {
+//                    userRepository.logUserActivity(
+//                            userId = message.userId,
+//                            activity = UserActivity.DATA_PROTECTION_POLICY_ACCEPTED,
+//                            date = message.ts_activity
+//                    )
+//                } catch (e: Exception) {
+//                    log.error(e.message, e)
+//                }
             }
         }
     }
