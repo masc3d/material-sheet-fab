@@ -2,8 +2,10 @@ package org.deku.leoz.node.rest
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonMappingException
+import org.deku.leoz.node.Application
 import org.deku.leoz.service.entity.ServiceError
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.zalando.problem.Status
 import org.zalando.problem.ThrowableProblem
@@ -16,6 +18,7 @@ import javax.ws.rs.ext.Provider
 /**
  * Created by masc on 21.04.15.
  */
+@Profile(Application.PROFILE_CLIENT_NODE)
 @Component
 @Provider
 class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
@@ -71,8 +74,8 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
             }
             else -> {
                 log.error(e.message, e)
-                status = Response.Status.BAD_REQUEST.statusCode
-                entity = RestProblem(status = Status.BAD_REQUEST, detail = e.message)
+                status = Response.Status.INTERNAL_SERVER_ERROR.statusCode
+                entity = RestProblem(status = Status.INTERNAL_SERVER_ERROR, detail = e.message)
             }
         }
 
