@@ -383,18 +383,10 @@ class StopProcessScreen :
                         colorRes = R.color.colorGreen,
                         iconRes = R.drawable.ic_delivery
                 ),
-
                 ActionItem(
                         id = R.id.action_delivery_select_event,
                         colorRes = R.color.colorAccent,
                         iconRes = R.drawable.ic_exclamation
-                ),
-                ActionItem(
-                        id = R.id.action_report_delay,
-                        colorRes = R.color.colorGrey,
-                        iconRes = R.drawable.ic_appointment_at_risk,
-                        iconTintRes = android.R.color.white,
-                        visible = this.isReportDelayActionAvailable
                 )
         )
         //endregion
@@ -759,11 +751,6 @@ class StopProcessScreen :
 
                                     it.visible = tourStop.canClose &&
                                             it.menu?.hasVisibleItems() == true
-                                }
-
-                        first { it.id == R.id.action_report_delay }
-                                .also {
-                                    it.visible = this@StopProcessScreen.isReportDelayActionAvailable
                                 }
                     }
                 }
