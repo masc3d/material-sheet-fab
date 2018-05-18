@@ -322,7 +322,8 @@ constructor(
                             clean = clean
                     )
                 } catch (e: Exception) {
-                    log.error("${it} failed. ${e.message}", e)
+                    val message = "${it} failed. ${e.message}"
+                    if (e.isJooqAccessException()) log.error(e.message) else log.error(e.message, e)
                 }
             }
 
