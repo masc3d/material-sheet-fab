@@ -20,13 +20,7 @@ fun <R, T> ResultQuery<R>.prepared(block: (q: ResultQuery<R>) -> T): T where R :
                 this.keepStatement(true)
         )
     } catch(e: Throwable) {
-        val closeOnExceptions = listOf<Class<*>>(
-                CommunicationsException::class.java,
-                com.mysql.jdbc.CommunicationsException::class.java,
-                DataAccessException::class.java
-        )
-
-        if (closeOnExceptions.contains(e.javaClass) || (e.cause != null && closeOnExceptions.contains(e.cause!!.javaClass))) {
+        if (e.isJooqAccessException()) {
             try {
                 this.close()
             } catch(e: Throwable) {
@@ -35,6 +29,17 @@ fun <R, T> ResultQuery<R>.prepared(block: (q: ResultQuery<R>) -> T): T where R :
         }
 
         throw e
+    }
+}
+
+/** Jooq access or jdbc communication problem */
+fun Throwable.isJooqAccessException(): Boolean {
+    return setOf<Class<*>>(
+            CommunicationsException::class.java,
+            com.mysql.jdbc.CommunicationsException::class.java,
+            DataAccessException::class.java
+    ).let {
+        it.contains(this.javaClass) || (this.cause != null && it.contains(this.cause!!.javaClass))
     }
 }
 
