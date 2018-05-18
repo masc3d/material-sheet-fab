@@ -25,6 +25,7 @@ import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.persistence.querydsl.delete
 import sx.persistence.truncate
+import sx.rx.retryWith
 import sx.rx.subscribeOn
 import sx.util.toNullable
 import java.util.concurrent.ScheduledExecutorService
@@ -200,6 +201,12 @@ constructor(
                             )
                         }
                 )
+                        .retryWith(
+                                action = { retry, e ->
+                                    log.error("Notification state retrieval failed [${e.message}]")
+                                    Observable.timer(1, TimeUnit.MINUTES)
+                                }
+                        )
             }
                     .concatWith(
                             this.notificationsSubject
