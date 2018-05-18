@@ -4,6 +4,7 @@ import org.springframework.jms.connection.JmsTransactionManager
 import org.springframework.jms.listener.DefaultMessageListenerContainer
 import org.springframework.jms.listener.SessionAwareMessageListener
 import org.springframework.util.ErrorHandler
+import sx.mq.MqListener
 import sx.mq.jms.JmsEndpoint
 import sx.mq.jms.JmsListener
 import java.util.concurrent.Executor
@@ -80,8 +81,15 @@ open class SpringJmsListener(
      * @param t Error
      */
     final override fun handleError(t: Throwable) {
-        this@SpringJmsListener.onError?.invoke(t)
-                ?: this.onError(t)
+        when {
+            t is MqListener.HandlingException -> {
+                log.error(t.message)
+            }
+            else -> {
+                this@SpringJmsListener.onError?.invoke(t)
+                        ?: this.onError(t)
+            }
+        }
     }
 
     /**
