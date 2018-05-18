@@ -5,6 +5,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.toCompletable
 import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.central.data.isJooqAccessException
 import org.deku.leoz.central.data.repository.JooqSyncRepository
 import org.deku.leoz.node.data.jpa.LclSync
 import org.deku.leoz.node.data.jpa.QLclSync.lclSync
@@ -201,13 +202,13 @@ constructor(
                             )
                         }
                 )
-                        .retryWith(
-                                action = { retry, e ->
-                                    log.error("Notification state retrieval failed [${e.message}]")
-                                    Observable.timer(1, TimeUnit.MINUTES)
-                                }
-                        )
             }
+                    .retryWith(
+                            action = { retry, e ->
+                                log.error("Notification state retrieval failed [${e.message}]")
+                                Observable.timer(1, TimeUnit.MINUTES)
+                            }
+                    )
                     .concatWith(
                             this.notificationsSubject
                     )
@@ -248,6 +249,12 @@ constructor(
                                         }
                         )
                     }
+                    .retryWith(
+                            action = { retry, e ->
+                                log.error("Sync state retrieval failed [${e.message}]")
+                                Observable.timer(1, TimeUnit.MINUTES)
+                            }
+                    )
                     // Group process steps by table name in order to throttle by table
                     .groupBy { it.srcSyncRecord.tableName }
                     .flatMap { tableSteps ->
@@ -274,7 +281,10 @@ constructor(
                             else
                                 log.trace(message)
                         } catch (e: Throwable) {
-                            log.error(e.message, e)
+                            if (e.isJooqAccessException())
+                                log.error(e.message)
+                            else
+                                log.error(e.message, e)
                         }
                     }
                     .subscribeOn(this.exceutorService)
