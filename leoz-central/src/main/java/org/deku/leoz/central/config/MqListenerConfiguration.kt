@@ -1,5 +1,6 @@
 package org.deku.leoz.central.config
 
+import org.deku.leoz.central.data.isJooqAccessException
 import org.deku.leoz.config.JmsEndpoints
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
@@ -19,11 +20,11 @@ import javax.inject.Inject
 @Configuration
 @Lazy(false)
 class MqListenerConfiguration : org.deku.leoz.node.config.MqListenerConfiguration() {
-    private val log = LoggerFactory.getLogger(this.javaClass)
+    private val log = LoggerFactory.getLogger(MqListenerConfiguration::class.java)
 
     @Inject
     private lateinit var executorService: ExecutorService
-    
+
     @Inject
     private lateinit var broker: ActiveMQBroker
 
@@ -33,7 +34,9 @@ class MqListenerConfiguration : org.deku.leoz.node.config.MqListenerConfiguratio
     val centralQueueListener by lazy {
         SpringJmsListener(
                 endpoint = JmsEndpoints.central.main.kryo,
-                executor = this.executorService)
+                executor = this.executorService,
+                onError = this::onError
+        )
     }
 
     /**
@@ -42,7 +45,19 @@ class MqListenerConfiguration : org.deku.leoz.node.config.MqListenerConfiguratio
     val centralTransientQueueListener by lazy {
         SpringJmsListener(
                 endpoint = JmsEndpoints.central.transient.kryo,
-                executor = this.executorService)
+                executor = this.executorService,
+                onError = this::onError
+        )
+    }
+
+    /**
+     * Central jms error handler
+     */
+    private fun onError(t: Throwable) {
+        if (t.isJooqAccessException()) {
+            log.error(t.message)
+        } else
+            log.error(t.message, t)
     }
 
     //region Lifecycle

@@ -21,8 +21,9 @@ import javax.jms.Session
 open class SpringJmsListener(
         endpoint: JmsEndpoint,
         private val executor: Executor,
-        private val durableClientId: String? = null)
-    :
+        private val durableClientId: String? = null,
+        private val onError: ((e: Throwable) -> Unit)? = null
+) :
         JmsListener(endpoint),
         ErrorHandler {
 
@@ -45,7 +46,8 @@ open class SpringJmsListener(
     /**
      * Start listener
      */
-    @Synchronized final override fun start() {
+    @Synchronized
+    final override fun start() {
         log.info("Starting ${this.description}")
         var lc = listenerContainer
         if (lc == null) {
@@ -78,13 +80,15 @@ open class SpringJmsListener(
      * @param t Error
      */
     final override fun handleError(t: Throwable) {
-        this.onError(t)
+        this@SpringJmsListener.onError?.invoke(t)
+                ?: this.onError(t)
     }
 
     /**
      * Stop listener
      */
-    @Synchronized override fun stop() {
+    @Synchronized
+    override fun stop() {
         val lc = listenerContainer
         if (lc != null) {
             log.info("Stopping ${this.description}")

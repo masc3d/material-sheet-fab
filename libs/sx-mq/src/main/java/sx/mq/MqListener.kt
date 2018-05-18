@@ -54,7 +54,7 @@ abstract class MqListener
      * @param e Error
      */
     protected open fun onError(e: Throwable) {
-        log.error(e.message)
+        log.error(e.message, e)
     }
 
     /**
