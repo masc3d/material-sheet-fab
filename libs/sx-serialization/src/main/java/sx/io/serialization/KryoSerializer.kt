@@ -11,11 +11,15 @@ import com.esotericsoftware.kryo.serializers.EnumNameSerializer
 import com.esotericsoftware.kryo.util.*
 import com.esotericsoftware.minlog.Log
 import de.javakaffee.kryoserializers.UUIDSerializer
+import org.objenesis.strategy.StdInstantiatorStrategy
 import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.io.OutputStream
 import java.lang.reflect.Array
 import java.util.*
+import java.util.HashMap
+import kotlin.collections.ArrayList
+
 
 /**
  * Kryo serializer with support for @Serializable annotations and lookup by UID
@@ -27,7 +31,7 @@ class KryoSerializer(
          * Kryo pool to use
          */
         private val kryoPool: KryoPool = KryoSerializer.defaultPool)
-:
+    :
         Serializer() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -176,7 +180,7 @@ class KryoSerializer(
         override fun read(kryo: Kryo?, input: Input?, type: Class<Enum<*>>?): Enum<out Enum<*>>? {
             return try {
                 super.read(kryo, input, type)
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 null
             }
         }
@@ -193,6 +197,14 @@ class KryoSerializer(
             // Setting the default serializer to CompatibleFieldSerializer is crucial here
             // as the default FiedldSerializer relies solely in order and may cause breakage as classes evolve
             k.setDefaultSerializer(CompatibleFieldSerializer::class.java)
+
+            // Always use default instantiator strategy (requiring no-arg c'tor)
+            k.instantiatorStrategy = Kryo.DefaultInstantiatorStrategy(
+                    // Do NOT fallback to std instantiator using objensis to create instances without invoking c'tor
+                    // breaking kotlin non-nullable types (when non-nullable fields with default values are added eg.)
+                    // StdInstantiatorStrategy()
+            )
+
             // Required for compatibility with kryo 3.x
             k.fieldSerializerConfig.isOptimizedGenerics = true
 

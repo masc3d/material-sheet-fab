@@ -21,8 +21,6 @@ abstract class JmsListener(
 :
         MqListener(),
         ExceptionListener {
-    /** Object message handler delegates  */
-    private val handlerDelegates = HashMap<Class<*>, MqHandler<Any?>>()
 
     /**
      * Message handling exception
