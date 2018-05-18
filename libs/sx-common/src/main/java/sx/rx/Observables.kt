@@ -160,7 +160,7 @@ fun <T> Observable<T>.behave(supplier: CompositeDisposableSupplier? = null): Obs
  */
 fun <T> Observable<T>.retryWith(
         // TODO: Int.MAX_VALUE doesn't seem to work for this implementation (freezes), while it works with Completable which is essentially the same implementation
-        count: Short,
+        count: Short = Short.MAX_VALUE,
         action: (retry: Long, error: Throwable) -> Observable<Long> = { _, _ -> Observable.just(0) })
         : Observable<T> {
 
@@ -190,7 +190,7 @@ fun <T> Observable<T>.retryWith(
  * @param action Callback invoked for every retry/error, returning a (timer) Observable
  */
 fun Completable.retryWith(
-        count: Short,
+        count: Short = Short.MAX_VALUE,
         action: (retry: Long, error: Throwable) -> Observable<Long> = { _, _ -> Observable.just(0) })
         : Completable {
 
