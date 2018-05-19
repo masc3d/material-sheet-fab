@@ -47,6 +47,12 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
                     level = Level.ERROR,
                     name = "org.apache.activemq.broker.TransportConnector",
                     message = "Could not accept connection"
+            ),
+            // Ignore activemq link stealing warnings, as those are common for (mobile) mqtt consumers
+            IgnoreFilterCondition(
+                    level = Level.WARN,
+                    name = "org.apache.activemq.broker.region.RegionBroker",
+                    message ="Stealing link"
             )
     )
 
