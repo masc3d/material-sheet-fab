@@ -563,7 +563,9 @@ class TourServiceV1
                             log.info("Ruote optimization completed for tour [${optimization.tourId}]")
 
                             if (options.vehicles?.count() ?: 0 > 0) {
-                                // Reset ids for all optimized tours, enforce create
+                                // Vehicles provided -> split optimization
+
+                                // Reset ids for all optimized tours, enforcing creation
                                 tours.forEach { it.id = null }
 
                                 // Create tours from optimized results
@@ -574,7 +576,7 @@ class TourServiceV1
                                 }
 
                             } else {
-                                // Update tour in place
+                                // In-place optimization of single tour
                                 this.put(
                                         tours = listOf(tours.first())
                                 )

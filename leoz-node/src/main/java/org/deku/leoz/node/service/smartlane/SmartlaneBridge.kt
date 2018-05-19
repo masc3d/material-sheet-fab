@@ -79,7 +79,16 @@ class SmartlaneBridge {
 
     /** Smartlaner container resolver interface */
     interface Resolver {
+        /**
+         * Resolve container by tour
+         * @throws NoSuchElementException if container could not be resolved
+         */
         fun containerByTour(tour: Tour): Container
+
+        /**
+         * Resolve container by user
+         * @throws NoSuchElementException if container could not be resolved
+         */
         fun containerByUser(user: User): Container
     }
 
@@ -355,10 +364,18 @@ class SmartlaneBridge {
     }
 
     /**
-     * Delete smartlane routes
+     * Delete smartlane routes.
      */
     fun deleteRoutes(tours: List<Tour>): Completable {
-        val byContainer = tours.groupBy { resolver.containerByTour(it) }
+        val byContainer = tours
+                .groupBy {
+                    try {
+                        resolver.containerByTour(it)
+                    } catch (e: NoSuchElementException) {
+                        log.trace { "Could not resolve container for tour, thus ignoring [${it.uid}] [${e.message}]" }
+                        null
+                    }
+                }
 
         return byContainer.keys
                 .filterNotNull()
