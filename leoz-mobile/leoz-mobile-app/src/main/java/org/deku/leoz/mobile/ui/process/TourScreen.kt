@@ -32,8 +32,9 @@ import org.deku.leoz.mobile.databinding.ViewOptimizationOptionsBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.log.user
-import org.deku.leoz.mobile.model.OptimizationOptions
+import org.deku.leoz.mobile.ui.vm.OptimizationOptionsViewModel
 import org.deku.leoz.mobile.model.entity.*
+import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -90,6 +91,7 @@ class TourScreen
     private val db: Database by Kodein.global.lazy.instance()
 
     private val tour: Tour by Kodein.global.lazy.instance()
+    private val login: Login by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
@@ -527,7 +529,7 @@ class TourScreen
         /** Mobile optimization options (will be translated to service layer) */
         val mobileOptions = sharedPrefs.getObject(
                 SharedPreference.OPTIMIZATION_OPTIONS.key,
-                OptimizationOptions::class.java)
+                OptimizationOptionsViewModel::class.java)
 
         fun optimize() {
             val progressDialog = MaterialDialog.Builder(this.activity)
@@ -554,7 +556,7 @@ class TourScreen
             // TODO: move optimization logic to model class (Tour)
             subscription = tourService.optimize(
                     options = options,
-                    startStationNo = mobileOptions.stationNo
+                    startStationNo = login.authenticatedUser?.stationNo
             )
                     // `Single`s that may be disposed before completion must be converted to observables
                     // in order to mitigate https://github.com/trello/RxLifecycle/issues/217
@@ -622,7 +624,6 @@ class TourScreen
                 }
                 .onPositive { _, _ ->
                     options.appointments.omit = mobileOptions.omitAppointments
-                    options.appointments.shiftDaysFromNow = if (mobileOptions.shiftAppointments) 1 else null
                     options.traffic = mobileOptions.traffic
 
                     optimize()

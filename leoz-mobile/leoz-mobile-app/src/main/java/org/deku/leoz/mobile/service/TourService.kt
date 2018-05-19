@@ -86,7 +86,8 @@ class TourService : MqHandler<Any> {
                             TourServiceV1.TourOptimizationRequest(
                                     requestUid = requestUid,
                                     options = options,
-                                    startStationNo = startStationNo
+                                    /** Only pass start station no if start location has not been set */
+                                    startStationNo = if (options.start == null) startStationNo else null
                             ).also {
                                 it.nodeUid = identity.uid.value
                                 log.trace { "Sending optimization request [${it}]" }

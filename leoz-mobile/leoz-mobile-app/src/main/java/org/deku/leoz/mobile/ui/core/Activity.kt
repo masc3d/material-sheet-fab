@@ -770,7 +770,7 @@ abstract class Activity : BaseActivity(),
                             // Update navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.VISIBLE
                             navHeaderView.uxActiveUser.text = user.email
-                            navHeaderView.uxStationId.text = "-_-"
+                            navHeaderView.uxStationId.text = user.stationNo?.toString() ?: "-"
                         }
                         else -> {
                             this.uxNavView.menu.also {
