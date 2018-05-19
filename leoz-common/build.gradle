@@ -119,8 +119,6 @@ dependencies {
     )
 
     testCompile(
-            project(":sx-core"),
-
             "junit:junit:$v_junit",
             "ch.qos.logback:logback-classic:$v_logback",
 

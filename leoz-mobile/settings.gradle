@@ -2,7 +2,6 @@ include ':leoz-mobile-data'
 include ':leoz-mobile-app'
 include ':leoz-common'
 include ':sx-common'
-include ':sx-core'
 include ':sx-android'
 include ':sx-android-honeywell'
 include ':sx-mq'
@@ -11,7 +10,6 @@ include ':material-sheet-fab'
 
 // Mangle project paths
 project(':sx-common').projectDir = file('../libs/sx-common')
-project(':sx-core').projectDir = file('../libs/sx-core')
 project(':sx-android').projectDir = file('../libs/sx-android')
 project(':sx-android-honeywell').projectDir = file('../libs/sx-android-honeywell')
 project(':sx-mq').projectDir = file('../libs/sx-mq')
