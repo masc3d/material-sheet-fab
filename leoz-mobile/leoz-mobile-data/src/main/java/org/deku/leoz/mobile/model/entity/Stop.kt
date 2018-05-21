@@ -77,6 +77,9 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     abstract var delayInMinutes: Int?
 
     val modificationTimeProperty by lazy { ObservableRxField(BR.modificationTime, { this.modificationTime }) }
+
+    val delayed: Boolean
+        get() = delayInMinutes ?: 0 > 0
 }
 
 fun Stop.Companion.create(
