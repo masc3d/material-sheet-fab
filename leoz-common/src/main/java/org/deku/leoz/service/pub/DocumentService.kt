@@ -72,13 +72,12 @@ interface DocumentService {
         @DefaultValue("1.0")
         var weight: Double? = null
         @ApiModelProperty(position = 100, required = false, value = "Services", example = "[Postbox allowed, Tel. Empfangsbestaetigung]")
-        @DefaultValue("1.0")
         var services: List<String>? = null
     }
 
     @POST
     @Path("/label")
-    @ApiOperation(value = "Get Label-Document")
+    @ApiOperation(value = "[WORK IN PROGRESS] Get Label-Document")
     @Produces(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM)
     fun printParcelLabel(
             @ApiParam(value = "Label request", required = false) labelRequest: LabelRequest? = null,
