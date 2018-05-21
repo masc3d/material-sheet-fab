@@ -29,14 +29,17 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileInputStream
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import javax.ws.rs.core.StreamingOutput
 
 
 @Named
 @Path("v1/document")
-class DocumentService: DocumentService {
+class DocumentService : DocumentService {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -47,7 +50,7 @@ class DocumentService: DocumentService {
     private val PPM: Float = 1 / (10 * 2.54f) * PPI
     val dpi = 300
 
-    override fun printParcelLabel(labelRequest: DocumentService.LabelRequest?, parcelId: Long?, parcelNo: String?): Response {
+    override fun printParcelLabel(labelRequest: DocumentService.LabelRequest?, parcelId: Long?, parcelNo: String?, returnType: String?): Response {
 
 
         return when {
@@ -60,15 +63,31 @@ class DocumentService: DocumentService {
             }
 
             labelRequest != null -> {
-                val documentFile: File = generateLabelPdf(labelRequest, storage.workTmpDataDirectory)
+                val stream = generateLabelPdf(labelRequest, storage.workTmpDataDirectory)
 
-                Response
-                        .ok(documentFile, MediaType.APPLICATION_OCTET_STREAM)
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"label.pdf\"")
-                        .header(HttpHeaders.CONTENT_LENGTH, documentFile.length().toString())
-                        .build()
+                when (returnType) {
+                    DocumentService.BASE64 -> {
+                        val base64 = Base64.getEncoder().encodeToString(stream.toByteArray())
 
-                // TODO Delete temporary file if client is done
+                        Response
+                                .ok(base64)
+                                .type("application/text")
+                                .header(HttpHeaders.CONTENT_LENGTH, base64.length)
+                                .build()
+                    }
+
+                    DocumentService.PDF -> {
+                        Response
+                                .status(Response.Status.NOT_IMPLEMENTED)
+                                .build()
+                    }
+
+                    else -> {
+                        Response
+                                .status(Response.Status.BAD_REQUEST)
+                                .build()
+                    }
+                }
             }
 
             else -> {
@@ -77,14 +96,9 @@ class DocumentService: DocumentService {
         }
     }
 
-    fun generateLabelPdf(request: DocumentService.LabelRequest, targetDirectory: File): File {
-        val documentName: String = "${UUID.randomUUID().toString()}-label.pdf"
-        val documentFile: File = targetDirectory.resolve(documentName)
+    fun generateLabelPdf(request: DocumentService.LabelRequest, targetDirectory: File): ByteArrayOutputStream {
+        val outputStream = ByteArrayOutputStream()
 
-        if (documentFile.exists())
-            documentFile.delete()
-
-        val font = PDType1Font.HELVETICA
         val document: PDDocument = PDDocument()
         val page: PDPage = PDPage(PDRectangle(4f * PPI, 6f * PPI))
 
@@ -173,7 +187,7 @@ class DocumentService: DocumentService {
         contentStream.addText(
                 font = PDType1Font.HELVETICA_BOLD,
                 size = 15f,
-                text = "${if (request.appointment.notBeforeStart) "F " else ""}${SimpleDateFormat("dd.MM.yyyy    HH:mm", CountryCode.valueOf(request.consignee.country).toLocale()).format(request.appointment.dateStart) } - ${SimpleDateFormat("HH:mm", CountryCode.valueOf(request.consignee.country).toLocale()).format(request.appointment.dateEnd)}",
+                text = "${if (request.appointment.notBeforeStart) "F " else ""}${SimpleDateFormat("dd.MM.yyyy    HH:mm", CountryCode.valueOf(request.consignee.country).toLocale()).format(request.appointment.dateStart)} - ${SimpleDateFormat("HH:mm", CountryCode.valueOf(request.consignee.country).toLocale()).format(request.appointment.dateEnd)}",
                 xOffset = 0.4f * PPI,
                 yOffset = 2.9f * PPI
         )
@@ -225,10 +239,10 @@ class DocumentService: DocumentService {
         contentStream.close()
 
         // Save the results and ensure that the document is properly closed:
-        document.save(documentFile)
+        document.save(outputStream)
         document.close()
 
-        return documentFile
+        return outputStream
 
     }
 }

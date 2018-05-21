@@ -16,6 +16,9 @@ interface DocumentService {
     companion object {
         const val PARCELID = "parcel-id"
         const val PARCELNO = "parcel-no"
+        const val RETURN_TYPE = "return-type"
+        const val BASE64 = "base64"
+        const val PDF = "pdf"
     }
 
     @ApiModel(value = "LabelRequest", description = "Request for label print", subTypes = [(LabelRequest.LabelParticipant::class)])
@@ -59,13 +62,17 @@ interface DocumentService {
         var consignee: LabelParticipant = LabelParticipant()
         @ApiModelProperty(position = 60, required = true, value = "Appointment")
         var appointment: OrderService.Order.Appointment = OrderService.Order.Appointment()
-        @ApiModelProperty(position = 70, required = false, value = "Total parcel amount", example = "2") @DefaultValue("1")
+        @ApiModelProperty(position = 70, required = false, value = "Total parcel amount", example = "2")
+        @DefaultValue("1")
         var parcelAmount: Int? = null
-        @ApiModelProperty(position = 80, required = false, value = "Parcel position", example = "2") @DefaultValue("1")
+        @ApiModelProperty(position = 80, required = false, value = "Parcel position", example = "2")
+        @DefaultValue("1")
         var parcelPosition: Int? = null
-        @ApiModelProperty(position = 90, required = true, value = "Parcel weight", example = "5.50") @DefaultValue("1.0")
+        @ApiModelProperty(position = 90, required = true, value = "Parcel weight", example = "5.50")
+        @DefaultValue("1.0")
         var weight: Double? = null
-        @ApiModelProperty(position = 100, required = false, value = "Services", example = "Postbox allowed") @DefaultValue("1.0")
+        @ApiModelProperty(position = 100, required = false, value = "Services", example = "[Postbox allowed, Tel. Empfangsbestaetigung]")
+        @DefaultValue("1.0")
         var services: List<String>? = null
     }
 
@@ -76,6 +83,7 @@ interface DocumentService {
     fun printParcelLabel(
             @ApiParam(value = "Label request", required = false) labelRequest: LabelRequest? = null,
             @QueryParam(PARCELID) @ApiParam(value = "Parcel ID", required = false) parcelId: Long? = null,      //TODO To be removed as this can be called via ParcelService??
-            @QueryParam(PARCELNO) @ApiParam(value = "Parcel Number", required = false) parcelNo: String? = null //TODO To be removed as this can be done via ParcelService??
+            @QueryParam(PARCELNO) @ApiParam(value = "Parcel Number", required = false) parcelNo: String? = null, //TODO To be removed as this can be done via ParcelService??
+            @QueryParam(RETURN_TYPE) @ApiParam(value = "Return Type", required = true, defaultValue = BASE64, allowableValues = "$BASE64, $PDF") returnType: String? = null
     ): Response
 }
