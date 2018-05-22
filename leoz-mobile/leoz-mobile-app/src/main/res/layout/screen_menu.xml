@@ -3,6 +3,20 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
+    <FrameLayout
+        style="@style/AppTheme.Layout.Content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <org.deku.leoz.mobile.ui.process.VehicleTypePicker
+            android:id="@+id/uxVehicleTypePicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </FrameLayout>
+
     <ListView
         android:id="@+id/uxMenuList"
         style="@style/AppTheme.ListView"

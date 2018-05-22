@@ -14,12 +14,13 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import kotlinx.android.synthetic.main.item_delivery_menu_entry.view.*
 import kotlinx.android.synthetic.main.screen_menu.*
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.slf4j.LoggerFactory
-import sx.android.aidc.AidcReader
 import sx.android.content.getDrawableCompat
 import sx.android.content.getLayoutInflater
 
@@ -32,8 +33,9 @@ class MenuScreen : ScreenFragment<Any>() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val tour: Tour by Kodein.global.lazy.instance()
+    private val login: Login by Kodein.global.lazy.instance()
 
-    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+    private val db: Database by Kodein.global.lazy.instance()
 
     enum class EntryType {
         DELIVERY,
@@ -75,7 +77,8 @@ class MenuScreen : ScreenFragment<Any>() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val inflater = context.getLayoutInflater()
 
-            val v: View = convertView ?: inflater.inflate(R.layout.item_delivery_menu_entry, parent, false)
+            val v: View = convertView
+                    ?: inflater.inflate(R.layout.item_delivery_menu_entry, parent, false)
 
             val entry = entries[position]
 
@@ -107,6 +110,7 @@ class MenuScreen : ScreenFragment<Any>() {
         this.title = "mobileX Tour"
         this.headerImage = Headers.street
 
+        this.accentColor = R.color.colorPrimary
         this.aidcEnabled = false
     }
 
@@ -147,6 +151,16 @@ class MenuScreen : ScreenFragment<Any>() {
                     entry = (this.uxMenuList.getItemAtPosition(position) as Entry)
             )
         }
+
+        this.uxVehicleTypePicker.selected = login.authenticatedUser?.vehicleType
+        this.uxVehicleTypePicker.selectedProperty
+                .subscribe { vehicleType ->
+                    login.authenticatedUser?.also {user ->
+                        user.vehicleType = vehicleType.value
+                        db.store.update(user).blockingGet()
+                    }
+
+                }
     }
 
     fun onEntryPressed(entry: Entry) {
