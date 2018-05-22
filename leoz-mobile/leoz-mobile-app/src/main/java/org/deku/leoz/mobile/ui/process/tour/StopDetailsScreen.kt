@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -44,6 +45,7 @@ import org.deku.leoz.model.DelayedAppointmentReason
 import org.deku.leoz.model.ParcelService
 import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.LazyInstance
 import sx.Result
 import sx.aidc.SymbologyType
@@ -369,10 +371,13 @@ class StopDetailsScreen
                                     .negativeText(android.R.string.cancel)
                                     .build()
 
+                            fun Duration.format(): String =
+                                    "%02d:%02d".format(this.seconds / 3600, (this.seconds % 3600) / 60)
+
                             dialog.customView!!.also {
                                 val textView = it.findViewById<TextView>(R.id.uxDelayDisplay)
 
-                                textView.text = "$delayMinutes Min."
+                                textView.text = Duration.ofMinutes(delayMinutes.toLong()).format()
 
                                 it.findViewById<Spinner>(R.id.uxDelayReasonList).also {
                                     val reasons = DelayedAppointmentReason.values().map {
@@ -403,7 +408,7 @@ class StopDetailsScreen
                                     }
                                 }
 
-                                it.findViewById<Button>(R.id.uxMinusFifteen).also {
+                                it.findViewById<FloatingActionButton>(R.id.uxMinus).also {
                                     it.setOnClickListener {
                                         var delayMin = this.stop.delayInMinutes ?: 0
 
@@ -412,18 +417,18 @@ class StopDetailsScreen
                                         } else {
                                             delayMin -= 15
                                         }
-                                        textView.text = "$delayMin Min."
+                                        textView.text = Duration.ofMinutes(delayMin.toLong()).format()
 
                                         this.stop.delayInMinutes = delayMin
                                     }
                                 }
 
-                                it.findViewById<Button>(R.id.uxPlusFifteen).also {
+                                it.findViewById<FloatingActionButton>(R.id.uxPlus).also {
                                     it.setOnClickListener {
                                         var delayMin = this.stop.delayInMinutes ?: 0
 
                                         delayMin += 15
-                                        textView.text = "$delayMin Min."
+                                        textView.text = Duration.ofMinutes(delayMin.toLong()).format()
 
                                         this.stop.delayInMinutes = delayMin
                                     }
