@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/stop_to_be_added"/>
 
-            <include android:id="@+id/uxSourceStop" layout="@layout/item_stop_merge_dialog" />
+            <include android:id="@+id/uxSourceStop" layout="@layout/item_stop" />
 
         </LinearLayout>
 
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/active_stop"/>
 
-            <include android:id="@+id/uxTargetStop" layout="@layout/item_stop_merge_dialog" />
+            <include android:id="@+id/uxTargetStop" layout="@layout/item_stop" />
 
         </LinearLayout>
 

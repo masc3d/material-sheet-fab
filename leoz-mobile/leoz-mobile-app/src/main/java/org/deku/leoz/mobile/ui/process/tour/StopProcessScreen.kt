@@ -33,7 +33,6 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
-import org.deku.leoz.mobile.databinding.ItemStopMergeDialogBinding
 import org.deku.leoz.mobile.databinding.ScreenTourStopProcessBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
@@ -891,13 +890,13 @@ class StopProcessScreen :
                     .start()
         }
 
-        val bindingSourceStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(sourceView)!!
+        val bindingSourceStop = DataBindingUtil.bind<ItemStopBinding>(sourceView)!!
         bindingSourceStop.stop = StopViewModel(
                 stop = sourceStop,
                 timerEvent = Observable.empty()
         )
 
-        val bindingTargetStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(targetView)!!
+        val bindingTargetStop = DataBindingUtil.bind<ItemStopBinding>(targetView)!!
         bindingTargetStop.stop = StopViewModel(
                 stop = this.tourStop.entity,
                 timerEvent = Observable.empty()
