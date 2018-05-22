@@ -218,10 +218,6 @@ class Login {
                         .blockingAwait()
             }
 
-            // Update last login time
-            user.lastLoginTime = Date()
-            store.update(user)
-
             user
         }
                 .observeOnMainThread()

@@ -24,6 +24,7 @@ import org.deku.leoz.mobile.ui.process.LoginFragment
 import org.deku.leoz.mobile.ui.process.MainScreen
 import org.deku.leoz.model.VehicleType
 import sx.android.rx.observeOnMainThreadUntilEvent
+import java.util.*
 
 class MainActivity
     :
@@ -126,6 +127,7 @@ class MainActivity
         this.loginPendingDialog.dismiss()
 
         user.vehicleType = vehicleType
+        user.lastLoginTime = Date()
         db.store.update(user).blockingGet()
 
         login.authenticatedUser = user

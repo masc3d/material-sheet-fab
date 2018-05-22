@@ -142,7 +142,8 @@ class LoginFragment : Fragment<Any>() {
                 }
                 .switchMap { state ->
                     when {
-                        state.isComplete -> this.queryPrivacyConfirmation()
+                        // Only query for privacy confirmation when user logs in for the first time
+                        state.isComplete && state.user?.lastLoginTime == null -> this.queryPrivacyConfirmation()
                                 .toObservable()
                                 .switchMap {
                                     when (it) {
