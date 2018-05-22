@@ -71,15 +71,15 @@ import org.jetbrains.anko.backgroundColor
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.aidc.SymbologyType
-import sx.android.app.ApplicationStateMonitor
-import sx.android.hardware.Device
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
+import sx.android.app.ApplicationStateMonitor
 import sx.android.content.res.getResourceEntryNameOrNull
 import sx.android.design.widget.isExpanded
 import sx.android.fragment.util.withTransaction
 import sx.android.graphics.withTransitionTo
+import sx.android.hardware.Device
 import sx.android.net.Connectivity
 import sx.android.net.NtpTime
 import sx.android.rx.observeOnMainThread
@@ -755,7 +755,7 @@ abstract class Activity : BaseActivity(),
 
         this.login.authenticatedUserProperty
                 .distinctUntilChanged()
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
                     this@Activity.invalidateOptionsMenu()
 
@@ -791,6 +791,18 @@ abstract class Activity : BaseActivity(),
                             }
                         }
                     }
+                }
+
+
+        // Reactive station no update of authenticated user
+        this.login.authenticatedUserProperty
+                .filter { it.value != null }
+                .switchMap {
+                    it.value!!.stationNoProperty
+                }
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
+                .subscribe {
+                    navHeaderView.uxStationId.text = it.value?.toString() ?: "-"
                 }
 
         //region AIDC
