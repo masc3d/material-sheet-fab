@@ -70,7 +70,7 @@ android {
     defaultConfig {
         applicationId "org.deku.leoz.mobile"
         versionCode 2
-        versionName "0.148-SNAPSHOT"
+        versionName "0.149-SNAPSHOT"
 
         minSdkVersion 19
         targetSdkVersion 27
