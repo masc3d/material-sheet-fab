@@ -72,14 +72,11 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     @get:Index("stop_modificationtime_index")
     abstract var modificationTime: Date?
 
+    val modificationTimeProperty by lazy { ObservableRxField(BR.modificationTime, { this.modificationTime }) }
+
     @get:Bindable
     @get:Column(nullable = true)
     abstract var delayInMinutes: Int?
-
-    val modificationTimeProperty by lazy { ObservableRxField(BR.modificationTime, { this.modificationTime }) }
-
-    val delayed: Boolean
-        get() = delayInMinutes ?: 0 > 0
 }
 
 fun Stop.Companion.create(

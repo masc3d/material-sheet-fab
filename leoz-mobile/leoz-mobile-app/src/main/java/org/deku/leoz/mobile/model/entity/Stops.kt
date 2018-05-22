@@ -64,3 +64,7 @@ val Stop.appointmentState: AppointmentState
             else -> AppointmentState.NONE
         }
     }
+
+/** Indicates if stop is reported to be delayed */
+val Stop.isDelayed: Boolean
+    get() = this.delayInMinutes ?: 0 > 0
