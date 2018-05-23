@@ -1,7 +1,6 @@
 package sx
 
 import org.yaml.snakeyaml.Yaml
-import java.io.FileNotFoundException
 import java.io.InputStream
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
@@ -12,18 +11,15 @@ import kotlin.reflect.KProperty
 annotation class ConfigurationMapPath(val path: String)
 
 /**
- * Configuration map base class.
+ * Configuration map
+ *
  * Allows convenient mapping of properties via delegation to a structured configuration map which
  * can be created from eg. YAML.
+ *
  * Created by masc on 15/02/2017.
  */
-abstract class ConfigurationMap(vararg sources: InputStream) {
-    val map: Map<String, Any>
-
-    init {
-        this.map = this.normalize(
-                this.loadMap(sources.toList()))
-    }
+class ConfigurationMap() {
+    private var map: Map<String, Any> = mapOf()
 
     /**
      * Extension method for conveniently navigating a tree of nested string based maps
@@ -48,49 +44,11 @@ abstract class ConfigurationMap(vararg sources: InputStream) {
         }.toTypedArray())
     }
 
-    abstract fun loadMap(sources: List<InputStream>): Map<String, Any>
-
     /**
-     * Property delegate which extracts string value from a map and converts it to the property's type
+     * Set configuration map based on sources in overriding order
+     * @param sources configuration map sources
      */
-    inner class MapValue<T>(
-            private val default: T,
-            private val type: Class<T>)
-        :
-            ReadOnlyProperty<Any, T> {
-
-        /**
-         * Getter
-         */
-        @Suppress("UNCHECKED_CAST")
-        override fun getValue(thisRef: Any, property: KProperty<*>): T {
-            val mapPath = thisRef.javaClass
-                    .annotationOfType(ConfigurationMapPath::class.java)
-                    .path
-                    .toLowerCase()
-                    .replace("-", "")
-
-            var map: Map<String, Any> = this@ConfigurationMap.map
-            mapPath.split(".").forEach {
-                map = map.resolve(it)
-            }
-
-            return map[property.name.toLowerCase()] as? T ?: default
-        }
-    }
-
-    inline fun <reified T : Any?> value(default: T) = MapValue<T>(default, T::class.java)
-}
-
-/**
- * Yaml configuration map
- * Created by masc on 15/02/2017.
- */
-@Suppress("UNCHECKED_CAST")
-class YamlConfigurationMap(vararg sources: InputStream) : ConfigurationMap(*sources) {
-
-    override fun loadMap(sources: List<InputStream>): Map<String, Any> {
-        val yaml = Yaml()
+    fun set(sources: List<Map<String, Any>>) {
         val treeMap = mutableMapOf<String, Any>()
 
         /**
@@ -103,16 +61,18 @@ class YamlConfigurationMap(vararg sources: InputStream) : ConfigurationMap(*sour
                 source: Map<String, Any>): MutableMap<String, Any> {
 
             source.entries.forEach {
-                if (it.value is Map <*, *>) {
+                if (it.value is Map<*, *>) {
                     val targetItem = target[it.key]
                     // If both source and target item are map
                     if (targetItem != null && targetItem is Map<*, *>) {
                         // Transform to mutable map and do recursive merge
                         val mutableTargetMap = targetItem.toMutableMap()
                         target[it.key] = mutableTargetMap
+
+                        @Suppress("UNCHECKED_CAST")
                         merge(
                                 target = mutableTargetMap as MutableMap<String, Any>,
-                                source = it.value as Map <String, Any>)
+                                source = it.value as Map<String, Any>)
 
                     } else {
                         target[it.key] = it.value
@@ -129,9 +89,44 @@ class YamlConfigurationMap(vararg sources: InputStream) : ConfigurationMap(*sour
         sources.forEach {
             merge(
                     target = treeMap,
-                    source = yaml.load(it) as Map<String, Any>)
+                    source = it
+            )
         }
 
-        return treeMap
+        // TODO: consider to normalize during merge to additional recursive iteration
+        this.map = this.normalize(treeMap)
     }
+
+    /**
+     * Property delegate which extracts string value from a map and converts it to the property's type
+     */
+    inner class MapValue<T>(
+            private val default: T,
+            private val type: Class<T>)
+        :
+            ReadOnlyProperty<Any, T> {
+
+        /**
+         * Getter
+         */
+        @Suppress("UNCHECKED_CAST")
+        override fun getValue(thisRef: Any, property: KProperty<*>): T {
+            // TODO: support caching
+
+            val mapPath = thisRef.javaClass
+                    .annotationOfType(ConfigurationMapPath::class.java)
+                    .path
+                    .toLowerCase()
+                    .replace("-", "")
+
+            var map: Map<String, Any> = this@ConfigurationMap.map
+            mapPath.split(".").forEach {
+                map = map.resolve(it)
+            }
+
+            return map[property.name.toLowerCase()] as? T ?: default
+        }
+    }
+
+    inline fun <reified T : Any?> value(default: T) = MapValue<T>(default, T::class.java)
 }

@@ -8,16 +8,20 @@ import com.github.salomonbrys.kodein.erased.singleton
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.settings.*
 import org.slf4j.LoggerFactory
+import org.yaml.snakeyaml.Yaml
 import sx.ConfigurationMap
-import sx.YamlConfigurationMap
 import java.io.IOException
-import java.io.InputStream
 
 /**
  * Settings configurations
  * Created by masc on 15/02/2017.
  */
-class SettingsConfiguration {
+class SettingsConfiguration(
+        /** Map of core settings */
+        val settingsMap: Map<String, Any>,
+        /** Map of debug specific overrides */
+        val debugSettingsMap: Map<String, Any>
+) {
     companion object {
         val ASSET_SETTINGS = "application.yml"
         val ASSET_SETTINGS_DEBUG = "application-debug.yml"
@@ -28,26 +32,41 @@ class SettingsConfiguration {
         private val log = LoggerFactory.getLogger(SettingsConfiguration::class.java)
 
         val module = Kodein.Module {
-            bind<ConfigurationMap>() with singleton {
+            bind<SettingsConfiguration>() with singleton {
                 val context: Context = instance()
+                val yaml = Yaml()
 
-                val sources = mutableListOf<InputStream>()
-                sources.add(context.assets.open(ASSET_SETTINGS))
-                if (BuildConfig.DEBUG || ENFORCE_DEBUG) {
-                    try {
-                        sources.add(context.assets.open(ASSET_SETTINGS_DEBUG))
-                    } catch (e: IOException) {
-                        // Optional asset, that's ok
-                    }
+                // Core settings map
+                val settingsMap = context.assets.open(ASSET_SETTINGS).let {
+                    yaml.loadAs(it, Map::class.java) as Map<String, Any>
                 }
 
-                try {
-                    YamlConfigurationMap(sources = *sources.toTypedArray())
-                } finally {
-                    // Close streams
-                    sources.forEach {
-                        it.close()
+                // Debug settings map
+                val debugSettingsMap = if (BuildConfig.DEBUG || ENFORCE_DEBUG) {
+                    try {
+                        context.assets.open(ASSET_SETTINGS_DEBUG).let {
+                            yaml.load(it) as Map<String, Any>
+                        }
+                    } catch (e: IOException) {
+                        // Optional asset, that's ok
+                        mapOf<String, Any>()
                     }
+                } else mapOf()
+
+                SettingsConfiguration(
+                        settingsMap = settingsMap,
+                        debugSettingsMap = debugSettingsMap
+                )
+            }
+
+            bind<ConfigurationMap>() with singleton {
+                val settingsConfiguration = instance<SettingsConfiguration>()
+
+                ConfigurationMap().also {
+                    it.set(listOf(
+                            settingsConfiguration.settingsMap,
+                            settingsConfiguration.debugSettingsMap
+                    ))
                 }
             }
 
