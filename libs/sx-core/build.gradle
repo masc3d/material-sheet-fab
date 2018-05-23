@@ -3,6 +3,7 @@ version = '0.1'
 
 buildscript {
     ext {
+        v_guava = '25.0-jre'
         v_jackson = '2.9.5'
         v_javax_persistence = '2.2'
         v_jersey = '2.27'
@@ -128,6 +129,9 @@ dependencies {
             "ch.qos.logback:logback-classic:$v_logback",
 
             "org.threeten:threetenbp:$v_threeten",
+
+            // Guava (for memory measurement etc.)
+            "com.google.guava:guava:$v_guava",
 
             "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
 
