@@ -1,5 +1,6 @@
 package org.deku.leoz.node.data.repository
 
+import org.deku.leoz.model.UserRole
 import org.deku.leoz.node.data.jpa.*
 import org.deku.leoz.node.data.jpa.QMstKey.mstKey
 import org.deku.leoz.node.data.jpa.QMstUser.mstUser
@@ -61,7 +62,9 @@ class UserRepositoryImpl : UserRepositoryExtension {
     }
 }
 
-fun MstUser.toUser(): UserService.User =
+fun MstUser.toUser(
+        allowedStations: List<Int>? = null
+): UserService.User =
         UserService.User(
                 // IMPORTANT: password must never be set when converting to service instance
                 // as it leaks hashes to the client. That's why the initial recommendation
@@ -71,7 +74,7 @@ fun MstUser.toUser(): UserService.User =
                 email = this.email,
                 debitorId = this.debitorId.toInt(),
                 alias = this.alias,
-                role = this.role,
+                role = UserRole.valueOf(this.role),
                 firstName = this.firstname,
                 lastName = this.lastname,
                 active = this.isActive,
@@ -79,7 +82,8 @@ fun MstUser.toUser(): UserService.User =
                 phone = this.phone,
                 phoneMobile = this.phoneMobile,
                 expiresOn = this.expiresOn,
-                passwordExpiresOn = this.passwordExpiresOn
+                passwordExpiresOn = this.passwordExpiresOn,
+                allowedStations = allowedStations
         )
 
 val MstUser.isActive: Boolean

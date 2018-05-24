@@ -116,9 +116,9 @@ class LocationServiceV2 :
                                 status = Response.Status.NOT_FOUND,
                                 title = "no user found by email")
 
-                if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                if ((authorizedUser.role!! == UserRole.ADMIN)
                         || ((authorizedUser.debitorId == userRecord.debitorId)
-                                && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value))) {
+                                && (authorizedUser.role!!.value >= UserRole.valueOf(userRecord.role).value))) {
 
                     val posList = posRepository.findByUserId(userRecord.id, pos_from, pos_to)
                     if (posList != null) {
@@ -154,9 +154,9 @@ class LocationServiceV2 :
                 //val user = mutableListOf<LocationService.User>()
                 userRecList.forEach {
 
-                    if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                    if ((authorizedUser.role!! == UserRole.ADMIN)
                             || ((authorizedUser.debitorId == it.debitorId)
-                                    && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value))) {
+                                    && (authorizedUser.role!!.value >= UserRole.valueOf(it.role).value))) {
 
                         val posList = posRepository.findByUserId(it.id, pos_from, pos_to)
                         //gpsList.clear()
@@ -218,9 +218,9 @@ class LocationServiceV2 :
                                 status = Response.Status.NOT_FOUND,
                                 title = "no user found by email")
 
-                if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                if ((authorizedUser.role!! == UserRole.ADMIN)
                         || ((authorizedUser.debitorId == userRecord.debitorId)
-                                && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value))) {
+                                && (authorizedUser.role!!.value >= UserRole.valueOf(userRecord.role).value))) {
 
                     val posList: List<TadNodeGeopositionRecord>?
                     if (duration != null) {
@@ -264,9 +264,9 @@ class LocationServiceV2 :
                 //val user = mutableListOf<LocationService.User>()
                 userRecList.forEach {
 
-                    if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                    if ((authorizedUser.role!! == UserRole.ADMIN)
                             || ((authorizedUser.debitorId == it.debitorId)
-                                    && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value))) {
+                                    && (authorizedUser.role!!.value >= UserRole.valueOf(it.role).value))) {
 
                         val posList: List<TadNodeGeopositionRecord>?
                         if (duration != null) {

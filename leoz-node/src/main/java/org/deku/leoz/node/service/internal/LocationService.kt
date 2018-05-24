@@ -98,9 +98,9 @@ class LocationService :
                                 status = Response.Status.NOT_FOUND,
                                 title = "no user found by email")
 
-                if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                if ((authorizedUser.role!! == UserRole.ADMIN)
                         || ((authorizedUser.debitorId == userRecord.debitorId.toInt())
-                                && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value))) {
+                                && (authorizedUser.role!!.value >= UserRole.valueOf(userRecord.role).value))) {
 
                     val posList = posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(userRecord.id.toInt(), pos_from, pos_to)
                     gpsList = filter(posList)
@@ -126,9 +126,9 @@ class LocationService :
                             title = "no user found by debitor-id")
                 userRecList.forEach {
 
-                    if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                    if ((authorizedUser.role!! == UserRole.ADMIN)
                             || ((authorizedUser.debitorId == it.debitorId.toInt())
-                                    && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value))) {
+                                    && (authorizedUser.role!!.value >= UserRole.valueOf(it.role).value))) {
 
                         val posList = posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(it.id.toInt(), pos_from, pos_to)
                         var gpsListTmp = mutableListOf<LocationServiceV2.GpsDataPoint>()
@@ -184,9 +184,9 @@ class LocationService :
                                 status = Response.Status.NOT_FOUND,
                                 title = "no user found by email")
 
-                if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                if ((authorizedUser.role!! == UserRole.ADMIN)
                         || ((authorizedUser.debitorId == userRecord.debitorId.toInt())
-                                && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value))) {
+                                && (authorizedUser.role!!.value >= UserRole.valueOf(userRecord.role).value))) {
 
                     val posList: List<TadNodeGeoposition>?
                     if (duration != null) {
@@ -228,9 +228,9 @@ class LocationService :
                             title = "No user found by debitor-id")
                 userRecList.forEach {
 
-                    if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                    if ((authorizedUser.role!! == UserRole.ADMIN)
                             || ((authorizedUser.debitorId == it.debitorId.toInt())
-                                    && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value))) {
+                                    && (authorizedUser.role!!.value >= UserRole.valueOf(it.role).value))) {
 
                         val posList: List<TadNodeGeoposition>?
                         if (duration != null) {

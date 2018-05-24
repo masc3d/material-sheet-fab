@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserPreferenceKey
+import org.deku.leoz.model.UserRole
 import org.deku.leoz.service.entity.Message
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
@@ -54,11 +55,12 @@ interface UserService {
             var alias: String? = null,
 
             @get:ApiModelProperty(example = "User", required = true, value = "Role of the user", allowableValues = "Admin, PowerUser, User, Driver, Customer")
-            var role: String? = null,
+            var role: UserRole? = null,
 
             // TODO: should be hash instead of pw
             @get:ApiModelProperty(example = "MyS3cr3t", required = false, value = "Password")
             var password: String? = null,
+
             @get:ApiModelProperty(example = "Foo", required = false, value = "First name")
             var firstName: String? = null,
 
@@ -80,23 +82,11 @@ interface UserService {
             @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this account is supposed to expire")
             var expiresOn: java.sql.Date? = null,
 
-            //@get:ApiModelProperty(example = "220,221",dataType = "String[]", required = false, value = "allowed stations")
-            //@get:ApiModelProperty(example = "220,221",dataType = "List", required = false, value = "allowed stations")
-            //@get:ApiModelProperty(example = "220,221",dataType = "java.util.List<String>", required = false, value = "allowed stations")
-            //@get:ApiModelProperty(example = "[\"220\",\"221\"]", required = false, value = "allowed stations")
-            //@get:ApiModelProperty(example = ["220","221"], required = false, value = "allowed stations")
-            //@get:ApiModelProperty(example = "220,221", dataType = "Array<String>", required = false, value = "allowed stations")
-            //@get:ApiModelProperty(example = "[220,221]", required = false, value = "allowed stations")
             @get:ApiModelProperty(example = "[220,221]", required = false, value = "allowed stations")
             var allowedStations: List<Int>? = null,
 
             @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this accounts password is supposed to expire")
             var passwordExpiresOn: java.sql.Date? = null
-
-//            @get:ApiModelProperty(example = "", required = false, value = "config")
-//            var config: String? = null,
-//            @get:ApiModelProperty(example = "", required = false, value = "preferences")
-//            var preferences: Preferences? = null
     )
 
     @ApiModel(description = "User preference object")
@@ -198,11 +188,6 @@ interface UserService {
     fun getConfigurationById(
             @PathParam(value = USER_ID) userId: Int
     ): String
-
-    @GET
-    @Path("/auth/configuration")
-    @ApiOperation(value = "Get user configuration for current user")
-    fun getCurrentUserConfiguration(): String
 
     @GET
     @Path("/id")

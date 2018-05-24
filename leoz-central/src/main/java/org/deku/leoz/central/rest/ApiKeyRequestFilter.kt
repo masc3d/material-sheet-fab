@@ -52,7 +52,10 @@ class ApiKeyRequestFilter : org.deku.leoz.node.rest.ApiKeyRequestFilter() {
 
     override fun verify(requestContext: ContainerRequestContext, resourceInfo: ResourceInfo, apiKey: String): Boolean {
         val user = this.userJooqRepository.findByKey(apiKey)
-                ?.toUser()?.also { x -> x.allowedStations = this.stationJooqRepository.findAllowedStationsByUserId(x.id!!) }
+                ?.toUser()
+                ?.also { x ->
+                    x.allowedStations = this.stationJooqRepository.findAllowedStationsByUserId(x.id!!)
+                }
 
         val userRole = user?.role
 
@@ -76,7 +79,7 @@ class ApiKeyRequestFilter : org.deku.leoz.node.rest.ApiKeyRequestFilter() {
         // Check role restrictions
         resourceInfo.annotationOfType(RestrictRoles::class.java)
                 ?.also {
-                    if (userRole == null || !it.role.contains(UserRole.valueOf(userRole)))
+                    if (userRole == null || !it.role.contains(userRole))
                         return false
                 }
 

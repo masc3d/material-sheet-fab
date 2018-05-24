@@ -8,6 +8,7 @@ import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
 import org.deku.leoz.central.data.jooq.dekuclient.tables.MstUser
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstUserRecord
 import org.deku.leoz.model.UserActivity
+import org.deku.leoz.model.UserRole
 import org.deku.leoz.node.data.jooq.Tables.MST_DEBITOR
 import org.deku.leoz.service.internal.UserService
 import org.jooq.DSLContext
@@ -164,7 +165,7 @@ fun MstUserRecord.toUser(): UserService.User =
                 email = this.email,
                 debitorId = this.debitorId,
                 alias = this.alias,
-                role = this.role,
+                role = UserRole.valueOf(this.role),
                 firstName = this.firstname,
                 lastName = this.lastname,
                 active = this.isActive,

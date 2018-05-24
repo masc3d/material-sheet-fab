@@ -87,11 +87,11 @@ class UserService :
                 val user = mutableListOf<User>()
                 userRecList.forEach {
 
-                    if (authorizedUser == null || authorizedUser.role == UserRole.ADMIN.name) {
+                    if (authorizedUser == null || authorizedUser.role == UserRole.ADMIN) {
                         user.add(it.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(it.id) })
                     } else {
                         if (authorizedUser.debitorId == it.debitorId) {
-                            if (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value) {
+                            if (authorizedUser.role!!.value >= UserRole.valueOf(it.role).value) {
                                 user.add(it.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(it.id) })
                             }
                         }
@@ -106,9 +106,9 @@ class UserService :
                                 status = Response.Status.NOT_FOUND,
                                 title = "No user found by email")
 
-                if (authorizedUser == null || UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                if (authorizedUser == null || authorizedUser.role!! == UserRole.ADMIN)
                     return listOf(userRecord.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(userRecord.id) })
-                if ((UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value) &&
+                if ((authorizedUser.role!!.value >= UserRole.valueOf(userRecord.role).value) &&
                         (authorizedUser.debitorId == userRecord.debitorId)) {
                     return listOf(userRecord.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(userRecord.id) })
                 } else {
@@ -160,7 +160,7 @@ class UserService :
 
         var debitor = user.debitorId
 
-        val userRole = user.role?.toUpperCase()
+        val userRole = user.role
         val alias = user.alias
         val password = user.password
         val lastName = user.lastName
@@ -191,16 +191,16 @@ class UserService :
             }
         } else {
             if (rec.debitorId == null) rec.debitorId = authorizedUser.debitorId
-            if (rec.role == null) rec.role = authorizedUser.role
+            if (rec.role == null) rec.role = authorizedUser.role!!.name
 
-            if (UserRole.valueOf(authorizedUser.role!!) != UserRole.ADMIN) {
+            if (authorizedUser.role!! != UserRole.ADMIN) {
                 if (rec.debitorId != authorizedUser.debitorId)
                     throw  RestProblem(
                             status = Response.Status.FORBIDDEN,
                             title = "Login user can not change user - debitorId")
             }
 
-            if (UserRole.valueOf(authorizedUser.role!!).value < UserRole.valueOf(rec.role).value) {
+            if (authorizedUser.role!!.value < UserRole.valueOf(rec.role).value) {
                 throw  RestProblem(
                         status = Response.Status.FORBIDDEN,
                         title = "Login user can not create/change user - no permission")
@@ -278,14 +278,14 @@ class UserService :
                         title = "Duplicate alias/debitor")
         }
 
-        if (!UserRole.values().any { it.name == authorizedUser.role })
+        if (!UserRole.values().any { it == authorizedUser.role })
             throw  RestProblem(
                     status = Response.Status.BAD_REQUEST,
                     title = "Login user role unknown")
 
         if (debitor != null) {
 
-            if (UserRole.valueOf(authorizedUser.role!!) != UserRole.ADMIN) {
+            if (authorizedUser.role!! != UserRole.ADMIN) {
                 if (authorizedUser.debitorId != debitor) {
                     throw  RestProblem(
                             status = Response.Status.FORBIDDEN,
@@ -295,12 +295,12 @@ class UserService :
         }
 
         if (userRole != null) {
-            if (!UserRole.values().any { it.name == userRole })
+            if (!UserRole.values().any { it == userRole })
                 throw  RestProblem(
                         status = Response.Status.BAD_REQUEST,
                         title = "User role unknown")
 
-            if (UserRole.valueOf(authorizedUser.role!!).value < UserRole.valueOf(userRole).value) {
+            if (authorizedUser.role!!.value < userRole.value) {
                 throw  RestProblem(
                         status = Response.Status.FORBIDDEN,
                         title = "Login user can not create/change user - no permission")
@@ -327,7 +327,7 @@ class UserService :
         if (alias != null)
             rec.alias = alias
         if (userRole != null)
-            rec.role = userRole
+            rec.role = userRole.name
         if (password != null)
             rec.setHashedPassword(password)
         if (firstName != null)
@@ -383,9 +383,9 @@ class UserService :
             val allowedStations = stationRepository.findAllowedStationsByUserId(rec.id)
 
             if (userStations != allowedStations) {
-                if (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.POWERUSER.value) {
+                if (authorizedUser.role!!.value >= UserRole.POWERUSER.value) {
 
-                    val possibleStations = stationRepository.findStationsByDebitorId(rec.debitorId).map { x->x.toInt() }
+                    val possibleStations = stationRepository.findStationsByDebitorId(rec.debitorId).map { x -> x.toInt() }
 
                     userStations.forEach {
                         if (!possibleStations.contains(it))
@@ -464,8 +464,7 @@ class UserService :
     override fun changePassword(userId: Int, oldPassword: String, newPassword: String) {
         val userRecord = this.userRepository.findById(userId)
 
-        userRecord ?:
-        throw RestProblem(title = "User does not exist")
+        userRecord ?: throw RestProblem(title = "User does not exist")
 
         // Verify credentials
         if (!userRecord.verifyPassword(oldPassword))
@@ -478,13 +477,6 @@ class UserService :
 
     override fun getConfigurationById(userId: Int): String {
         return configurationService.getUserConfiguration(userId)
-    }
-
-    override fun getCurrentUserConfiguration(): String {
-        val authorizedUser = httpRequest.authorizedUser
-
-        return configurationService.getUserConfiguration(authorizedUser.id
-                ?: throw RestProblem(status = Response.Status.NOT_FOUND))
     }
 
     @MqHandler.Types(

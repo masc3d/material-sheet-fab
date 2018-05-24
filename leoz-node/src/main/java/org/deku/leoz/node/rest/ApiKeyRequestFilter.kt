@@ -80,7 +80,7 @@ class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
         // Check role restrictions
         resourceInfo.annotationOfType(RestrictRoles::class.java)
                 ?.also {
-                    if (userRole == null || !it.role.contains(UserRole.valueOf(userRole)))
+                    if (userRole == null || !it.role.contains(userRole))
                         return false
                 }
 
@@ -120,7 +120,7 @@ fun HttpServletRequest.restrictByDebitor(debitorId: () -> Int?) {
     val user = this.authorizedUser
     val userRole = user.role
 
-    if (userRole == null || UserRole.valueOf(userRole) != UserRole.ADMIN) {
+    if (userRole == null || userRole != UserRole.ADMIN) {
         if (this.authorizedUser.debitorId != debitorId.invoke())
             throw WebApplicationException(Response.Status.FORBIDDEN)
     }
