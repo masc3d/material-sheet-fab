@@ -18,21 +18,19 @@ annotation class ConfigurationMapPath(val path: String)
  *
  * Created by masc on 15/02/2017.
  */
+@Suppress("UNCHECKED_CAST")
 class ConfigurationMap() {
     private var map: Map<String, Any> = mapOf()
 
     /**
      * Extension method for conveniently navigating a tree of nested string based maps
      */
-    private fun Map<String, Any>.resolve(name: String): Map<String, Any> {
-        @Suppress("UNCHECKED_CAST")
-        return this[name] as? Map<String, Any> ?: mapOf()
-    }
+    private fun Map<String, Any>.resolve(name: String): Map<String, Any> =
+            this[name] as? Map<String, Any> ?: mapOf()
 
     /**
      * Recursively mangles all key names so they're in line with property names (removal of hyphens eg. etc.)
      */
-    @Suppress("UNCHECKED_CAST")
     private fun normalize(sourceMap: Map<String, Any>): Map<String, Any> {
         return mapOf(*sourceMap.map {
             val newKey = it.key.toLowerCase().replace("-", "")
@@ -69,7 +67,6 @@ class ConfigurationMap() {
                         val mutableTargetMap = targetItem.toMutableMap()
                         target[it.key] = mutableTargetMap
 
-                        @Suppress("UNCHECKED_CAST")
                         merge(
                                 target = mutableTargetMap as MutableMap<String, Any>,
                                 source = it.value as Map<String, Any>)
@@ -93,7 +90,7 @@ class ConfigurationMap() {
             )
         }
 
-        // TODO: consider to normalize during merge to additional recursive iteration
+        // TODO: consider to normalize during merge to avoid additional recursive iteration
         this.map = this.normalize(treeMap)
     }
 
@@ -109,7 +106,6 @@ class ConfigurationMap() {
         /**
          * Getter
          */
-        @Suppress("UNCHECKED_CAST")
         override fun getValue(thisRef: Any, property: KProperty<*>): T {
             // TODO: support caching
 
