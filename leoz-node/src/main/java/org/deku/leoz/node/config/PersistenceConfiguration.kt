@@ -280,17 +280,6 @@ class PersistenceConfiguration {
         // Migrate schema
         log.info("Migrating embedded data source schema")
 
-        // TODO. workaround for h2 migration V19 taking a long time.
-        try {
-            Stopwatch.createStarted(this, "Removing all node geoposition records", Level.WARN, {
-                this.dataSource.connection
-                        .createStatement()
-                        .executeUpdate("TRUNCATE TABLE tad_node_geoposition;")
-            })
-        }catch (e:Exception){
-            log.info("Truncate tad_node_geoposition failed: ${e.toString()}")//table not exist when db-file deleted
-        }
-
         val flyway = Flyway()
         flyway.dataSource = this.dataSource
         flyway.setLocations("classpath:/db/node/migration")
