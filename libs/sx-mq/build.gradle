@@ -3,8 +3,8 @@ version '1.0'
 
 buildscript {
     ext {
-        v_activemq = '5.15.3'
-        v_artemis = '2.5.0'
+        v_activemq = '5.15.4'
+        v_artemis = '2.6.0'
         v_kodein = '4.1.0'
         v_kotlin = '1.2.41'
         v_kryo = '4.0.2'
