@@ -100,3 +100,6 @@ class Identity constructor(
 
     override fun toString(): String = "Identity name [${this.name}] uid [${this.shortUid}]"
 }
+
+/** Transform generic uuid to identity uid */
+fun UUID.toIdentityUid(): Identity.Uid = Identity.Uid(value = this.toString())

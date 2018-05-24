@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType
 @Path("internal/v1/configuration")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "Configuration service")
+@Api(value = "Configuration service", authorizations = arrayOf(Authorization(Rest.API_KEY)))
 @ApiKey(true)
 interface ConfigurationService {
 
@@ -23,18 +23,32 @@ interface ConfigurationService {
 
     @GET
     @Path("/user/{${USER_ID}}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get configuration of user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Get user configuration")
     fun getUserConfiguration(
             @PathParam(value = USER_ID) userId: Int
     ): String
 
     @GET
     @Path("/node/{${NODE_UID}}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get configuration given node", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Get node configuration")
     fun getNodeConfiguration(
-            @PathParam(value = NODE_UID) @ApiParam(value = "Node UID. Needs to be the full UID, short UID is not allowed here") nodeUid: String
+            @PathParam(value = NODE_UID) @ApiParam(value = "Full node uid") nodeUid: String
     ): String
 
+    @PUT
+    @Path("/user/{${USER_ID}}")
+    @ApiOperation(value = "Store user configuration")
+    fun putUserConfiguration(
+            @PathParam(value = USER_ID) userId: Int,
+            config: String
+    )
+
+    @PUT
+    @Path("/node/{${NODE_UID}}")
+    @ApiOperation(value = "Store node configuration")
+    fun putNodeConfiguration(
+            @PathParam(value = NODE_UID) @ApiParam(value = "Full node uid")
+            nodeUid: String,
+            config: String
+    )
 }

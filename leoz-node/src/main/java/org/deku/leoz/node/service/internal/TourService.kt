@@ -541,7 +541,7 @@ class TourServiceV1
 
         // Schedule multiple optimizations
         Observable.mergeDelayError(ids.map { id ->
-            var tour = this.getById(id)
+            val tour = this.getById(id)
 
             if (tour.nodeUid != null) {
                 // Node restrictions

@@ -1,5 +1,6 @@
 package org.deku.leoz.central.service.internal
 
+import org.deku.leoz.central.Application
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.repository.JooqNodeRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository
@@ -10,6 +11,7 @@ import org.deku.leoz.service.internal.UserService
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import sx.rs.RestProblem
 import javax.inject.Inject
@@ -19,8 +21,9 @@ import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
 
 @Component
+@Profile(Application.PROFILE_CENTRAL)
 @Path("internal/v1/configuration")
-class ConfigurationService: ConfigurationService {
+class ConfigurationService : org.deku.leoz.node.service.internal.ConfigurationService() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -29,50 +32,35 @@ class ConfigurationService: ConfigurationService {
     private lateinit var dsl: DSLContext
 
     @Inject
-    private lateinit var userService: UserService
-
-    @Inject
     private lateinit var userRepository: JooqUserRepository
 
     @Inject
     private lateinit var nodeJooqRepository: JooqNodeRepository
 
-    @Context
-    private lateinit var httpHeaders: HttpHeaders
-
     override fun getUserConfiguration(userId: Int): String {
-        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
-        apiKey ?:
-                throw RestProblem(status = Response.Status.UNAUTHORIZED)
-
-        val authorizedUserRecord = userRepository.findByKey(apiKey)
-        authorizedUserRecord ?:
-                throw RestProblem(status = Response.Status.UNAUTHORIZED)
-
-        val targetUserRecord = userRepository.findById(userId) ?: throw RestProblem(title = "User not found", status = Response.Status.NOT_FOUND)
-
-        if (targetUserRecord.keyId != authorizedUserRecord.keyId) {
-            if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
-                if (authorizedUserRecord.debitorId != targetUserRecord.debitorId) {
-                    throw RestProblem(title = "No access to this user", status = Response.Status.FORBIDDEN)
-                } else {
-                    val authRole = UserRole.valueOf(authorizedUserRecord.role)
-                    val targetRole = UserRole.valueOf(targetUserRecord.role)
-                    if (authRole != UserRole.POWERUSER) {
-                        if (targetRole >= authRole) {
-                            throw RestProblem(title = "No access to this user", status = Response.Status.FORBIDDEN)
-                        }
-                    }
-                }
-            }
-        }
+        val targetUserRecord = userRepository.findById(userId)
+                ?: throw RestProblem(title = "User not found", status = Response.Status.NOT_FOUND)
 
         return targetUserRecord.config?.toString() ?: "{}"
     }
 
     override fun getNodeConfiguration(nodeUid: String): String {
-        val node = nodeJooqRepository.findByKey(nodeUid) ?: throw RestProblem(title = "Invalid Node UID", detail = "Node UID could not be found", status = Response.Status.NOT_FOUND)
+        val node = nodeJooqRepository.findByKey(nodeUid)
+                ?: throw NoSuchElementException("Invalid node uid")
 
         return node.config?.toString() ?: "{}"
     }
+
+    override fun putUserConfiguration(userId: Int, config: String) {
+        assertValidJson(config)
+
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun putNodeConfiguration(nodeUid: String, config: String) {
+        assertValidJson(config)
+
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 }
