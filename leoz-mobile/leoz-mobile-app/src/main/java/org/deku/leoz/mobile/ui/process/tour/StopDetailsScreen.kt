@@ -282,8 +282,7 @@ class StopDetailsScreen
                         iconRes = R.drawable.ic_comment_alert,
                         iconTintRes = android.R.color.white,
                         alignEnd = false,
-                        menu = stopNoteMenu,
-                        visible = isReportDelayActionAvailable || isAddStopNoteActionAvailable
+                        menu = stopNoteMenu
                 )
         )
     }
