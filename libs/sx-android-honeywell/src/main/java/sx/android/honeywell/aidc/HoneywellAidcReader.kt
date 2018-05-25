@@ -17,7 +17,7 @@ import sx.rx.toHotReplay
  */
 class HoneywellAidcReader private constructor(
         private var aidcManager: AidcManager
-) : AidcReader(), BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener {
+) : AidcReader() {
 
     companion object {
         private val log = LoggerFactory.getLogger(HoneywellAidcReader::class.java)
@@ -119,8 +119,8 @@ class HoneywellAidcReader private constructor(
      */
     private val honeywellReaderInstance = LazyInstance<BarcodeReader>({
         val bc = this.aidcManager.createBarcodeReader()
-        bc.addBarcodeListener(this)
-        bc.addTriggerListener(this)
+        bc.addBarcodeListener(this.listener)
+        bc.addTriggerListener(this.listener)
 
         // Default settings
         bc.setProperties(mapOf<String, Any>(
@@ -264,27 +264,32 @@ class HoneywellAidcReader private constructor(
         QrCode("s", SymbologyType.QrCode),
     }
 
-    override fun onBarcodeEvent(evt: BarcodeReadEvent) {
-        val barcodeType = CodeId.values()
-                .firstOrNull { it.value == evt.codeId }
-                ?.symbologyType ?: SymbologyType.Unknown
+    /**
+     * Honeywell barcode reader listener
+     */
+    private val listener = object : BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener {
+        override fun onBarcodeEvent(evt: BarcodeReadEvent) {
+            val barcodeType = CodeId.values()
+                    .firstOrNull { it.value == evt.codeId }
+                    ?.symbologyType ?: SymbologyType.Unknown
 
-        this.readEventSubject.onNext(ReadEvent(data = evt.barcodeData, symbologyType = barcodeType))
-    }
+            readEventSubject.onNext(ReadEvent(data = evt.barcodeData, symbologyType = barcodeType))
+        }
 
-    override fun onFailureEvent(evt: BarcodeFailureEvent) {
-        log.error("Honeywell aidc failure event ${evt}")
-    }
+        override fun onFailureEvent(evt: BarcodeFailureEvent) {
+            log.error("Honeywell aidc failure event ${evt}")
+        }
 
-    override fun onTriggerEvent(evt: TriggerStateChangeEvent) {
-        if (this.enabled) {
-            try {
-                this.honeywellReader.aim(evt.state)
-                this.honeywellReader.light(evt.state)
-                this.honeywellReader.decode(evt.state)
-            } catch (t: Throwable) {
-                log.error("Enabling reader failed [${t.message}]", t)
-                throw t
+        override fun onTriggerEvent(evt: TriggerStateChangeEvent) {
+            if (enabled) {
+                try {
+                    honeywellReader.aim(evt.state)
+                    honeywellReader.light(evt.state)
+                    honeywellReader.decode(evt.state)
+                } catch (t: Throwable) {
+                    log.error("Enabling reader failed [${t.message}]", t)
+                    throw t
+                }
             }
         }
     }
