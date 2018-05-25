@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response
 @RestrictRoles(UserRole.ADMIN)
 interface RecoveryService {
     companion object {
-        const val DRY = "dry"
+        const val DRY_RUN = "dry-run"
     }
 
     /**
@@ -34,5 +34,5 @@ interface RecoveryService {
     @GET
     @Path("/mobile/parcel-messages")
     @ApiOperation(value = "Dump central stations")
-    fun recoverMobileParcelMessages(dryRun: Boolean)
+    fun recoverMobileParcelMessages(@QueryParam(DRY_RUN) @DefaultValue("true") dryRun: Boolean)
 }
