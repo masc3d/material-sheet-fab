@@ -69,7 +69,10 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                 val formatEn = SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH)
 
                 fun parseDate(date: String): Date {
-                    return formatEn.parse(date.replace("MESZ", "CEST"))
+                    return formatEn.parse(date
+                            .replace("MESZ", "CEST")
+                            .replace("MEZ", "CET")
+                    )
                 }
 
                 val events = mr.groups[3]!!.value.split("Event(")

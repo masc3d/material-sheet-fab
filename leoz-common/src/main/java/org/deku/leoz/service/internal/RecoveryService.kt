@@ -33,6 +33,6 @@ interface RecoveryService {
      */
     @GET
     @Path("/mobile/parcel-messages")
-    @ApiOperation(value = "Dump central stations")
+    @ApiOperation(value = "Recover parcel messages from mobile logs")
     fun recoverMobileParcelMessages(@QueryParam(DRY_RUN) @DefaultValue("true") dryRun: Boolean)
 }
