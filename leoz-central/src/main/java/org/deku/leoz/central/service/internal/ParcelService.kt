@@ -122,7 +122,7 @@ class ParcelServiceV1 :
             recordMessages.parcelId = it.parcelId
             //recordMessages.parcelNo = parcelScan
             recordMessages.scanned = scannedDate
-            recordMessages.eventValue = it.event
+            recordMessages.eventValue = if (it.event == 107 && it.reason == 0) 106 else 107
             recordMessages.reasonId = it.reason
             recordMessages.latitude = it.latitude
             recordMessages.longitude = it.longitude
@@ -137,7 +137,7 @@ class ParcelServiceV1 :
                 parcelAddInfo.damagedFileUIDs = damagedInfo.pictureFileUids.map { j -> j.toString() }.toList()
             }
 
-            val eventId = it.event
+            val eventId = if (it.event == 107 && it.reason == 0) 106 else 107
             val event = Event.values().find { it.value == eventId }!!
             val reasonId = it.reason
             val reason = Reason.values().find { it.id == reasonId }!!
