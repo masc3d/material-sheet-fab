@@ -1,5 +1,6 @@
 export const LANG_DE_TRANS = {
   // login form
+  'privacy protection': 'Datenschutz',
   'login': 'Anmeldung',
   'username': 'Benutzername',
   'btlogin': 'anmelden',

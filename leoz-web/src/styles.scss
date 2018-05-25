@@ -464,6 +464,7 @@ p-tabpanel > div {
 .ui-datepicker.ui-widget .ui-datepicker-calendar td a.ui-state-active {
   background-color: #186ba0 !important;
 }
+
 /*.ui-state-default a {
   background: none !important;
 }*/
@@ -598,7 +599,7 @@ p-tabpanel > div {
 //  height: 69px;
 //  margin-bottom:5px;
 //  border:1px solid darkgrey;
-//  width:98%; font-size:
+//  width:98%; font-size: | translate
 //  40px;
 //}
 
@@ -721,7 +722,7 @@ input[pinputtext] {
   background-color: white !important;
 }
 
-.text2button{
+.text2button {
   margin-top: 6px;
   padding-top: 4px;
   text-align: center;
@@ -735,9 +736,11 @@ input[pinputtext] {
 .colorRed {
   color: #ff0000 !important;
 }
+
 .colorGreen {
   color: #00a200 !important;
 }
+
 .colorYellow {
   color: #ff9818 !important;
   font-weight: bold !important;
@@ -751,4 +754,17 @@ input[pinputtext] {
   border-color: #ffffff;
   background: #ffffff;
   color: #212121;
+}
+
+/**** privacy policy footer ***/
+#dsvoFooter {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #eee;
+  padding: 20px;
+  font-size: 14px;
+  display: block;
+  text-align: center;
 }
