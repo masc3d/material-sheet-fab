@@ -1097,7 +1097,6 @@ class StopProcessScreen :
         this.tourStop.recipientSalutation = recipientSalutation
         this.tourStop.recipientStreet = recipientStreet
         this.tourStop.recipientStreetNo = recipientStreetNo
-        this.tourStop.deliveredReason = EventDeliveredReason.NEIGHBOR
 
         this.activity.showScreen(
                 SignatureScreen().with(target = this)
