@@ -116,10 +116,10 @@ class ParcelServiceTest {
         var events: MutableList<ParcelServiceV1.Event> = e.toMutableList()
 
 
-//        events.add(ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.ADDRESS_WRONG.id, time = Date().toTimestamp(), parcelId = 15000000))
+        events.add(ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.ADDRESS_WRONG.id, time = Date().toTimestamp(), parcelId = 15000000))
 //        events.add(ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.ADDRESS_WRONG.id, time = Date().toTimestamp(), parcelId = 15000000))
 //
-//        events.add(ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 15000000))
+    //    events.add(ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 15000000))
 
         //events.add(eventImportReceive)
         //events.add(event956)
@@ -127,6 +127,7 @@ class ParcelServiceTest {
 
         //pro message events zu einer(!) parcel_id + additional (deliveredInfo, SignatureOnPaper,PostboxDeliverecInfo)
         val ret = ParcelServiceV1.ParcelMessage(events = events.toTypedArray(), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c", deliveredInfo = ParcelServiceV1.ParcelMessage.DeliveredInfo(recipient = "trotzki", signature = svgDirect))
+        //val ret = ParcelServiceV1.ParcelMessage(events = events.toTypedArray(), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
         parcelService.onMessage(ret, null)
 
 
