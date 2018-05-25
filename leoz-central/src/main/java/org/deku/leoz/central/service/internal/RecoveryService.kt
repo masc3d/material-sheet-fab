@@ -86,15 +86,20 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                             }
                         }
 
-                val reDeliveredInfo = Regex(
+                val reDeliveredInfo1 = Regex(
                         "DeliveredInfo\\(recipient=(.*), recipientStreet=(.*), recipientStreetNo=(.*), recipientSalutation=(.*), signature=(.*), mimetype=(.*)\\)",
+                        options = setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL)
+                )
+
+                val reDeliveredInfo2 = Regex(
+                        "DeliveredInfo\\(recipient=(.*), signature=(.*), mimetype=(.*)\\)",
                         options = setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL)
                 )
 
                 val deliveredInfoText = mr.groups[4]!!.value.nullableString()
 
                 val deliveredInfo = if (deliveredInfoText != null) {
-                    reDeliveredInfo.find(deliveredInfoText)
+                    reDeliveredInfo1.find(deliveredInfoText)
                             ?.let {
                                 ParcelServiceV1.ParcelMessage.DeliveredInfo(
                                         recipient = it.groups[1]!!.value.nullableString(),
@@ -110,6 +115,16 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                                                 ?: MediaType.APPLICATION_SVG_XML
                                 )
                             }
+                            ?: reDeliveredInfo2.find(deliveredInfoText)
+                                    ?.let {
+                                        ParcelServiceV1.ParcelMessage.DeliveredInfo(
+                                                recipient = it.groups[1]!!.value.nullableString(),
+                                                signature = it.groups[2]!!.value.nullableString(),
+                                                mimetype = it.groups[3]!!.value.nullableString()
+                                                        ?: MediaType.APPLICATION_SVG_XML
+                                        )
+                                    }
+
                 } else null
 
                 if (!deliveredInfoText.isNullOrEmpty() && deliveredInfo == null) {
