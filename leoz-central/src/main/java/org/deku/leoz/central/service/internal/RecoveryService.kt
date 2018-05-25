@@ -231,6 +231,6 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
             }
         }
 
-        log.info { "Recovered ${recoveredMessageCount} message from files: ${logFiles.map { it.name }.joinToString(", ")}" }
+        log.info { "Recovered ${recoveredMessageCount} messages from ${logFiles.count()} files: ${logFiles.map { it.name }.joinToString(", ")}" }
     }
 }
