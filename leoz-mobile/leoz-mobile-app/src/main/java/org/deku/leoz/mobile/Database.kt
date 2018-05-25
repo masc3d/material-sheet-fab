@@ -159,7 +159,9 @@ class Database(
                         EntityCacheBuilder(Models.DEFAULT)
                                 // Disabling reference cache as it trigger #644 when cascade is disabled.
                                 // and it has to be disabled as it's buggy, removing references still in use eg.
-                                .useReferenceCache(false)
+
+                                // IMPORTANT. Disabling reference cache breaks consistency of in-memory graphs!
+                                .useReferenceCache(true)
                                 .build()
                 )
                 super.onConfigure(builder)
