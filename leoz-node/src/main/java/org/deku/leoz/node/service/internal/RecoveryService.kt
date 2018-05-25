@@ -64,7 +64,12 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                         "event=(.*), reason=(.*), parcelId=(.*), time=(.*), latitude=(.*), longitude=(.*), fromStation"
                 )
 
-                val format = SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy")
+                val formatEn = SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH)
+
+                fun parseDate(date: String): Date {
+                    return formatEn.parse(date.replace("MESZ", "CEST"))
+                }
+
                 val events = mr.groups[3]!!.value.split("Event(")
                         .mapNotNull {
                             reEvent.find(it)?.let {
@@ -72,7 +77,7 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                                         event = it.groups[1]!!.value.toInt(),
                                         reason = it.groups[2]!!.value.toInt(),
                                         parcelId = it.groups[3]!!.value.toLong(),
-                                        time = format.parse(it.groups[4]!!.value),
+                                        time = parseDate(it.groups[4]!!.value),
                                         latitude = it.groups[5]!!.value.toDoubleOrNull(),
                                         longitude = it.groups[6]!!.value.toDoubleOrNull()
                                 )
@@ -90,7 +95,11 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                                     recipient = it.groups[1]!!.value.nullableString(),
                                     recipientStreet = it.groups[2]!!.value.nullableString(),
                                     recipientStreetNo = it.groups[3]!!.value.nullableString(),
-                                    recipientSalutation = SalutationType.valueOf(it.groups[4]!!.value),
+                                    recipientSalutation = try {
+                                        SalutationType.valueOf(it.groups[4]!!.value)
+                                    } catch (e: IllegalArgumentException) {
+                                        null
+                                    },
                                     signature = it.groups[5]!!.value.nullableString(),
                                     mimetype = it.groups[6]!!.value.nullableString() ?: MediaType.APPLICATION_SVG_XML
                             )
@@ -109,7 +118,7 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                         }
 
                 val rePostboxDeliveryInfo = Regex(
-                        "PostboxDeliveryInfo\\(pictureFileUid=(.*)\\)"
+                        "PostboxDeliveryInfo\\(pictureFileUid=(.*)\\)\\)"
                 )
 
                 val postboxDeliveryInfo = rePostboxDeliveryInfo.find(mr.groups[6]!!.value)
@@ -142,6 +151,8 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
             reFilename.matches(file.name)
         }
 
+        var recoveredMessageCount = 0
+
         logFiles.forEach { file ->
             log.info { "Scanning ${file} for parcel messages" }
 
@@ -155,16 +166,26 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                     if (line.indexOf("[ParcelMessage") >= 0) {
                         log.info { "Found message line" }
 
-                        val message = MobileLogParcelMessageParser.parse(
-                                // Also include next line as svg contains CR
-                                line + (reader.readLine() ?: "")
-                        )
+                        // Also include next line as svg contains CR
+                        val lineToParse = line + (reader.readLine() ?: "")
+
+                        val message = try {
+                            MobileLogParcelMessageParser.parse(
+                                    lineToParse
+                            )
+                        } catch (e: Throwable) {
+                            log.error("Failed to parse [${lineToParse}]")
+                            throw e
+                        }
+
+                        recoveredMessageCount++
 
                         log.info { message }
                     }
                 }
             }
         }
-        log.info { logFiles.joinToString(", ") }
+
+        log.info { "Recovered ${recoveredMessageCount} message from files: ${logFiles.joinToString(", ")}" }
     }
 }
