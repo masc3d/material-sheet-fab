@@ -6,11 +6,11 @@ import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import io.reactivex.Observable
-import sx.android.hardware.Device
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.CompositeAidcReader
 import sx.android.aidc.SimulatingAidcReader
+import sx.android.hardware.Device
 import sx.android.honeywell.aidc.HoneywellAidcReader
 import sx.rx.toHotReplay
 
@@ -69,6 +69,12 @@ class AidcConfiguration {
                 val aidcReaders = ovAidcReader
                         .blockingIterable()
                         .toList()
+
+                // Honeywell specific configuration
+                aidcReaders.firstOrNull { it is HoneywellAidcReader }?.also {
+                    // Bind exclusively to avoid honeywell issue where claiming the reader mail fail sporadically
+                    it.bindExclusively = true
+                }
 
                 CompositeAidcReader(readers = *aidcReaders.toTypedArray())
             }
