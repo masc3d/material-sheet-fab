@@ -42,6 +42,32 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
 
             private val log = LoggerFactory.getLogger(MobileLogParcelMessageParser::class.java)
 
+            private val reParcelMessage by lazy {
+                Regex(
+                        "^.*\\[ParcelMessage\\(userId=(.*), nodeId=(.*),.* events=\\[(.*)\\], deliveredInfo=(.*), signatureOnPaperInfo=(.*), postboxDeliveryInfo=(.*)",
+                        options = setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
+            }
+
+            private val reEvent by lazy {
+                Regex(
+                        "event=(.*), reason=(.*), parcelId=(.*), time=(.*), latitude=(.*), longitude=(.*), fromStation"
+                )
+            }
+
+            private val reDeliveredInfo1 by lazy {
+                Regex(
+                        "DeliveredInfo\\(recipient=(.*), recipientStreet=(.*), recipientStreetNo=(.*), recipientSalutation=(.*), signature=(.*), mimetype=(.*)\\)",
+                        options = setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL)
+                )
+            }
+
+            private val reDeliveredInfo2 by lazy {
+                Regex(
+                        "DeliveredInfo\\(recipient=(.*), signature=(.*), mimetype=(.*)\\)",
+                        options = setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL)
+                )
+            }
+
             /**
              * Parse parcel message from mobile log file (line)
              * @param line line to parse
@@ -49,10 +75,6 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
             fun parse(line: String): ParcelServiceV1.ParcelMessage? {
 
                 fun String.nullableString(): String? = if (this == "null") null else this
-
-                val reParcelMessage = Regex(
-                        "^.*\\[ParcelMessage\\(userId=(.*), nodeId=(.*),.* events=\\[(.*)\\], deliveredInfo=(.*), signatureOnPaperInfo=(.*), postboxDeliveryInfo=(.*)",
-                        options = setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
 
                 val mr = reParcelMessage.find(line)
 
@@ -62,14 +84,12 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                 val userId = mr.groups[1]!!.value.toInt()
                 val nodeId = mr.groups[2]!!.value
 
-                val reEvent = Regex(
-                        "event=(.*), reason=(.*), parcelId=(.*), time=(.*), latitude=(.*), longitude=(.*), fromStation"
-                )
 
                 val formatEn = SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH)
 
                 fun parseDate(date: String): Date {
                     return formatEn.parse(date
+                            // Deal with localized timezone names within timestamps
                             .replace("MESZ", "CEST")
                             .replace("MEZ", "CET")
                     )
@@ -88,16 +108,6 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                                 )
                             }
                         }
-
-                val reDeliveredInfo1 = Regex(
-                        "DeliveredInfo\\(recipient=(.*), recipientStreet=(.*), recipientStreetNo=(.*), recipientSalutation=(.*), signature=(.*), mimetype=(.*)\\)",
-                        options = setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL)
-                )
-
-                val reDeliveredInfo2 = Regex(
-                        "DeliveredInfo\\(recipient=(.*), signature=(.*), mimetype=(.*)\\)",
-                        options = setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL)
-                )
 
                 val deliveredInfoText = mr.groups[4]!!.value.nullableString()
 
