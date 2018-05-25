@@ -34,7 +34,8 @@ interface ImportService {
             var deliveryStation: Int = 0,
             var deliveryDate: java.sql.Date? = null,
             var sealNumber: Long? = null,
-            var parcels: List<Parcel> = listOf()
+            var parcels: List<Parcel> = listOf(),
+            var pickupAddress:Address=Address()
 
     )
 

@@ -10,6 +10,7 @@ import org.deku.leoz.model.maxWeightForParcelBag
 import org.deku.leoz.service.internal.ExportService
 import org.deku.leoz.service.internal.ImportService
 import org.deku.leoz.service.internal.entity.Address
+import org.deku.leoz.service.internal.entity.GeoLocation
 import org.deku.leoz.time.workDate
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.sum
@@ -261,7 +262,7 @@ class JooqParcelRepository {
                         .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
                         .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
                         .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGDEPOT2.isNull)
-                        .and(Tables.TBLAUFTRAGCOLLIES.DTAUSGANGHUP3.isNotNull)
+                        //.and(Tables.TBLAUFTRAGCOLLIES.DTAUSGANGHUP3.isNotNull)
         )
     }
 
@@ -467,11 +468,28 @@ fun TblauftragRecord.toOrderToImport(): ImportService.Order {
             deliveryAddress = Address(
                     countryCode = this.landd ?: "",
                     zipCode = this.plzd ?: "",
-                    city = this.ortd
+                    city = this.ortd,
+                    line1 = this.firmad,
+                    line2=this.firmad2,
+                    line3=this.firmad3,
+                    street = this.strassed,
+                    streetNo = this.strnrd,
+                    geoLocation = GeoLocation(this.deliveryLatitude,this.deliveryLongitude)
             ),
             deliveryStation = this.depotnrld,
             deliveryDate = this.dtauslieferung?.toTimestamp()?.toSqlDate(),
-            sealNumber = this.plombennra?.toLong()
+            sealNumber = this.plombennra?.toLong(),
+            pickupAddress = Address(
+                    countryCode = this.lands?:"",
+                    zipCode = this.plzs?:"",
+                    city = this.orts,
+                    line1 = this.firmas,
+                    line2 = this.firmas2,
+                    line3 = this.firmas3,
+                    street = this.strasses,
+                    streetNo = this.strnrs,
+                    geoLocation = GeoLocation(this.pickupLatitude,this.pickupLongitude)
+            )
     )
     return order
 }

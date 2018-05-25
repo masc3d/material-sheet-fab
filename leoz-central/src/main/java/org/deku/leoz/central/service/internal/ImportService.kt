@@ -51,7 +51,7 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
                     status = Response.Status.NOT_FOUND,
                     title = ImportService.ResponseMsg.NO_ORDERS_FOUND.value //"No orders found"
             )
-        val allParcels = parcelRepository.findParcelsNotDeliveredByOrderids(orders
+        val allParcels = parcelRepository.findNotImportedParcelsByOrderids(orders
                 .map { it.orderid.toLong() }
                 .toList()
         )
