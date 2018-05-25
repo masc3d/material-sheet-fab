@@ -50,7 +50,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     }
 }
 
-version = '0.235-SNAPSHOT'
+version = '0.236-SNAPSHOT'
 mainClassName = "org.deku.leoz.central.Main"
 
 // Database constants
@@ -76,11 +76,11 @@ sourceSets {
 }
 
 //region Prototype test setup
-test {
-    useJUnit {
-        includeCategories 'sx.junit.StandardTest'
-    }
-}
+//test {
+//    useJUnit {
+//        includeCategories 'sx.junit.StandardTest'
+//    }
+//}
 
 sourceSets {
     test {
