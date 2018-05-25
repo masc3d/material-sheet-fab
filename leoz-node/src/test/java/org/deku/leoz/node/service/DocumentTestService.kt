@@ -61,7 +61,5 @@ open class DocumentTestService {
                 },
                 targetDirectory = File("/Users/prangenberg/Desktop/")
         )
-
-        assert(document.exists())
     }
 }
