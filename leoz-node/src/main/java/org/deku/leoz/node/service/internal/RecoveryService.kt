@@ -142,7 +142,7 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
         }
     }
 
-    override fun recoverMobileParcelMessages() {
+    override fun recoverMobileParcelMessages(dryRun: Boolean) {
         val mobileLogDir = storage.logDirectory.resolve(BundleType.LEOZ_MOBILE.value)
 
         val reFilename = Regex("^leoz-mobile-([0-9a-f]+).log$")
@@ -186,6 +186,6 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
             }
         }
 
-        log.info { "Recovered ${recoveredMessageCount} message from files: ${logFiles.joinToString(", ")}" }
+        log.info { "Recovered ${recoveredMessageCount} message from files: ${logFiles.map { it.name }.joinToString(", ")}" }
     }
 }

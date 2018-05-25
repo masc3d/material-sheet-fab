@@ -34,5 +34,5 @@ interface RecoveryService {
     @GET
     @Path("/mobile/parcel-messages")
     @ApiOperation(value = "Dump central stations")
-    fun recoverMobileParcelMessages()
+    fun recoverMobileParcelMessages(dryRun: Boolean)
 }
