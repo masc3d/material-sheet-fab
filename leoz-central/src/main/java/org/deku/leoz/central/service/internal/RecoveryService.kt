@@ -195,8 +195,6 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                         break
 
                     if (line.indexOf("[ParcelMessage") >= 0) {
-                        log.info { "Found message line" }
-
                         // Also include next line as svg contains CR
                         val lineToParse = line + (reader.readLine() ?: "")
 
