@@ -291,7 +291,12 @@ class SmartlaneBridge {
      * @param email User / driver email
      */
     private fun getDriverId(user: User): Int? {
-        val domain = resolver.containerByUser(user).domain()
+        val domain = try {
+            resolver.containerByUser(user).domain()
+        } catch (e: NoSuchElementException) {
+            return null
+        }
+
         val driverApi = domain.proxy(DriverApi::class.java)
 
         return synchronized(this.driverIdByEmail) {
