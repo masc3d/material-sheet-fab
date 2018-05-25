@@ -1,4 +1,4 @@
-package org.deku.leoz.node.service.internal
+package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.model.SalutationType
@@ -7,14 +7,13 @@ import org.deku.leoz.service.internal.ParcelServiceV1
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import sx.log.slf4j.info
-import sx.log.slf4j.trace
+import sx.log.slf4j.warn
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
 
 /**
  * Recovery service
@@ -28,6 +27,9 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
 
     @Inject
     private lateinit var storage: Storage
+
+    @Inject
+    private lateinit var parcelService: org.deku.leoz.central.service.internal.ParcelServiceV1
 
     /**
      * Mobile log parcel message parser
@@ -89,21 +91,32 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                         options = setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL)
                 )
 
-                val deliveredInfo = reDeliveredInfo.find(mr.groups[4]!!.value)
-                        ?.let {
-                            ParcelServiceV1.ParcelMessage.DeliveredInfo(
-                                    recipient = it.groups[1]!!.value.nullableString(),
-                                    recipientStreet = it.groups[2]!!.value.nullableString(),
-                                    recipientStreetNo = it.groups[3]!!.value.nullableString(),
-                                    recipientSalutation = try {
-                                        SalutationType.valueOf(it.groups[4]!!.value)
-                                    } catch (e: IllegalArgumentException) {
-                                        null
-                                    },
-                                    signature = it.groups[5]!!.value.nullableString(),
-                                    mimetype = it.groups[6]!!.value.nullableString() ?: MediaType.APPLICATION_SVG_XML
-                            )
-                        }
+                val deliveredInfoText = mr.groups[4]!!.value.nullableString()
+
+                val deliveredInfo = if (deliveredInfoText != null) {
+                    reDeliveredInfo.find(deliveredInfoText)
+                            ?.let {
+                                ParcelServiceV1.ParcelMessage.DeliveredInfo(
+                                        recipient = it.groups[1]!!.value.nullableString(),
+                                        recipientStreet = it.groups[2]!!.value.nullableString(),
+                                        recipientStreetNo = it.groups[3]!!.value.nullableString(),
+                                        recipientSalutation = try {
+                                            SalutationType.valueOf(it.groups[4]!!.value)
+                                        } catch (e: IllegalArgumentException) {
+                                            null
+                                        },
+                                        signature = it.groups[5]!!.value.nullableString(),
+                                        mimetype = it.groups[6]!!.value.nullableString()
+                                                ?: MediaType.APPLICATION_SVG_XML
+                                )
+                            }
+                } else null
+
+                if (!deliveredInfoText.isNullOrEmpty() && deliveredInfo == null) {
+                    log.warn { "Skipping message, delivery info could not be parsed [${deliveredInfoText}]" }
+                    return null
+                }
+
 
                 val reSignatureOnPaperInfo = Regex(
                         "SignatureOnPaperInfo\\(recipient=(.*), pictureFileUid=(.*)\\)"
@@ -178,9 +191,15 @@ class RecoveryService : org.deku.leoz.service.internal.RecoveryService {
                             throw e
                         }
 
-                        recoveredMessageCount++
+                        if (message != null) {
+                            recoveredMessageCount++
 
-                        log.info { message }
+                            log.info { message }
+
+                            if (!dryRun) {
+                                this.parcelService.onMessage(message, null)
+                            }
+                        }
                     }
                 }
             }

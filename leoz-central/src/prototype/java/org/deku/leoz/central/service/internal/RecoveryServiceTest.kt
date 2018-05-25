@@ -1,8 +1,9 @@
-package org.deku.leoz.node.service.internal
+package org.deku.leoz.central.service.internal
 
-import org.deku.leoz.node.config.ApplicationTestConfiguration
-import org.deku.leoz.node.config.DataTestConfiguration
-import org.deku.leoz.node.service.pub.RoutingService
+import org.deku.leoz.central.config.ApplicationTestConfiguration
+import org.deku.leoz.central.config.DataTestConfiguration
+import org.deku.leoz.central.config.ParcelServiceConfiguration
+import org.deku.leoz.node.service.pub.DocumentService
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
@@ -10,8 +11,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import sx.junit.PrototypeTest
-import sx.junit.StandardTest
-import sx.log.slf4j.trace
 import javax.inject.Inject
 
 /**
@@ -20,8 +19,12 @@ import javax.inject.Inject
 @Category(PrototypeTest::class)
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(
-        ApplicationTestConfiguration::class,
-        RecoveryService::class
+        DataTestConfiguration::class,
+        RecoveryService::class,
+        ParcelServiceV1::class,
+        ParcelServiceConfiguration::class,
+        ParcelProcessingService::class,
+        DocumentService::class
 ))
 class RecoveryServiceTest {
 
@@ -32,6 +35,8 @@ class RecoveryServiceTest {
 
     @Test
     fun testRecoverMobileParcelMessages() {
-        recoveryService.recoverMobileParcelMessages()
+        recoveryService.recoverMobileParcelMessages(
+                dryRun = true
+        )
     }
 }

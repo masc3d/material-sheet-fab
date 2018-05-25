@@ -1,10 +1,12 @@
-package org.deku.leoz.node.service.internal
+package org.deku.leoz.central.service.internal
 
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
 import sx.junit.StandardTest
 import sx.log.slf4j.trace
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Created by masc on 25.05.18.
@@ -23,6 +25,15 @@ class MobileLogParcelMessageParserTest {
         log.trace {
             RecoveryService.MobileLogParcelMessageParser.parse(
                     message
+            )
+        }
+    }
+
+    @Test
+    fun testDate() {
+        log.trace {
+            SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH).parse(
+                    "Fri May 25 07:00:52 GMT+02:00 2018"
             )
         }
     }
