@@ -184,6 +184,7 @@ dependencies {
 flyway {
     driver = DB_H2_JDBC_DRIVER
     url = DB_H2_JDBC_URL
+    ignoreFutureMigrations = false
     locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
 }
 

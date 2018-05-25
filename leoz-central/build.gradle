@@ -198,39 +198,18 @@ class FlywayCopyTask extends FlywayInfoTask {
     }
 }
 
-class FlywayValidateTaskHotfix extends FlywayValidateTask {
-    @Override
-    protected Object run(Flyway flyway) {
-        def result = super.run(flyway)
-
-        // TODO: remove this hotfix/validation when fixed upstream https://github.com/flyway/flyway/issues/1554)
-        if (!this.extension.ignoreFutureMigrations) {
-            flyway.info().all().findAll { it.type == MigrationType.SQL && it.state.isApplied() } each {
-                def targetVersion = MigrationVersion.fromVersion(extension.target)
-                if (it.version.compareTo(targetVersion) > 0)
-                    throw new IllegalStateException("Applied future migrations detected! :flywayClean will resolve this")
-            }
-        }
-
-        return result
-    }
-}
-
 flyway {
     driver = DB_MYSQL_JDBC_DRIVER
     url = DB_MYSQL_JDBC_URL
     user = 'root'
     password = 'root'
     schemas = ['dekuclient', 'dekutmp', 'mobile']
-    ignoreFutureMigrations = true
+    ignoreFutureMigrations = false
     target = FLYWAY_TARGET
     locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
 }
 
-tasks.remove(tasks.flywayValidate)
-task flywayValidate(type: FlywayValidateTaskHotfix) {
-    mustRunAfter tasks.flywayMigrate
-}
+tasks.flywayValidate.mustRunAfter tasks.flywayMigrate
 
 task flywayCopy(type: FlywayCopyTask) {
     // FlywayCopy task properties
