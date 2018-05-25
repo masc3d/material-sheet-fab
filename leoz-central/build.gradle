@@ -76,11 +76,11 @@ sourceSets {
 }
 
 //region Prototype test setup
-//test {
-//    useJUnit {
-//        includeCategories 'sx.junit.StandardTest'
-//    }
-//}
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
+    }
+}
 
 sourceSets {
     test {
