@@ -5,6 +5,7 @@ import org.deku.leoz.model.UserRole
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.data.jpa.MstKey
 import org.deku.leoz.node.data.jpa.MstNode
+import org.deku.leoz.node.data.jpa.QMstKey.mstKey
 import org.deku.leoz.node.data.repository.*
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
@@ -82,7 +83,7 @@ class AuthorizationService
                     status = Response.Status.UNAUTHORIZED)
         }
 
-        val keyRecord = this.keyRepo.findById(userRecord.keyId)
+        val keyRecord = this.keyRepo.findOne(mstKey.uid.eq(userRecord.keyUid))
                 .toNullable()
                 ?: MstKey().also {
                     it.key = UUID.randomUUID().toString()
