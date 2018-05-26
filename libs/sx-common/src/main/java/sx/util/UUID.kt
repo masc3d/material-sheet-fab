@@ -29,3 +29,14 @@ fun UUID.hashWithSha1(length: Int = 20) =
         listOf(this.toByteArray())
                 .hash(DigestType.SHA1)
                 .take(length)
+
+/**
+ * Convert (first 16 byte of) byte array to uuid
+ */
+fun ByteArray.toUUID(): UUID {
+    return ByteBuffer.wrap(this).let { bb ->
+        val high = bb.getLong()
+        val low = bb.getLong()
+        UUID(high, low)
+    }
+}

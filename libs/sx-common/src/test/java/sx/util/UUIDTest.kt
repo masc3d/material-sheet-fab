@@ -28,6 +28,14 @@ class UUIDTest {
         }
     }
 
+    @Test
+    fun testUUIDToByteArray() {
+        log.trace {
+            UUID.fromString("7601c0c4-609c-11e8-b5a5-001c42a68c02")
+                    .toByteArray()
+        }
+    }
+
     @Ignore
     @Test
     fun testMostSignificantBitsCollisions() {
