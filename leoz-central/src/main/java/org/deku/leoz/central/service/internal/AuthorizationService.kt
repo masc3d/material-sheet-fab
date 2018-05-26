@@ -7,11 +7,11 @@ import org.deku.leoz.model.UserRole
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import sx.event.EventListener
 import sx.log.slf4j.info
 import sx.mq.MqHandler
 import sx.rs.RestProblem
 import sx.time.toTimestamp
+import sx.util.toUUID
 import java.text.DecimalFormat
 import java.util.*
 import javax.inject.Inject
@@ -47,13 +47,12 @@ class AuthorizationService
     /**
      * Authorize user
      */
-    override fun authorize(request: AuthorizationService.Credentials): AuthorizationService.Response {
+    override fun authorizeUser(request: AuthorizationService.Credentials): AuthorizationService.Response {
         val user = request
 
         val userRecord = this.userRepository.findByMail(email = user.email)
 
-        userRecord ?:
-                throw RestProblem(title = "User does not exist")
+        userRecord ?: throw RestProblem(title = "User does not exist")
 
         // Verify credentials
         if (!userRecord.verifyPassword(user.password))
@@ -71,24 +70,26 @@ class AuthorizationService
 
         if (!userRecord.isActive) {
             throw RestProblem(
-                    title = "user deactivated",
+                    title = "User deactivated",
                     status = Response.Status.UNAUTHORIZED)
         }
         if (Date() > userRecord.expiresOn) {
             throw RestProblem(
-                    title = "user account expired",
+                    title = "User account expired",
                     status = Response.Status.UNAUTHORIZED)
         }
 
-        var keyRecord = this.keyRepository.findById(userRecord.keyId)
+        var keyRecord = userRecord.keyUid?.let {
+            this.keyRepository.findByUid(it.toUUID())
+        }
 
         if (keyRecord == null) {
-            val keyId = this.keyRepository.insertNew(
+            val keyUid = this.keyRepository.insertNew(
                     key = UUID.randomUUID().toString())
 
-            this.userRepository.updateKeyIdById(userRecord.id, keyId)
+            this.userRepository.updateKeyIdById(userRecord.id, keyUid)
 
-            keyRecord = this.keyRepository.findById(keyId)
+            keyRecord = this.keyRepository.findByUid(keyUid)
         }
         userRecord.tsLastlogin = Date().toTimestamp()
         userRecord.store()
@@ -102,9 +103,14 @@ class AuthorizationService
                 key = keyRecord.key,
                 user = userRecord.toUser().also { x -> x.allowedStations = stationJooqRepository.findAllowedStationsByUserId(userRecord.id) })
     }
-    //endregion
 
-    //region MQ
+    override fun authorizeWeb(request: AuthorizationService.Credentials): AuthorizationService.Response {
+        return this.authorizeUser(request)
+    }
+
+//endregion
+
+//region MQ
     /**
      * Node authorizatino request mq handler
      */
@@ -143,5 +149,5 @@ class AuthorizationService
             log.error(e.message, e)
         }
     }
-    //endregion
+//endregion
 }

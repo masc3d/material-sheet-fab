@@ -20,6 +20,7 @@ import sx.security.hash
 import sx.text.parseHex
 import sx.text.toHexString
 import sx.time.toTimestamp
+import sx.util.toByteArray
 import java.util.*
 import javax.inject.Inject
 
@@ -124,15 +125,15 @@ class JooqUserRepository {
     fun findByKey(apiKey: String): MstUserRecord? {
         return dsl.select()
                 .from(MST_USER.innerJoin(MST_KEY)
-                        .on(MST_USER.KEY_ID.eq(MST_KEY.KEY_ID)))
+                        .on(MST_USER.KEY_UID.eq(MST_KEY.UID)))
                 .where(MST_KEY.KEY.eq(apiKey))
                 .fetchOneInto(MstUser.MST_USER)
     }
 
-    fun updateKeyIdById(id: Int, keyID: Int): Boolean {
+    fun updateKeyIdById(id: Int, keyUid: UUID): Boolean {
         val rec = findById(id)
         rec ?: return false
-        rec.keyId = keyID
+        rec.setKeyUid(*keyUid.toByteArray())
         return (rec.store() > 0)
     }
 

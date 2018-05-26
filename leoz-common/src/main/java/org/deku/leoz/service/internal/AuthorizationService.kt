@@ -70,8 +70,18 @@ interface AuthorizationService {
      */
     @PATCH
     @Path("/web")
-    @ApiOperation(value = "Request web authorization")
-    fun authorize(request: Credentials): Response
+    @ApiOperation(value = "Authorize web user")
+    @Deprecated("Superseded bei more generic entry point `/user`")
+    fun authorizeWeb(request: Credentials): Response
+
+    /**
+     * Request authorization
+     * @param request Authorization request
+     */
+    @PATCH
+    @Path("/user")
+    @ApiOperation(value = "Authorize user")
+    fun authorizeUser(request: Credentials): Response
 
     companion object {
         // TODO: extension methods on interface level will break feign. also this looks like it rather belongs to mst_user/leoz-central

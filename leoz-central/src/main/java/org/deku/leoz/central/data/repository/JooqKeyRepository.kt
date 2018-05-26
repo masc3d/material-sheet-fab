@@ -7,6 +7,9 @@ import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstKeyRecord
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
+import sx.util.toByteArray
+import sx.util.toUUID
+import java.util.*
 import javax.inject.Inject
 
 
@@ -19,11 +22,8 @@ class JooqKeyRepository {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     lateinit var dsl: DSLContext
 
-    fun findById(id: Int): MstKeyRecord? {
-        if (id == 0)
-            return null
-        else
-            return dsl.fetchOne(MstKey.MST_KEY, Tables.MST_KEY.KEY_ID.eq(id))
+    fun findByUid(uid: UUID): MstKeyRecord? {
+        return dsl.fetchOne(MstKey.MST_KEY, Tables.MST_KEY.UID.eq(uid.toByteArray()))
     }
 
     fun findValidByKey(key: String): Boolean {
@@ -33,11 +33,12 @@ class JooqKeyRepository {
         ) != null)
     }
 
-    fun insertNew(key: String): Int {
+    fun insertNew(key: String): UUID {
         val r = dsl.newRecord(Tables.MST_KEY)
         r.key = key
         r.store()
+        r.refresh()
 
-        return dsl.lastID().toInt()
+        return r.uid.toUUID()
     }
 }

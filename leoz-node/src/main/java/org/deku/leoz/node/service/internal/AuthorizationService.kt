@@ -51,7 +51,7 @@ class AuthorizationService
     /**
      * Authorize user
      */
-    override fun authorize(request: AuthorizationService.Credentials): AuthorizationService.Response {
+    override fun authorizeUser(request: AuthorizationService.Credentials): AuthorizationService.Response {
         val user = request
 
         val userRecord = this.userRepo.findByEmail(email = user.email)
@@ -105,6 +105,10 @@ class AuthorizationService
                 key = keyRecord.key,
                 user = userRecord.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(userRecord.id) }
         )
+    }
+
+    override fun authorizeWeb(request: AuthorizationService.Credentials): AuthorizationService.Response {
+        return this.authorizeUser(request)
     }
     //endregion
 

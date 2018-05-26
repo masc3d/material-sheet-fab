@@ -156,7 +156,7 @@ class DeliveryListService
             }
 
             Stopwatch.createStarted(this,
-                    "Deleting delivery list(s) [${tours.mapNotNull { it.customId }.joinToString(", ")}]", {
+                    "Deleting related tours [${tours.mapNotNull { it.customId }.joinToString(", ")}]", {
                 this.tourService.delete(
                         customIds = tours.mapNotNull { it.customId }
                                 // TODO: removal of tours with deprecated custom id. remove in next update.
@@ -181,7 +181,7 @@ class DeliveryListService
 
         dlRecord = this.deliveryListRepository.findById(id)
                 ?: throw RestProblem(
-                title = "DeliveryList not found",
+                title = "Delivery list not found",
                 status = Response.Status.NOT_FOUND)
 
         this.httpRequest.restrictByDebitor { dlRecord.debitorId.toInt() }
