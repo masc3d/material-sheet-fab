@@ -14,13 +14,10 @@ import sx.rx.ObservableRxProperty
 
 /**
  * Android data binding field wrapping a regular rx Observable (readonly) or ObservableRxProperty (readwrite)
- * @param source Source observable
- * @param default Field default value
  */
 class ObservableRxField<T> constructor(
-        source: Observable<T>,
-        default: T? = null)
-    : ObservableField<T>(default) {
+        source: Observable<T>)
+    : ObservableField<T>() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -54,8 +51,7 @@ class ObservableRxField<T> constructor(
 
 /**
  * Extension method for creating ObservableRxField from rx observable
- * @param default Default value
  * @return DataBinding field created from the specified Observable
  */
-fun <T> Observable<T>.toField(default: T? = null): ObservableRxField<T>
-        = ObservableRxField(source = this, default = default)
+fun <T> Observable<T>.toField(): ObservableRxField<T>
+        = ObservableRxField(this)

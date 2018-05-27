@@ -15,13 +15,13 @@ import android.widget.ViewSwitcher;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import sx.android.hardware.Camera;
+import sx.android.Camera;
 import sx.android.Function;
 import sx.android.R;
 import sx.android.event.FragmentEventDispatcher;
-import sx.android.ui.view.AsyncImageView;
-import sx.android.ui.view.CameraView;
-import sx.android.ui.view.CircleButton;
+import sx.android.view.AsyncImageView;
+import sx.android.view.CameraView;
+import sx.android.view.CircleButton;
 import sx.event.EventListener;
 
 import java.util.ArrayList;
