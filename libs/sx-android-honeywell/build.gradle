@@ -1,0 +1,104 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url 'https://maven.google.com' }
+    }
+
+    ext {
+        v_kotlin = '1.2.41'
+        v_android_buildtools = '27.0.3'
+        v_android_support = '27.1.1'
+        v_android_test = '1.0.2'
+        v_rxlifecycle = '2.2.1'
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+}
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        // masc20181101. android support
+        // API levels < 24 are not compatible with some java8 bytecode kt compiler produces
+        jvmTarget = JavaVersion.VERSION_1_6
+    }
+}
+
+repositories {
+    mavenCentral()
+    google()
+    maven { url "https://jitpack.io" }
+}
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion v_android_buildtools
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    lintOptions {
+        abortOnError true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-rules-debug.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation(
+            project(':sx-android'),
+            project(':sx-common'),
+            fileTree(dir: 'libs', include: ['*.jar']),
+
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+
+            // Android support libs
+            "com.android.support:support-annotations:$v_android_support",
+            "com.android.support:appcompat-v7:$v_android_support",
+            "com.android.support:support-v4:$v_android_support",
+            "com.android.support:design:$v_android_support",
+
+            // rx
+            "io.reactivex.rxjava2:rxjava:2.1.14",
+            "io.reactivex.rxjava2:rxandroid:2.0.2",
+
+            // rxlifecycle
+            "com.trello.rxlifecycle2:rxlifecycle:$v_rxlifecycle",
+            "com.trello.rxlifecycle2:rxlifecycle-kotlin:$v_rxlifecycle",
+            "com.trello.rxlifecycle2:rxlifecycle-components:$v_rxlifecycle"
+    )
+
+    androidTestImplementation(
+            "junit:junit:4.12",
+            "com.android.support:support-annotations:$v_android_support",
+            "com.android.support.test:runner:$v_android_test",
+            "com.android.support.test:rules:$v_android_test"
+    )
+}

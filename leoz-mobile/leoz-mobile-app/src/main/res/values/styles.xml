@@ -1,0 +1,139 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppThemeBase" parent="Base.Theme.AppCompat.Light">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="buttonStyle">@style/AppTheme.Button.Colored</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+        <item name="textAppearanceLargePopupMenu">@style/TextAppearance.AppCompat.Button</item>
+    </style>
+
+    <style name="AppTheme" parent="AppThemeBase">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- Startup theme, tailored for immediate display of img_splash screen (before activity is even loaded)
+    by overriding window background -->
+    <style name="StartupTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+
+    <!-- Appbar Style -->
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <!-- Appbar popup menu style -->
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <!--<item name="android:background">@color/colorWhiteSmoke</item>-->
+    </style>
+
+    <!-- Collapsing toolbar title style -->
+    <style name="AppTheme.AppBarOverlay.TextAppearance"/>
+
+    <style name="AppTheme.AppBarOverlay.TextAppearance.Title" parent="@style/TextAppearance.AppCompat.Display1">
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowRadius">4</item>
+        <item name="android:shadowColor">@color/colorDarkGrey</item>
+        <item name="android:textSize">32sp</item>
+    </style>
+
+    <!-- Layout styles -->
+    <style name="AppTheme.Layout"/>
+
+    <!-- Common screen style -->
+    <style name="AppTheme.Layout.Screen">
+        <item name="android:layout_marginBottom">@dimen/small_margin</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_marginTop">@dimen/small_margin</item>
+    </style>
+
+    <!-- Use this style for all content areas which require default margins -->
+    <style name="AppTheme.Layout.Content">
+        <item name="android:layout_marginBottom">@dimen/large_margin</item>
+        <item name="android:layout_marginLeft">@dimen/large_margin</item>
+        <item name="android:layout_marginRight">@dimen/large_margin</item>
+        <item name="android:layout_marginTop">@dimen/large_margin</item>
+    </style>
+
+    <style name="AppTheme.Layout.List">
+        <item name="android:layout_marginBottom">@dimen/small_margin</item>
+        <item name="android:layout_marginLeft">@dimen/margin</item>
+        <item name="android:layout_marginRight">@dimen/margin</item>
+        <item name="android:layout_marginTop">@dimen/small_margin</item>
+    </style>
+
+    <style name="AppTheme.ListView">
+        <item name="android:divider">@android:color/transparent</item>
+        <item name="android:dividerHeight">0dp</item>
+    </style>
+
+    <style name="AppTheme.ActionOverlay"/>
+
+    <style name="AppTheme.ActionOverlay.ImageView">
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_width">32dp</item>
+    </style>
+
+    <!-- Standalone cardview, eg. menu -->
+    <style name="AppTheme.CardView">
+        <item name="cardCornerRadius">2dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardMaxElevation">0dp</item>
+        <item name="cardUseCompatPadding">true</item>
+    </style>
+
+    <!-- Standalone cardview, eg. menu -->
+    <style name="AppTheme.CardView.Flat">
+        <item name="cardElevation">2dp</item>
+    </style>
+
+    <!-- Card view used in continues lists -->
+    <style name="AppTheme.CardView.List" parent="AppTheme.CardView">
+        <item name="android:layout_marginBottom">@dimen/small_margin</item>
+        <item name="android:layout_marginLeft">@dimen/margin</item>
+        <item name="android:layout_marginRight">@dimen/margin</item>
+        <item name="android:layout_marginTop">@dimen/small_margin</item>
+        <item name="cardElevation">0.3dp</item>
+    </style>
+
+    <!-- Common floating action button style -->
+    <style name="AppTheme.Fab" parent="">
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="useCompatPadding">true</item>
+        <item name="elevation">@dimen/fab_elevate</item>
+    </style>
+
+    <!-- Colored button style -->
+    <style name="AppTheme.Button.Colored" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:paddingTop">18dp</item>
+        <item name="android:paddingBottom">18dp</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <!-- Borderless colored button style -->
+    <style name="AppTheme.Button.Borderless.Colored" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:paddingTop">18dp</item>
+        <item name="android:paddingBottom">18dp</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.AppointmentLarge" parent="TextAppearance.AppCompat.Title">
+    </style>
+
+    <style name="AppTheme.TextAppearance.AppointmentSmall" parent="TextAppearance.AppCompat.Body2">
+    </style>
+
+    <style name="AppTheme.ToggleImageButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:padding">6dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="tint">@color/colorLightGrey</item>
+        <item name="background">@android:color/transparent</item>
+        <item name="selectedBackground">@color/colorPrimary</item>
+        <item name="selectedTint">@android:color/white</item>
+    </style>
+</resources>

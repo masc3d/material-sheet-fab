@@ -1,0 +1,92 @@
+<form [formGroup]="orderformForm">
+  <div class="orderform ui-fluid ui-g">
+    <div class="ui-g-12 ui-lg-5" style="padding: 0;">
+      <p-fieldset legend="{{'consignor' | translate}}">
+        <div class="ui-g-12 bgColorTabView">
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText formControlName="consignorClientNos" placeholder="{{ 'consignorClientNos' | translate }}">
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText formControlName="consignorClientReNos" placeholder="{{ 'consignorClientReNos' | translate }}">
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText formControlName="customer" placeholder="{{ 'customer' | translate }}">
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText formControlName="reference" placeholder="{{ 'reference' | translate }}">
+            </div>
+          </div>
+          <app-address [addresses]="pickupAddresses" [placeholderLine1]="'senderLine1'"
+                       [placeholderLine2]="'senderLine2'" [placeholderLine3]="'senderLine3'"></app-address>
+        </div>
+        <div class="ui-g-12 ui-g-nopad bgColorTabView" style="margin: 10px 0 10px 0; min-height: 330px;">
+          <p-tabView class="orderForm" [style]="{'minHeight': '330px'}">
+            <p-tabPanel header="{{'pickupTimeWindow' | translate}}">
+              <app-timewindows [isPickup]="true"></app-timewindows>
+            </p-tabPanel>
+            <p-tabPanel header="{{'serviceF7' | translate}}">
+              <app-services [isPickup]="true"></app-services>
+            </p-tabPanel>
+            <p-tabPanel header="{{'pickupInfo' | translate}}">
+              <app-info [isPickup]="true"></app-info>
+            </p-tabPanel>
+            <p-tabPanel header="{{'pickupContact' | translate}}" [style]="{'border': 'none'}">
+              <app-contact></app-contact>
+            </p-tabPanel>
+            <p-tabPanel header="{{'clientInvoice' | translate}}">
+              <app-client></app-client>
+            </p-tabPanel>
+          </p-tabView>
+        </div>
+        <div class="ui-g-12 ui-g-nopad bgColorTabView" style="padding: 4px;" >
+          <app-packages style="min-height: 90px;"></app-packages>
+        </div>
+    </p-fieldset>
+    </div>
+    <div class="ui-g-12 ui-lg-5" style="padding: 0;">
+      <p-fieldset legend="{{'consignee' | translate}}">
+        <div class="ui-g-12 bgColorTabView">
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText placeholder="{{ 'consigneeClientNos' | translate }}">
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 8px;">
+              &nbsp;
+            </div>
+          </div>
+          <app-address [addresses]="deliveryAddresses" [placeholderLine1]="'deliveryLine1'"
+                       [placeholderLine2]="'deliveryLine2'" [placeholderLine3]="'deliveryLine3'"></app-address>
+        </div>
+          <div class="ui-g-12 ui-g-nopad bgColorTabView" style="margin: 10px 0 10px 0; min-height: 330px;">
+            <p-tabView class="orderForm" [style]="{'minHeight': '330px'}">
+              <p-tabPanel header="{{'deliveryTimeWindow' | translate}}">
+                <app-timewindows [isPickup]="false"></app-timewindows>
+              </p-tabPanel>
+              <p-tabPanel header="{{'serviceF8' | translate}}">
+                <app-services [isPickup]="false"></app-services>
+              </p-tabPanel>
+              <p-tabPanel header="{{'deliveryInfo' | translate}}">
+                <app-info [isPickup]="false"></app-info>
+              </p-tabPanel>
+              <p-tabPanel header="{{'deliveryContact' | translate}}">
+                <app-contact></app-contact>
+              </p-tabPanel>
+            </p-tabView>
+          </div>
+        <div class="ui-g-12 ui-g-nopad bgColorTabView" style="padding: 4px;">
+          <app-productspec style = "min-height: 90px"></app-productspec>
+        </div>
+      </p-fieldset>
+    </div>
+    <div class="ui-g-12 ui-lg-2" style="padding: 0;">
+      <p-fieldset legend="{{'system' | translate}}">
+        <app-system></app-system>
+      </p-fieldset>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,14 @@
+*.iml
+.DS_Store
+.externalNativeBuild
+.gradle
+.idea/encodings.xml
+.idea/libraries
+.idea/workspace.xml
+.idea/compiler.xml
+.idea/gradle.xml
+.idea/misc.xml
+.idea/kotlinc.xml
+build
+captures
+local.properties

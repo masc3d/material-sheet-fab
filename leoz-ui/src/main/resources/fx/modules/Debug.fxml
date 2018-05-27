@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane fx:id="fxRoot" prefHeight="396.0" prefWidth="459.0" stylesheets="@../../css/leoz.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leoz.ui.fx.modules.DebugController">
+   <center>
+      <FlowPane hgap="20.0" prefHeight="200.0" prefWidth="200.0" rowValignment="TOP" vgap="20.0" BorderPane.alignment="CENTER_LEFT">
+         <children>
+            <TitledPane text="LeoBridge">
+               <content>
+                  <VBox spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER" spacing="10.0">
+                           <children>
+                              <TextField fx:id="fxLeoBridgeMessageTextField" prefHeight="26.0" prefWidth="140.0" HBox.hgrow="ALWAYS" />
+                              <Button mnemonicParsing="false" onAction="#onLeoBridgeSend" prefHeight="26.0" prefWidth="49.0" text="Send" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </HBox>
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onLeoBridgeSendComplexMessage" text="Send complex message" />
+                     </children>
+                  </VBox>
+               </content>
+            </TitledPane>
+            <TitledPane animated="false" text="User Interface">
+              <content>
+                  <VBox>
+                     <children>
+                        <CheckBox fx:id="fxUiAnimationsEnabled" mnemonicParsing="false" text="Animations" />
+                     </children>
+                  </VBox>
+              </content>
+            </TitledPane>
+            <TitledPane animated="false" text="Depot">
+              <content>
+                  <VBox>
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#onDepotSelect" text="Select" />
+                     </children>
+                  </VBox>
+              </content>
+            </TitledPane>
+         </children>
+      </FlowPane>
+   </center>
+</BorderPane>

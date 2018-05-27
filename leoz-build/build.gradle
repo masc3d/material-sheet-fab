@@ -1,0 +1,58 @@
+// This project prepares build time requirements for the main leoz project
+// It will publish all required artifacts to a local (maven) repository with the directory `repo`
+
+apply from: '../versions.gradle'
+
+group 'org.deku.leoz'
+version '0.1'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+subprojects {
+    // Global repositories
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+}
+
+// Find subprojects outside the root folder (shared) and use dedicated build dir to avoid build/cache clashes
+subprojects.findAll {
+    !it.project.projectDir.toString().startsWith(rootDir.toString())
+}.each {
+    it.buildDir = new File(it.buildDir, project.name)
+}
+
+configure(
+        allprojects.findAll { it.name.startsWith('sx') || it.name.startsWith('mina-sshd') }
+) {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+            }
+        }
+    }
+
+    publishing {
+        repositories {
+            maven {
+                // change to point to your repo, e.g. http://my.org/repo
+                url "${project.rootProject.projectDir}/repo"
+            }
+        }
+    }
+}

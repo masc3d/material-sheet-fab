@@ -1,0 +1,507 @@
+import com.trello.victor.RasterizeTask
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url '../../leoz-build/repo' }
+        maven { url 'https://maven.google.com' }
+    }
+
+    dependencies {
+        classpath(
+                "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
+                "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2",
+                "com.trello:victor:1.0.0",
+                "sx:sx-packager-gradle:0.1",
+        )
+    }
+
+    ext {
+        v_android_gms = '11.8.0'
+        v_anko = '0.10.5'
+        v_javamail = '1.6.0'
+        v_material_dialogs = '0.9.6.0'
+        v_multidex = '1.0.3'
+        v_parceler = '1.1.10'
+        v_roboelectric = '3.8'
+        v_rxlifecycle = '2.2.1'
+        v_stetho = '1.5.0'
+        v_truetime = '3.3'
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'com.trello.victor'
+apply plugin: 'sx-packager-android'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        // masc20181101. android support
+        // API levels < 24 are not compatible with some java8 bytecode kt compiler produces
+        jvmTarget = JavaVersion.VERSION_1_6
+    }
+}
+
+def GENERATED_DIR = project.projectDir.toPath()
+        .resolve('src')
+        .resolve('generated')
+        .toFile()
+
+def GENERATED_SVG_DIR = new File(GENERATED_DIR,
+        'svg')
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion v_android_buildtools
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        applicationId "org.deku.leoz.mobile"
+        versionCode 2
+        versionName "0.150-SNAPSHOT"
+
+        minSdkVersion 19
+        targetSdkVersion 27
+
+        // Multidex options
+        multiDexEnabled true
+        multiDexKeepProguard file('multidex-keep.pro')
+
+        // Resource options
+        // Only keep localizations for those languages
+        resConfigs "en", "de"
+        vectorDrawables.useSupportLibrary true
+
+        // Test settings
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    dataBinding {
+        enabled true
+    }
+
+    signingConfigs {
+        release {
+            keyAlias 'leoz-mobile'
+            keyPassword '6TL3IpcUhOv7K1dZ'
+            storeFile new File(project.projectDir, '../leoz-mobile.jks')
+            storePassword 'QzIKjZeRkct3B0on'
+        }
+    }
+
+    lintOptions {
+        abortOnError true
+
+        // TODO lintVitalRelease always fails with 3.0.0-beta
+        checkReleaseBuilds false
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+
+        debug {
+            debuggable true
+
+            // Use android class shrinker
+            minifyEnabled false
+            useProguard false
+
+            // Disable crashlytics as it's not used
+            ext.enableCrashlytics = false
+
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-rules-debug.pro'
+            testProguardFile('proguard-rules.pro')
+        }
+    }
+
+    sourceSets {
+        main {
+            svg.srcDirs += 'src/main/svg'
+            res.srcDirs += GENERATED_SVG_DIR
+        }
+    }
+
+    packagingOptions {
+        // Exclude duplicates ad unnecessary files for a clean apk
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/kodein-android-compileKotlin.kotlin_module'
+        exclude 'META-INF/kodein-compileKotlin.kotlin_module'
+        exclude 'META-INF/kotlin-runtime.kotlin_module'
+        exclude 'META-INF/kotlin-stdlib.kotlin_module'
+        exclude 'META-INF/MANIFEST.MF'
+        exclude 'META-INF/rxjava-async-util.properties'
+        exclude 'META-INF/rxjava.properties'
+        exclude 'META-INF/rxkotlin.properties'
+        exclude 'META-INF/rxkotlin-compileKotlin.kotlin_module'
+        exclude 'META-INF/rxlifecycle-kotlin-compileReleaseKotlin.kotlin_module'
+        exclude 'META-INF/sx-android-compileReleaseKotlin.kotlin_module'
+        exclude 'META-INF/sx-common-compileKotlin.kotlin_module'
+        exclude 'kotlin/annotation/annotation.kotlin_builtins'
+        exclude 'kotlin/collections/collections.kotlin_builtins'
+        exclude 'kotlin/internal/internal.kotlin_builtins'
+        exclude 'kotlin/kotlin.kotlin_builtins'
+        exclude 'kotlin/ranges/ranges.kotlin_builtins'
+        exclude 'kotlin/reflect/reflect.kotlin_builtins'
+        exclude 'logback.xml'
+    }
+}
+
+kapt {
+    useBuildCache = true
+}
+
+androidExtensions {
+    experimental = true
+}
+
+dexcount {
+    format = "list"
+    includeClasses = false
+    includeFieldCount = true
+    includeTotalMethodCount = false
+    orderByMethodCount = false
+    verbose = false
+    maxTreeDepth = Integer.MAX_VALUE
+    teamCityIntegration = false
+    teamCitySlug = null
+    runOnEachAssemble = false
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    google()
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    implementation(
+            project(':leoz-mobile-data'),
+            project(':sx-android'),
+            project(':sx-android-honeywell'),
+            project(':material-sheet-fab'),
+
+            project(':leoz-common'),
+            project(':sx-common'),
+            project(':sx-serialization'),
+            project(':sx-mq'),
+            fileTree(dir: 'libs', include: ['*.jar']),
+
+            "com.jakewharton.threetenabp:threetenabp:1.1.0",
+
+            // Android
+            "com.android.support:support-annotations:$v_android_support",
+            "com.android.support:support-v13:$v_android_support",
+            "com.android.support:appcompat-v7:$v_android_support",
+            "com.android.support:design:$v_android_support",
+            "com.android.support:cardview-v7:$v_android_support",
+            "com.android.support:recyclerview-v7:$v_android_support",
+            "com.android.support:gridlayout-v7:$v_android_support",
+            "com.android.support:multidex:$v_multidex",
+            "com.android.support:multidex-instrumentation:$v_multidex",
+            "android.arch.lifecycle:runtime:1.1.0",
+
+            // Camera
+            "com.wonderkiln:camerakit:0.13.0",
+
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
+
+            // Kodein
+            "com.github.salomonbrys.kodein:kodein:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-android:$v_kodein",
+            // Kodein implementation using erased types (no generics support, but much faster on android)
+            "com.github.salomonbrys.kodein:kodein-erased:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
+
+            // Logging
+            "org.slf4j:slf4j-api:$v_slf4j",
+            "org.slf4j:jul-to-slf4j:$v_slf4j",
+            dependencies.create("com.github.tony19:logback-android-classic:1.1.1-6") {
+                exclude group: 'com.google.android', module: 'android'
+            },
+
+            // JavaMail
+            "com.sun.mail:android-mail:$v_javamail",
+            "com.sun.mail:android-activation:$v_javamail",
+
+            // Reactive
+            "io.reactivex.rxjava2:rxjava:$v_rxjava",
+            "io.reactivex.rxjava2:rxandroid:2.0.2",
+            "io.reactivex:rxkotlin:$v_rxkotlin",
+            "com.jakewharton.rxbinding2:rxbinding:2.1.1",
+            "com.trello.rxlifecycle2:rxlifecycle:$v_rxlifecycle",
+            "com.trello.rxlifecycle2:rxlifecycle-kotlin:$v_rxlifecycle",
+            "com.trello.rxlifecycle2:rxlifecycle-components:$v_rxlifecycle",
+            "com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar",
+
+            // REST
+            "io.github.openfeign:feign-core:$v_feign",
+            "io.github.openfeign:feign-jackson:$v_feign",
+            "io.github.openfeign:feign-okhttp:$v_feign",
+            "io.github.openfeign:feign-jaxrs2:$v_feign",
+
+            // JAX-RS
+            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
+
+            // Requery
+            "com.github.masc3d.requery:requery:$v_requery",
+            "com.github.masc3d.requery:requery-kotlin:$v_requery",
+            "com.github.masc3d.requery:requery-android:$v_requery",
+            "io.requery:sqlite-android:3.23.1",
+
+            "javax.transaction:jta:1.1",
+
+            // Miscellaneous
+            "io.swagger:swagger-annotations:$v_swagger",
+
+            // Kotlin extensions for activity/fragment state persistence
+            "com.github.tinsukE:icekick:0.4",
+
+            "org.parceler:parceler-api:$v_parceler",
+            'com.journeyapps:zxing-android-embedded:3.6.0',
+
+            // YAML
+            // TODO: 1.18.2 causes startup error with android-4.4
+            "pl.droidsonroids.yaml:snakeyaml:1.18-android",
+
+            // Signature pad
+            "com.github.gcacace:signature-pad:1.2.1",
+
+            // MQTT client
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
+
+            'com.github.pwittchen:reactivenetwork-rx2:0.12.3',
+
+            // Kryo
+            dependencies.create("com.esotericsoftware:kryo:$v_kryo") {
+                exclude group: 'org.ow2.asm', module: 'asm'
+            },
+            dependencies.create("de.javakaffee:kryo-serializers:$v_kryo_serializers") {
+                exclude group: 'org.ow2.asm', module: 'asm'
+            },
+
+            // UI
+            "eu.davidea:flexible-adapter:5.0.4",
+            "eu.davidea:flexible-adapter-ui:1.0.0-b4@aar",
+            "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0",
+
+            "com.afollestad.material-dialogs:core:$v_material_dialogs",
+            "com.afollestad.material-dialogs:commons:$v_material_dialogs",
+
+            "com.eightbitlab:blurview:1.3.4",
+            "com.github.andrewlord1990:snackbarbuilder:0.9.0",
+
+            "com.github.BlacKCaT27:CurrencyEditText:2.0.2",
+            "com.code-troopers.betterpickers:library:3.1.0",
+            "mobi.upod:time-duration-picker:1.1.3",
+
+            "com.anthonymandra:ToggleButtons:2.0.0",
+
+            // GMS
+            "com.google.android.gms:play-services-location:$v_android_gms",
+
+            // TrueTime
+            "com.github.instacart.truetime-android:library:$v_truetime",
+            "com.github.instacart.truetime-android:library-extension-rx:$v_truetime",
+
+            // For swagger jaxrs annotations
+            dependencies.create("io.swagger:swagger-jaxrs:$v_swagger") {
+                transitive false
+            },
+
+            "org.zeroturnaround:zt-zip:1.13",
+
+            //region EVALUATION
+            // Socket.IO
+            dependencies.create("io.socket:socket.io-client:$v_socketio") {
+                // excluding org.json which is provided by Android
+                exclude group: 'org.json', module: 'json'
+            },
+
+            "com.github.lzyzsd:circleprogress:1.2.1",
+
+            //RX Location
+            "com.patloew.rxlocation:rxlocation:1.0.4",
+            "com.google.android.gms:play-services-location:$v_android_gms",
+
+            // Volley
+            "com.android.volley:volley:1.1.0",
+
+            // Anko
+            "org.jetbrains.anko:anko-commons:$v_anko",
+
+            // Anko Layouts
+            "org.jetbrains.anko:anko-sdk25:$v_anko", // sdk15, sdk19, sdk21, sdk23 are also available
+            "org.jetbrains.anko:anko-appcompat-v7:$v_anko",
+
+            // Coroutine listeners for Anko Layouts
+            "org.jetbrains.anko:anko-sdk25-coroutines:$v_anko",
+            "org.jetbrains.anko:anko-appcompat-v7-coroutines:$v_anko",
+
+            // Appcompat-v7 (only Anko Commons)
+            "org.jetbrains.anko:anko-appcompat-v7-commons:$v_anko",
+
+            // Appcompat-v7 (Anko Layouts)
+            "org.jetbrains.anko:anko-appcompat-v7:$v_anko",
+            "org.jetbrains.anko:anko-coroutines:$v_anko",
+
+            // CardView-v7
+            "org.jetbrains.anko:anko-cardview-v7:$v_anko",
+
+            // Design
+            "org.jetbrains.anko:anko-design:$v_anko",
+            "org.jetbrains.anko:anko-design-coroutines:$v_anko",
+
+            // GridLayout-v7
+            "org.jetbrains.anko:anko-gridlayout-v7:$v_anko",
+
+            // RecyclerView-v7
+            "org.jetbrains.anko:anko-recyclerview-v7:$v_anko",
+            "org.jetbrains.anko:anko-recyclerview-v7-coroutines:$v_anko",
+
+            // ShowcaseView
+            "com.github.amlcurran.showcaseview:library:5.4.3",
+
+            // Support-v4 (only Anko Commons)
+            "org.jetbrains.anko:anko-support-v4-commons:$v_anko",
+
+            // Support-v4 (Anko Layouts)
+            "org.jetbrains.anko:anko-support-v4:$v_anko",
+
+            "com.fenchtose:tooltip:0.1.5",
+            "net.cachapa.expandablelayout:expandablelayout:2.9.2"
+            //endregion
+    )
+
+    compileOnly(
+            // masc20180509. workaround for agp-3.1 instant-run not finding byte code
+            // https://issuetracker.google.com/issues/76403146
+            // Any relevant `compileOnly` deps of subprojects need to be replicated here
+            //region sx-common
+            "org.zalando:problem:0.20.3",
+            "junit:junit:4.12"
+            //endregion
+    )
+
+    debugImplementation(
+            // Stetho
+            "com.facebook.stetho:stetho:$v_stetho",
+            "com.facebook.stetho:stetho-okhttp:$v_stetho",
+    )
+
+    testImplementation(
+            "junit:junit:$v_junit",
+
+            "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
+
+            "org.robolectric:robolectric:$v_roboelectric",
+            "org.robolectric:shadows-multidex:$v_roboelectric",
+    )
+
+    androidTestImplementation(
+            project(path: ':sx-common', configuration: 'testArtifacts'),
+            project(path: ':sx-serialization', configuration: 'testArtifacts'),
+            "junit:junit:$v_junit",
+            "com.android.support:support-annotations:$v_android_support",
+            "com.android.support.test:runner:$v_android_test",
+            "com.android.support.test:rules:$v_android_test",
+    )
+}
+
+victor {
+    // Any assets defined in relative terms needs a base DPI specified
+    svgDpi = 72
+
+    // Do not generate these densities for SVG assets
+    excludeDensities = ['ldpi']
+
+    // WARNING: EXPERIMENTAL
+    // Generates Android drawables instead of PNGs.
+    // This is known not to work on only a subset of SVGs (e.g., does not support any value besides px).
+    generateVectorDrawables = false
+}
+
+clean {
+    doFirst {
+        GENERATED_DIR.deleteDir()
+    }
+}
+
+//region masc20170526. Victor customization
+
+afterEvaluate {
+    GENERATED_DIR.mkdirs()
+
+    // Amend output paths of victor, as AndroidStudio designer cannot see
+    // generated resources/drawables in build folder
+    tasks.withType(RasterizeTask).each {
+        it.outputDir = GENERATED_SVG_DIR
+    }
+}
+
+//endregion
+
+// Exclude sqlite native libs for release builds only.
+// As android.packagingOptions can't be defined on build type level,
+// need hook into tasks and clean before tasks.package*Release
+
+def removeSqliteLibs() {
+    fileTree("${buildDir}/intermediates") {
+        include '**/x86/libsqlite3x.so'
+        include '**/x86_64/libsqlite3x.so'
+    }.each {
+        it.absoluteFile.delete()
+    }
+}
+
+afterEvaluate {
+    if (tasks.findByName('packageRelease') != null) {
+        tasks.packageRelease.doFirst {
+            removeSqliteLibs()
+        }
+    }
+}
+
+/**
+ * Task for syncing mobile data project flyway sql migrations to android assets.
+ * Should run prior to assembly of apk.
+ * Flyway uses a specific internal scanning mechanism for android, only scanning assets
+ */
+task syncFlywayMigrations(type: Sync) {
+    from new File(project.rootDir, 'leoz-mobile-data/src/main/resources/db/migration')
+    into new File(project.projectDir, 'src/main/assets/db/migration')
+}
+tasks.preBuild.dependsOn(tasks.syncFlywayMigrations)
+
+packager {
+    title = 'Leoz Mobile'
+    bundleName = 'leoz-mobile'
+
+    android {
+        buildType 'release'
+    }
+}

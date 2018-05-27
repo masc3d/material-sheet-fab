@@ -1,0 +1,64 @@
+spring:
+    application:
+        name: leoz-central
+
+# Log levels
+logging:
+    level:
+        # Global log level
+        ROOT: INFO
+        # Application logic log level
+        org.deku.leoz: INFO
+        # Shows config loading details on DEBUG log level
+        org.springframework.boot.context.config: INFO
+        # dbcp2 logs an ugly warning including stack trace referring to unregsitering jmx
+        # when it's auto-closed on shutdown (as spring already unregistered the jmx bean)
+        org.apache.commons.dbcp2.BasicDataSource: ERROR
+
+server:
+    ssl:
+        # SSL is enabled for leoz-central
+        enabled: true
+        key-store: classpath:keystore.jks
+        key-store-password: FzgPjlHg4We3
+        # SSL certificate. somehow alias seems to be ignored (at least for undertow)
+        # and the wrong certificate may be provided in case of multiple entries
+        # Resolved by simply just having one certificate in the keystore (removed self-signed)
+        key-alias: le-1d4811c9-e696-4106-bfb2-03eb9d72bf6b
+        key-password: FzgPjlHg4We3
+        protocol: TLSv1.2
+        enabled-protocols: TLSv1.1,TLSv1.2
+        #ciphers: DHE_RSA_AES256_GCM_SHA384,DHE_RSA_AES128_GCM_SHA256,ECDHE_RSA_AES256_GCM_SHA384,ECDHE_RSA_AES128_GCM_SHA256,DHE_RSA_AES256_SHA256,DHE_RSA_AES128_SHA256,ECDHE_RSA_AES256_SHA384,ECDHE_RSA_AES128_SHA256,ECDHE_RSA_AES256_SHA,ECDHE_RSA_AES128_SHA,DHE_RSA_AES256_SHA,DHE_RSA_AES128_SHA
+
+# Central datasource
+persistence:
+    central:
+        datasource:
+            url: jdbc:mysql://10.0.10.10:3306/dekuclient?useSSL=false
+            username: root
+            password: root
+        # Enables debug logging for this persistence context
+        debug: false
+
+# leoz-central is final destination, doesn't have a peer
+remote:
+    host: ''
+
+# Updater configuration
+update:
+    info-service:
+        # By default the update service uses the local repository for providing update info/available versions
+        rsync-host: ''
+
+    enabled: true
+    # Run updater on broker connection and message notification
+    automatic: false
+    cleanup: false
+
+# Sevice Settings
+service:
+    # Parcel Service
+    parcel-service:
+        # Test/debug option which skips effective parcel data processing
+        skip-parcel-processing: false
+

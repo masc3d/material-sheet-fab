@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <color name="colorAccent">#f8ae18</color>
+    <color name="colorAccentOverlay">#aaf8ae18</color>
+    <color name="colorAccentTransparent">#ddffb525</color>
+    <color name="colorBlurOverlay">#aacccccc</color>
+    <color name="colorDarkGrey">#494949</color>
+    <color name="colorDarkIcon">#777777</color>
+    <color name="colorDev">#832c99</color>
+    <color name="colorDevTransparent">#dd832c99</color>
+    <color name="colorGreen">#28d228</color>
+    <color name="colorGreenTransparent">#dd28d228</color>
+    <color name="colorGrey">#797979</color>
+    <color name="colorGreyTransparent">#dd797979</color>
+    <color name="colorLighterGrey">#cecece</color>
+    <color name="colorLightGrey">#a6a6a6</color>
+    <color name="colorLightGreyTransparent">#dda6a6a6</color>
+    <color name="colorPrimary">#2D5682</color>
+    <color name="colorPrimaryDark">#214066</color>
+    <color name="colorPrimaryTransparent">#dd2D5682</color>
+    <color name="colorRed">#e43e30</color>
+    <color name="colorOrange">#ede76c19</color>
+    <color name="colorService">#ff5198e4</color>
+    <color name="colorWhiteSmoke">#f5f5f5</color>
+    <color name="colorYellow">#dede00</color>
+</resources>

@@ -1,0 +1,508 @@
+import groovy.io.FileType
+import groovy.xml.MarkupBuilder
+import org.apache.commons.lang3.ClassUtils
+import org.apache.commons.lang3.SystemUtils
+import org.jboss.forge.roaster.Roaster
+import org.jboss.forge.roaster.model.source.FieldSource
+import org.jboss.forge.roaster.model.source.JavaClassSource
+import org.jboss.forge.roaster.model.source.AnnotationSource
+import org.jboss.forge.roaster.model.source.PropertySource
+import org.jooq.util.DefaultGeneratorStrategy
+import org.jooq.util.Definition
+import org.jooq.util.GenerationTool
+import org.jooq.util.GeneratorStrategy
+import org.jooq.util.h2.H2Database
+import org.jooq.util.jaxb.*
+import sx.platform.OperatingSystem
+
+buildscript {
+    ext {
+        v_aspectj = '1.9.0'
+        v_jaxb = '2.3.0'
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+
+        // Flyway
+        classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
+        classpath "com.h2database:h2:$v_h2"
+
+        // JPA
+        classpath "javax.persistence:javax.persistence-api:$v_javax_persistence"
+        classpath("org.eclipse.persistence:eclipselink:$v_eclipselink") {
+            exclude module: 'javax.persistence'
+        }
+
+        // Roaster
+        classpath "org.jboss.forge.roaster:roaster-api:$v_roaster"
+        classpath "org.jboss.forge.roaster:roaster-jdt:$v_roaster"
+        classpath "org.apache.commons:commons-lang3:$v_commons_lang"
+
+        // QueryDSL SQL codegen
+        classpath "com.querydsl:querydsl-sql-codegen:$v_querydsl"
+
+        // JOOQ
+        classpath "org.jooq:jooq:$v_jooq"
+        classpath "org.jooq:jooq-meta:$v_jooq"
+        classpath "org.jooq:jooq-codegen:$v_jooq"
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'idea'
+apply plugin: 'org.flywaydb.flyway'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+}
+
+group = 'org.deku.leoz'
+
+//region Constants
+def GENERATED_DIR = file('src/generated')
+def PROTOTYPE_TEST_DIR = file('src/prototype/java')
+// For proper integration with gradle task's up-to-date checks, JPA weaving destination directory
+// must be separate from the original compiler class output directory.
+// However the final output folder needs to remain `build/classes` for IJ run configurations to work,
+// so the only way to achieve this without breaking things is to update all tasks writing to `build/classes`
+// to use a new location and leave all writing to `build/classes` to the weaving task.
+def UNWEAVED_CLASSES_DIR = new File(project.buildDir, "classes-unweaved")
+
+// Database constants
+def PROJECT_DB_DIR = file('src/main/resources/db/node')
+
+def DB_DIR = new File(project.buildDir, 'db')
+def DB_PERSISTENCE_XML = new File(DB_DIR, 'META-INF/persistence.xml')
+def DB_H2_JDBC_DRIVER = 'org.h2.Driver'
+// TODO: enabling TO_UPPER until DataGrip/IntelliJ support disabling it properly https://youtrack.jetbrains.com/issue/DBE-3292
+def DB_H2_JDBC_URL = "jdbc:h2:${DB_DIR}/leoz;database_to_upper=true"
+// Tables file which contains mapping to @Serializable uids
+def DB_TABLES_XML = new File(PROJECT_DB_DIR, "tables.xml")
+
+// SQL migrations (used for flyway eg.)
+def FLYWAY_MIGRATION_DIR = new File(PROJECT_DB_DIR, 'migration')
+
+def JOOQ_PACKAGE_NAME = "org.deku.leoz.node.data.jooq"
+def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
+def QUERYDSL_GENERATED_DIR = new File(GENERATED_DIR, 'querydsl')
+
+class Constants {
+    static JPA_GENERATED_PACKAGE = 'org.deku.leoz.node.data.jpa'
+}
+
+def JPA_GENERATED_PACKAGE = Constants.JPA_GENERATED_PACKAGE
+def JPA_TASK_GROUP = 'jpa'
+//endregion
+
+clean {
+    doFirst {
+        GENERATED_DIR.deleteDir()
+    }
+}
+
+idea {
+    module {
+        // Add KAPT generated sources to intellij
+        sourceDirs += file("$projectDir/build/generated/source/kapt/main")
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += JOOQ_GENERATED_DIR
+            srcDirs += QUERYDSL_GENERATED_DIR
+        }
+    }
+
+    test {
+        java {
+            srcDirs += PROTOTYPE_TEST_DIR
+        }
+    }
+}
+
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
+    }
+}
+
+configurations {
+    driver
+    querydslapt
+}
+
+dependencies {
+    // leoz webservice dependencies
+    compile(
+            // TODO: workaround for kotlin compiler not seeing jdk9 modules in non-jigsaw projects
+            "javax.annotation:javax.annotation-api:1.3.2",
+
+            // JPA
+            "javax.persistence:javax.persistence-api:$v_javax_persistence",
+            dependencies.create("org.eclipse.persistence:eclipselink:$v_eclipselink") {
+                exclude module: 'javax.persistence'
+            },
+
+            // queryDSL
+            "com.querydsl:querydsl-core:$v_querydsl",
+            "com.querydsl:querydsl-jpa:$v_querydsl",
+            "com.querydsl:querydsl-collections:$v_querydsl",
+            "com.querydsl:querydsl-sql-codegen:$v_querydsl",
+
+            // jooq
+            "org.jooq:jooq:$v_jooq",
+            "org.jooq:jooq-codegen:$v_jooq"
+    )
+
+    compileOnly(
+            project(':sx-serialization')
+    )
+
+    driver(
+            "com.h2database:h2:$v_h2"
+    )
+
+    // TODO: kapt disabled due to https://youtrack.jetbrains.com/issue/KT-14139. @see generateQueryDSL
+    // QueryDSL codegen/annotation processor
+//    kapt(
+//            "com.querydsl:querydsl-apt:$v_querydsl:jpa",
+//            "org.eclipse.persistence:javax.persistence:$v_javax_persistence")
+
+    querydslapt(
+            "com.querydsl:querydsl-apt:$v_querydsl:jpa"
+    )
+}
+
+flyway {
+    driver = DB_H2_JDBC_DRIVER
+    url = DB_H2_JDBC_URL
+    ignoreFutureMigrations = false
+    locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
+}
+
+//region JPA
+compileJava {
+    destinationDir = UNWEAVED_CLASSES_DIR
+}
+
+processResources {
+    destinationDir = UNWEAVED_CLASSES_DIR
+}
+
+/**
+ * Task for statically weaving eclipselink entitiy classes.
+ * This must be a `JavaExec` path otherwise there's sporadic issues with StaticWeave not being able to find
+ * specific classes of subprojects.
+ */
+task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
+    inputs.dir compileJava.destinationDir
+    outputs.dir sourceSets.main.output.classesDirs.first()
+
+    dependsOn tasks.compileJava, tasks.compileKotlin, tasks.processResources
+    mustRunAfter tasks.compileJava, tasks.compileKotlin, tasks.processResources
+
+    main 'org.eclipse.persistence.tools.weaving.jpa.StaticWeave'
+    args '-persistenceinfo', DB_DIR,
+            compileJava.destinationDir.getAbsolutePath(),
+            sourceSets.main.output.classesDirs.first()
+
+    doFirst {
+        // masc20170327. eclipselink weaver does not detect removed classes, thus may produce inconsistent output if output directory is not clean.
+        sourceSets.main.output.classesDirs.each {
+            if (it.exists()) {
+                println "Removing classes prior to weaving [${it}]"
+                it.traverse(type: FileType.FILES) {
+                    it.delete()
+                }
+            }
+        }
+    }
+}
+// masc20170118. workaround for path limit on windows systems
+if (SystemUtils.IS_OS_WINDOWS) {
+    tasks.jpaWeaving.environment = ['CLASSPATH': configurations.compile.join(';')]
+} else {
+    tasks.jpaWeaving.classpath = configurations.compile
+}
+// Dependencies
+tasks.classes {
+    dependsOn tasks.jpaWeaving
+    mustRunAfter tasks.jpaWeaving
+}
+//endregion
+
+//region JOOQ
+/**
+ * JOOQ generator strategy
+ */
+class CustomJooqGeneratorStrategy extends DefaultGeneratorStrategy {
+    @Override
+    String getJavaPackageName(Definition definition, GeneratorStrategy.Mode mode) {
+        def packageName = super.getJavaPackageName(definition, mode)
+        // Mangle package name for jpa pojos
+        if (mode == GeneratorStrategy.Mode.POJO) {
+            packageName = Constants.JPA_GENERATED_PACKAGE
+        }
+        return packageName
+    }
+}
+
+/**
+ * JOOQ generator configuration
+ */
+def jooqConfiguration = new Configuration()
+        .withJdbc(
+        new Jdbc()
+                .withDriver(DB_H2_JDBC_DRIVER)
+                .withUrl(DB_H2_JDBC_URL))
+        .withGenerator(
+        new Generator()
+                .withGenerate(
+                new Generate()
+                        .withJpaAnnotations(true)
+                        .withPojos(true)
+                        .withFluentSetters(false)
+                        .withPojosEqualsAndHashCode(true))
+                .withStrategy(
+                new Strategy()
+                        .withName(CustomJooqGeneratorStrategy.class.canonicalName))
+                .withDatabase(
+                new Database()
+                        .withName(H2Database.class.canonicalName)
+                        .withInputSchema('PUBLIC'))
+                .withTarget(
+                new Target()
+                        .withPackageName(JOOQ_PACKAGE_NAME)
+                        .withDirectory(JOOQ_GENERATED_DIR.toString())))
+
+/**
+ * Task generating JOOQ and JPA classes.
+ * TODO: jooq plugin doesn't work correctly with customized generator strategy (class loading issue)
+ */
+task jooqGenerate(group: 'jooq') {
+    dependsOn tasks.flywayMigrate
+    mustRunAfter tasks.flywayMigrate
+
+    inputs.dir FLYWAY_MIGRATION_DIR
+    outputs.dir JOOQ_GENERATED_DIR
+    doFirst {
+        JOOQ_GENERATED_DIR.deleteDir()
+    }
+
+    doLast {
+        GenerationTool.generate(jooqConfiguration)
+        // Post process generated java classes
+        List<String> entityClassNames = jpaPostProcess(DB_TABLES_XML, JOOQ_GENERATED_DIR)
+
+        // Update persistence.xml to include generated classes. This is required for eclipselink static weaving
+        // which relies on a complete persistence.xml
+        generatePersistenceXml(DB_PERSISTENCE_XML, entityClassNames)
+    }
+}
+// Dependencies
+tasks.compileJava {
+    dependsOn tasks.jooqGenerate
+    mustRunAfter tasks.jooqGenerate
+}
+//endregion
+
+//region QueryDSL
+/**
+ * Generates querydsl classes
+ * Workaround for kapt issue https://youtrack.jetbrains.com/issue/KT-14139
+ */
+task queryDslGenerate(type: JavaCompile, group: 'build', description: 'Generates the QueryDSL query types') {
+    source = JOOQ_GENERATED_DIR
+    classpath = configurations.compile + configurations.querydslapt // add processor module to classpath
+    // specify javac arguments
+    options.compilerArgs = [
+            "-proc:only",
+            "-processor", "com.querydsl.apt.jpa.JPAAnnotationProcessor" // your processor here
+    ]
+    // specify output of generated code
+    destinationDir = QUERYDSL_GENERATED_DIR
+}
+tasks.queryDslGenerate.dependsOn(tasks.jooqGenerate)
+tasks.compileKotlin.dependsOn(tasks.queryDslGenerate)
+tasks.compileJava.dependsOn(tasks.queryDslGenerate)
+//endregion
+
+//region Support methods
+/**
+ * Dynamically generate persistence.xml
+ * @param persistenceXml Destination persistence.xml
+ * @param classNames Class names to add to persistence unit
+ * @return
+ */
+static generatePersistenceXml(File persistenceXml, List<String> classNames) {
+    persistenceXml.parentFile.mkdirs()
+
+    def fileWriter = new FileWriter(persistenceXml)
+    def builder = new MarkupBuilder(fileWriter)
+    builder.persistence(xmlns: "http://java.sun.com/xml/ns/persistence", version: "1.0") {
+        "persistence-unit"(name: "leoz") {
+            classNames.each {
+                "class"(it)
+            }
+            properties {
+            }
+        }
+    }
+    fileWriter.close()
+}
+
+/**
+ * Performs post-processing on jpa-generated entity classes.
+ * @param tablesXmlFile Source tables.xml to use
+ * @param sourceDir Generated sources dir (to process)
+ * @return List of entity class names that have been found
+ */
+static List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
+    // Parse `tables.xml` for @Serializable uids and build look up map
+    def tables = new XmlSlurper().parse(tablesXmlFile)
+    def tableUidMap = new HashMap<String, String>()
+    tables.table.each {
+        tableUidMap[it.@name.toString().toLowerCase()] = it
+    }
+
+    // Id classes are collected here
+    def idClassUidByEntityClassName = new HashMap<String, String>()
+
+    // Entity class names are collected here
+    def entityClassNames = new ArrayList<String>()
+
+    // Iterate source files
+    sourceDir.eachFileRecurse(FileType.FILES, {
+        if (!it.name.endsWith(".java"))
+            return
+
+        def jtype = Roaster.parse(it)
+        def jsource = (JavaClassSource) jtype
+
+        // Look for JPA annotations
+        def tableAnnotation = jsource.annotations.find {
+            it.qualifiedName == javax.persistence.Table.canonicalName
+        }
+
+        def idClassAnnotation = jsource.annotations.find {
+            it.qualifiedName == javax.persistence.IdClass.canonicalName
+        }
+
+        String uid
+        if (tableAnnotation != null) {
+            // Remove JPA annotations from jooq record classes (jooq can't be parameterized to do this :[)
+            if (jsource.superType.startsWith(org.jooq.impl.UpdatableRecordImpl.canonicalName)) {
+                jsource.removeAnnotation(tableAnnotation)
+
+                def entityAnnotation = jsource.annotations.find {
+                    it.qualifiedName == javax.persistence.Entity.canonicalName
+                }
+                if (entityAnnotation != null)
+                    jsource.removeAnnotation(entityAnnotation)
+
+                // Generate and write updated class
+                it.write(jsource.toString())
+                return
+            }
+
+            entityClassNames.add(jsource.canonicalName)
+
+            def tableName = tableAnnotation.values.find { it.name == "name" }.stringValue
+
+            // Skip flyway schema table
+            if (tableName == "flyway_schema_history")
+                return
+
+            // Determine table uid
+            def tableEntry = tableUidMap[tableName.toLowerCase()]
+            if (tableEntry == null)
+                throw new IllegalStateException("Table [${tableName}] is missing entry in [${tablesXmlFile}]")
+
+            uid = tableEntry.@uid.toString()
+
+            if (idClassAnnotation != null) {
+                def idClassName = idClassAnnotation.literalValue
+                def idClassUid = tableEntry.@pkuid.toString()
+                idClassUidByEntityClassName[idClassName] = idClassUid
+            }
+        } else {
+            if (idClassAnnotation == null) {
+                return
+            }
+            uid = idClassUidByEntityClassName[jsource.canonicalName]
+            if (uid == null)
+                throw new IllegalStateException("Missing uid for id class [${jsource.canonicalName}]")
+        }
+
+        def uidLiteral = uid + "L"
+
+        // Amend serializableVersionUID if applicable
+        def serializableUidField = jsource.fields.find {
+            it.name == "serialVersionUID"
+        }
+        if (serializableUidField != null)
+            serializableUidField.literalInitializer = uidLiteral
+
+        jsource.fields.each { field ->
+            // Find field with @Id annotation
+            def idAnnotation = field.annotations.find {
+                it.qualifiedName == javax.persistence.Id.canonicalName
+            }
+
+            if (idAnnotation != null) {
+                //region Mangle primitive @Id fields
+                // EclipseLink currently does not support primitive @Id fields
+                // https://bugs.eclipse.org/bugs/show_bug.cgi?id=415027
+                // Thus changing primitve @Id fields and referring properties to their wrapped object type counterpart
+                if (field.type.primitive) {
+                    def fieldSource = (FieldSource) field
+                    def wrapperType = ClassUtils.primitiveToWrapper(ClassUtils.getClass(field.type.qualifiedName))
+
+                    // Find property referring to this field
+                    def p = (PropertySource) jsource.properties.find {
+                        it.field.equals(field)
+                    }
+
+                    // Update property type
+                    def setterParam = p.mutator.parameters.first()
+                    def setterParamName = setterParam.name
+                    p.mutator
+                            .removeParameter(setterParam)
+                            .addParameter(wrapperType, setterParamName)
+                    p.type = wrapperType
+
+                    // Update field type
+                    fieldSource.type = wrapperType
+                }
+                //endregion
+            }
+        }
+
+//        jsource.properties.each { property ->
+//            //region Change generated value strategies to AUTO. unlike IDENTITY, this allows manual id updates (if desired)
+//            def generatedValueAnnotation = property.annotations.find {
+//                it.qualifiedName == javax.persistence.GeneratedValue.canonicalName
+//            }
+//
+//            if (generatedValueAnnotation != null) {
+//                def a = (AnnotationSource<JavaClassSource>) generatedValueAnnotation
+//                a.setLiteralValue("strategy", "GenerationType.IDENTITY")
+//            }
+//            //endregion
+//        }
+
+        // Generate and write updated class
+        it.write(jsource.toString())
+    })
+
+    return entityClassNames
+}
+//endregion

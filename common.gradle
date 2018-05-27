@@ -1,0 +1,15 @@
+import java.lang.management.ManagementFactory
+
+// Common gradle tasks
+
+allprojects {
+    task cleanAll {
+        group = 'build'
+    }
+
+    project.plugins.whenPluginAdded { plugin ->
+        if (plugin instanceof JavaPlugin)
+            tasks.cleanAll.dependsOn(tasks.clean)
+    }
+}
+

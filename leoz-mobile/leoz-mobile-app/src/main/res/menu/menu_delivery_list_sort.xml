@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_sort_optimize"
+        android:orderInCategory="100"
+        android:title="@string/sort_optimize"
+        android:visible="true"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_sort_appointment_asc"
+        android:orderInCategory="100"
+        android:title="@string/sort_appointment"
+        android:icon="@drawable/ic_sort_ascending"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_sort_zip_desc"
+        android:orderInCategory="100"
+        android:title="@string/sort_zip"
+        android:icon="@drawable/ic_sort_descending"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_sort_zip_asc"
+        android:orderInCategory="100"
+        android:title="@string/sort_zip"
+        android:icon="@drawable/ic_sort_ascending"
+        app:showAsAction="never"/>
+
+</menu>

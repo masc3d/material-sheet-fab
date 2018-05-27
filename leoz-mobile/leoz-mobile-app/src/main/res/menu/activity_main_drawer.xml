@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools">
+
+    <group android:id="@+id/nav_group_2">
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/capture_image"
+            android:visible="false"/>
+        <item
+            android:id="@+id/nav_check_updates"
+            android:icon="@drawable/ic_update"
+            android:title="@string/check_for_updates"/>
+        <item
+            android:id="@+id/nav_send_diagnostics"
+            android:icon="@drawable/ic_bug"
+            android:title="@string/send_diagnostic_data"
+            android:visible="true"/>
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="@string/logout"
+            android:visible="false"/>
+    </group>
+
+    <group>
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_home"
+            android:title="@string/help"
+            android:visible="false"
+            />
+        <item
+            android:id="@+id/nav_data_policy"
+            android:icon="@drawable/ic_search_data"
+            android:title="@string/data_protection"
+            android:visible="true" />
+    </group>
+
+    <group android:id="@+id/nav_group_dev">
+        <item
+            android:id="@+id/nav_dev_remote_settings"
+            android:icon="@drawable/ic_service_exchange"
+            android:title="Remote settings"
+            android:visible="false"
+            tools:ignore="HardcodedText"/>
+    </group>
+
+</menu>

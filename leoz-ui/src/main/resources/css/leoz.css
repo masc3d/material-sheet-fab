@@ -1,0 +1,176 @@
+/** leo2 styles */
+.root {
+    /** CSS constants (unfortunately only works for colors as of jdk1.8.0_102)
+    /** Color constant */
+    -leoz-primary-color: #32629d;
+    -leoz-secondary-color: #f8ae18;
+
+    -fx-accent: -leoz-primary-color;
+    -fx-focus-color: -leoz-primary-color;
+}
+
+/** generic containers */
+.leoz-pane {
+    -fx-padding: 0.4em;
+}
+
+.leoz-menu-pane {
+    -fx-background-color: white;
+    -fx-padding: 0;
+}
+
+.leoz-menu-pane Button {
+    -fx-background-color: white;
+}
+
+.leoz-error {
+    -fx-border-color: red;
+    -fx-border-width: 2;
+    -fx-border-radius: 4;
+    -fx-background-color: mistyrose;
+}
+
+/** main view styles */
+.leoz-top-pane {
+    -fx-background-color: linear-gradient(to bottom, darkgray, whitesmoke);
+    -fx-border-color: -leoz-secondary-color transparent darkgray transparent;
+    -fx-border-width: 3 0 0 0;
+}
+
+.leoz-content-pane {
+    -fx-padding: 0.4em 0.4em 0.30em 0;
+}
+
+.leoz-logo {
+    -fx-background-image: url('../images/deku-logo.256px.png');
+    -fx-background-position: center center;
+    -fx-background-size: contain;
+    -fx-background-repeat: no-repeat;
+}
+
+.leoz-title {
+    /** Minor top padding to bring title more in line with image */
+    -fx-padding: 0.07em 0 0 0;
+    -fx-font-size: 28;
+    -fx-font-family: 'Futura Condensed Medium';
+}
+
+.leoz-title-image {
+    -fx-padding: 0 0.2em 0 0;
+}
+
+.leoz-status-bar {
+    -fx-background-color: linear-gradient(to top, darkgray, whitesmoke);
+    -fx-border-color: darkgray;
+    -fx-border-width: 1 0 0 0;
+}
+
+.leoz-status-bar HBox {
+    -fx-spacing: 0.4em;
+}
+
+.leoz-status-bar .leoz-version {
+    -fx-text-fill: gray;
+}
+
+.leoz-status-bar ToggleButton {
+    -fx-min-height: 24px;
+    -fx-max-height: 24px;
+    -fx-min-width: 24px;
+    -fx-max-width: 24px;
+    -fx-background-color: transparent;
+}
+
+.leoz-status-bar ToggleButton:selected {
+    -fx-background-color: white;
+}
+
+.leoz-log {
+    -fx-font-size: 11;
+    -fx-font-family: "Menlo";
+    -fx-font-weight: bold;
+}
+
+.leoz-sidebar-selection {
+    -fx-background-color: -leoz-primary-color;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 3px, 3px, 2px, 1px;
+    -fx-padding: 0.333333em 0.666667em 0.333333em 0.666667em;
+    -fx-text-fill: white
+}
+
+/** home view styles */
+.leoz-home-pane {
+    -fx-background-image: url('../images/deku-logo.backdrop.1178px.png');
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: contain;
+}
+
+.leoz-textfield-search {
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 3, 2, 2;
+    -fx-background-image: url("../images/search-144px.png");
+    -fx-background-size: 20 20;
+    -fx-background-position: left 10 center;
+    -fx-background-repeat: no-repeat;
+    /*-fx-opacity: 0.85;*/
+    /*-fx-background-color: transparent;*/
+    /*-fx-border-width: 2pt;*/
+    /*-fx-border-color: transparent transparent #f8ae18 transparent;*/
+    /*-fx-prompt-text-fill: #5c5c5c;*/
+    -fx-padding: 0 0 0 27pt;
+}
+
+/** FormFX styles */
+.form-label {
+    -fx-pref-width: 150;
+    -fx-alignment: center-right;
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+    -fx-text-fill: darkgray;
+    -fx-padding: 5 10 5 10;
+}
+
+.form-editor {
+    -fx-font-size: 12;
+}
+
+.form-title {
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+}
+
+.form-tooltip {
+    -fx-font-size: 11;
+    -fx-text-fill: gray;
+}
+
+.form-constraint .label {
+    -fx-font-size: 13;
+    -fx-text-fill: red;
+}
+
+.form-constraint ImageView {
+    /*    -fx-image: url("");*/
+}
+
+.form-content-box {
+    -fx-padding: 5 5 5 5;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 20%, rgba(225, 225, 225, 1), white);
+    -fx-background-radius: 2, 2, 2, 2;
+    -fx-border-color: darkgray;
+    -fx-border-radius: 5;
+}
+
+/** sx.fx.MaterialProgressIndicator */
+.circular-progress {
+    -indicator-color: #32629d;
+}
+
+.circular-progress .indicator {
+    -fx-stroke-type: centered;
+    -fx-fill: null;
+    -fx-stroke: -indicator-color;
+}

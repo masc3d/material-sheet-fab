@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/leoz-central-schema/db" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/leoz-central/db/mysql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/leoz-node-data/src/main/resources/db/node/migration" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/leoz-node/db/h2/data/util/generate_users.sql" dialect="H2" />
+  </component>
+</project>

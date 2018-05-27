@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.*?>
+<AnchorPane prefHeight="827.0" prefWidth="1371.0" stylesheets="@../../css/leoz.css"
+    xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="org.deku.leoz.ui.fx.modules.DepotMaintenanceController">
+    <children>
+        <VBox prefHeight="200.0" prefWidth="458.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+            AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <SplitPane dividerPositions="0.6" VBox.vgrow="ALWAYS">
+                    <items>
+                        <AnchorPane>
+                            <children>
+                                <TitledPane collapsible="false" minWidth="0.0" text="%global.search"
+                                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <content>
+                                        <fx:include fx:id="fxDepotList" source="../components/DepotList.fxml" />
+                                    </content>
+                                    <opaqueInsets>
+                                        <Insets />
+                                    </opaqueInsets>
+                                </TitledPane>
+                            </children>
+                        </AnchorPane>
+                        <AnchorPane>
+                            <children>
+                                <TitledPane collapsible="false" minWidth="0.0" text="%global.details"
+                                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <content>
+                                        <fx:include fx:id="fxDepotDetails" source="../components/DepotDetails.fxml" />
+                                    </content>
+                                </TitledPane>
+                            </children>
+                        </AnchorPane>
+                    </items>
+                </SplitPane>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

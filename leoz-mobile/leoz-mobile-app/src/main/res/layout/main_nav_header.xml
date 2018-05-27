@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="180dp"
+              android:background="@drawable/navbar_background"
+              android:divider="@drawable/divider_vertical_large"
+              android:gravity="bottom"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/large_margin"
+              android:paddingLeft="@dimen/large_margin"
+              android:paddingRight="@dimen/large_margin"
+              android:paddingTop="@dimen/large_margin"
+              android:showDividers="middle"
+              android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_launcher"
+            android:contentDescription="TODO"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:divider="@drawable/divider"
+            android:orientation="vertical"
+            android:showDividers="middle">
+
+            <TextView
+                android:id="@+id/uxTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:text="@string/app_name_long"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/uxVersion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:text="@string/app_name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:layout_marginEnd="@dimen/margin"
+                android:layout_gravity="top"
+                android:gravity="top"
+                android:tint="@color/colorDarkIcon"
+                app:srcCompat="@drawable/ic_device"
+                android:contentDescription="TODO"/>
+
+            <TextView
+                android:id="@+id/uxDeviceId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DeviceID"
+                android:textAppearance="@style/TextAppearance.AppCompat.Inverse"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/uxUserAreaLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:layout_gravity="top"
+                android:layout_marginEnd="@dimen/margin"
+                android:gravity="top"
+                android:tint="@color/colorDarkIcon"
+                app:srcCompat="@drawable/ic_user"
+                android:contentDescription="TODO"/>
+
+            <TextView
+                android:id="@+id/uxActiveUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/user"
+                android:textAppearance="@style/TextAppearance.AppCompat.Inverse"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:layout_gravity="top"
+                android:layout_marginEnd="@dimen/margin"
+                android:gravity="top"
+                android:tint="@color/colorDarkIcon"
+                app:srcCompat="@drawable/ic_station"
+                android:contentDescription="TODO"/>
+
+            <TextView
+                android:id="@+id/uxStationId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/station_id"
+                android:textAppearance="@style/TextAppearance.AppCompat.Inverse"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

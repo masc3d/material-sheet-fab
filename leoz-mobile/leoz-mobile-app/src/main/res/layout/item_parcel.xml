@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <data>
+
+        <variable
+            name="parcel"
+            type="org.deku.leoz.mobile.ui.vm.ParcelViewModel"/>
+    </data>
+
+    <FrameLayout
+        style="@style/AppTheme.Layout.Content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin"
+        android:layout_marginTop="@dimen/margin"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size"
+                            android:layout_height="@dimen/icon_size"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="@dimen/medium_margin"
+                            android:src="@{parcel.parcelIcon, default=@drawable/ic_package_variant_closed}"
+                            android:tint="@color/colorGrey"
+                            android:contentDescription="TODO"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@{parcel.number, default=000000000}"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                            />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="2dp"
+                        android:text="@{parcel.modificationTime, default=`dd.MM HH:mm:ss`}"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        />
+
+                </FrameLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:visibility="@{parcel.dimensionsVisibility}"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        >
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size"
+                            android:layout_height="@dimen/icon_size"
+                            android:layout_marginEnd="@dimen/small_margin"
+                            android:src="@drawable/ic_width"
+                            android:tint="@color/colorLightGrey"
+                            android:contentDescription="TODO"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@{parcel.length, default=`100.0`}"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        >
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size"
+                            android:layout_height="@dimen/icon_size"
+                            android:layout_marginEnd="@dimen/small_margin"
+                            android:src="@drawable/ic_depth"
+                            android:tint="@color/colorLightGrey"
+                            android:contentDescription="TODO"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@{parcel.width, default=`100.0`}"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        >
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size"
+                            android:layout_height="@dimen/icon_size"
+                            android:layout_marginEnd="@dimen/small_margin"
+                            android:src="@drawable/ic_height"
+                            android:tint="@color/colorLightGrey"
+                            android:contentDescription="TODO"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@{parcel.height, default=`100.0`}"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:orientation="horizontal"
+                        >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="@dimen/small_margin"
+                            android:text="@{parcel.weight, default=`100.00`}"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            />
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size"
+                            android:layout_height="@dimen/icon_size"
+                            android:src="@drawable/ic_weight_scale"
+                            android:tint="@color/colorLightGrey"
+                            android:contentDescription="TODO"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:orientation="vertical"
+                android:visibility="@{parcel.orderTaskVisbility}"
+                >
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size"
+                            android:layout_height="@dimen/icon_size"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="@dimen/margin"
+                            android:src="@{parcel.orderTask.icon, default=@drawable/ic_delivery}"
+                            android:tint="@color/colorLightGrey"
+                            android:contentDescription="TODO"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@{parcel.orderTask.address.city, default=`12345 Some Place`}"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                            />
+
+                    </LinearLayout>
+
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{parcel.orderTask.address.line1, default=`Line1`}"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</layout>

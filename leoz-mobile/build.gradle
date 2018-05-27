@@ -1,0 +1,141 @@
+import org.apache.commons.lang3.SystemUtils
+import sx.packager.BundleRepository
+import sx.rsync.Rsync
+import sx.ssh.SshHost
+import sx.ssh.SshTunnelProvider
+
+import java.lang.management.ManagementFactory
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+apply from: '../versions.gradle'
+apply from: '../common.gradle'
+
+buildscript {
+    ext {
+        v_android_gradle = '3.1.2'
+        v_kotlin = '1.2.41'
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        google()
+        maven {
+            url '../leoz-build/repo'
+        }
+        maven {
+            url 'https://maven.java.net/content/groups/public/'
+        }
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+
+        // masc20171004. as of 3.0.0-beta7, agp must solely be included on root project level to avoid
+        // local project configuration/variant resolution to work properly.
+        classpath "com.android.tools.build:gradle:$v_android_gradle"
+        classpath "sx:sx-ssh:0.1"
+        classpath "sx:sx-packager-gradle:0.1"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.17.0"
+    }
+}
+
+apply plugin: 'idea'
+// masc20180509. applying kapt plugin in root project to avoid databinding warning
+// about kapt task not being found
+apply plugin: 'kotlin-kapt'
+
+idea {
+    module {
+        excludeDirs += file('build-cache')
+    }
+}
+
+// Find subprojects outside the root folder (shared) and use dedicated build dir to avoid build/cache clashes
+subprojects.findAll {
+    !it.project.projectDir.toString().startsWith(rootDir.toString())
+}.each {
+    it.buildDir = new File(it.buildDir, project.name)
+}
+
+subprojects {
+    buildscript {
+        repositories {
+            mavenCentral()
+            jcenter()
+            maven {
+                url "https://maven.google.com"
+            }
+        }
+
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
+    }
+
+    apply plugin: 'com.github.ben-manes.versions'
+    apply plugin: 'project-report'
+
+    // Set boot classpath for all subprojects (eliminates warning in conjunction with setting sourceCompatibility)
+    tasks.withType(JavaCompile) {
+        options.bootstrapClasspath = files(
+                ManagementFactory.getRuntimeMXBean().bootClassPath
+                        .split(SystemUtils.IS_OS_WINDOWS ? ";" : ":")
+                        .collect { new File(it) }
+        )
+    }
+
+    project.plugins.whenPluginAdded { plugin ->
+        if (plugin instanceof com.android.build.gradle.AppPlugin ||
+                plugin instanceof com.android.build.gradle.LibraryPlugin) {
+            tasks.cleanAll.dependsOn(tasks.clean)
+            tasks.cleanAll.dependsOn(tasks.cleanBuildCache)
+        }
+    }
+
+    // Setup common sx-packager-gradle plugin properties for all subprojects
+    plugins.withType(sx.packager.gradle.PackagerPlugin).whenPluginAdded {
+        SshTunnelProvider mySshTunnelProvider = new SshTunnelProvider(
+                new kotlin.ranges.IntRange(13300, 13350),
+                new SshHost(
+                        "",
+                        13003,
+                        "leoz",
+                        "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
+
+        packager {
+            sshTunnelProvider = mySshTunnelProvider
+            bundleRepository = new BundleRepository(
+                    new Rsync.URI("rsync://leoz@leoz.derkurier.de:13002/bundles"),
+                    '2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x',
+                    mySshTunnelProvider)
+
+            releaseBasePath = project.rootDir.toPath()
+                    .parent
+                    .resolve('release')
+                    .toFile()
+
+            nativePlatformDir = project.rootDir.toPath()
+                    .parent
+                    .resolve('libs')
+                    .resolve('sx-rsync')
+                    .resolve('platform')
+                    .toFile()
+
+            gitRoot = project.rootDir.parentFile
+        }
+    }
+}
+
+task clean(type: Delete) {
+    group 'build'
+    delete rootProject.buildDir
+}
+
+tasks.cleanAll.dependsOn(clean)
