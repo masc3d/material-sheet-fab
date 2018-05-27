@@ -147,7 +147,7 @@ class Login {
                 )
 
                 val authService = Kodein.global.instance<AuthorizationService>()
-                val authResponse = authService.authorize(request)
+                val authResponse = authService.authorizeUser(request)
 
                 val user = User.create(
                         id = authResponse.user?.id!!,
