@@ -55,7 +55,7 @@ dependencies {
             "org.slf4j:jul-to-slf4j:$v_slf4j",
 
             // RX
-            "io.reactivex.rxjava2:rxjava:2.1.13",
+            "io.reactivex.rxjava2:rxjava:2.1.14",
             "io.reactivex:rxkotlin:2.0.0-RC1",
 
             "com.gojuno.koptional:koptional:$v_koptional",

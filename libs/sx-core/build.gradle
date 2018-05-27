@@ -3,7 +3,7 @@ version = '0.1'
 
 buildscript {
     ext {
-        v_guava = '25.0-jre'
+        v_guava = '25.1-jre'
         v_jackson = '2.9.5'
         v_javax_persistence = '2.2'
         v_jersey = '2.27'
