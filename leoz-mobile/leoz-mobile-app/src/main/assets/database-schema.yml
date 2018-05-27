@@ -1,5 +1,0 @@
-# Schema version. Must be increased on entity model changes.
-# Major increases indicate breaking changes and will reset the database on migration
-# Minor increases indicate soft/compatible migrations (only fields with default value or indexes added)
-major: 9
-minor: 1

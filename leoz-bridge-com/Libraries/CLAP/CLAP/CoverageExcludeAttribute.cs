@@ -1,1 +1,0 @@
-﻿internal class CoverageExcludeAttribute : System.Attribute { }

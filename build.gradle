@@ -1,552 +1,183 @@
-import com.jcraft.jsch.JSch
-import com.jcraft.jsch.JSchException
-import com.jcraft.jsch.Session
-import com.jcraft.jsch.agentproxy.ConnectorFactory
-import com.jcraft.jsch.agentproxy.RemoteIdentityRepository
-import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.transport.RefSpec
-import org.eclipse.jgit.transport.JschConfigSessionFactory
-import org.eclipse.jgit.transport.OpenSshConfig
-import org.eclipse.jgit.transport.SshSessionFactory
-import org.eclipse.jgit.util.FS
-import org.apache.commons.lang3.SystemUtils
-import java.time.Duration
-import org.gradle.api.invocation.Gradle
-import sx.ProcessExecutor
-import sx.ProcessExecutor.ProcessRunException
-import sx.packager.BundleRepository
-import sx.platform.PlatformId
-import sx.platform.OperatingSystem
-import sx.rsync.Rsync
-import sx.ssh.SshHost
-import sx.ssh.SshTunnelProvider
-import sx.Stopwatch
-
-import java.lang.management.ManagementFactory
-import java.nio.file.Files
-import java.nio.file.Paths
-
-apply from: 'versions.gradle'
-apply from: 'common.gradle'
-apply plugin: 'idea'
-
-def assertJvmVersion(String vmVersion) {
-    def jvm = ManagementFactory.getRuntimeMXBean()
-    println("JVM version [${jvm.specVersion}] [${jvm.vmVersion}]")
-    if (!jvm.vmVersion.startsWith(vmVersion))
-        throw new IllegalStateException("JVM/JDK version is [${jvm.vmVersion}], should start with [${vmVersion}]")
-}
-
-assertJvmVersion(v_jvm)
-
-idea {
-    module {
-        // Exclude dirs to prevent indexing
-        excludeDirs += file('leoz-build')
-        excludeDirs += file('leoz-mobile')
-        excludeDirs += file('leoz-web')
-        excludeDirs += file('release')
-        excludeDirs += file('build-cache')
-    }
-}
-
 buildscript {
-    apply from: 'versions.gradle'
+    repositories {
+        jcenter()
+        maven { url 'https://maven.google.com' }
+    }
 
     ext {
-        v_jgit = '4.11.0.201803080745-r'
-        v_jsch = '0.0.9'
-    }
-
-    repositories {
-        mavenCentral()
-        jcenter()
-        google()
-        maven {
-            url 'leoz-build/repo'
-        }
+        v_android_gradle = '3.0.1'
+        v_android_buildtools = '27.0.3'
+        v_android_support = '27.0.2'
+        v_android_test = '1.0.1'
+        v_android_gms = '11.8.0'
+        v_anko = '0.10.4'
+        v_javamail = '1.6.0'
+        v_junit = '4.12'
+        v_kotlin = '1.2.10'
+        v_material_dialogs = '0.9.6.0'
+        v_ormlite = '5.0'
+        v_paho = '1.2.0'
+        v_roboelectric = '3.6.1'
+        v_rxlifecycle = '2.2.1'
+        v_truetime = '3.3'
     }
 
     dependencies {
-        classpath(
-                "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
-                "com.github.ben-manes:gradle-versions-plugin:0.17.0",
-                "org.kordamp.gradle:stats-gradle-plugin:0.2.2",
-                "sx:sx-ssh:0.1",
-                "sx:sx-common:0.1",
-                "sx:sx-packager-gradle:0.1",
-                "sx:sx-serialization:0.1"
-        )
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
 
-ext {
-    g_platform_identifier = PlatformId.current().toString()
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
-    // Leoz release path, relative to root project
-    g_release_path = Paths.get(project.rootDir.toURI())
-            .resolve("release")
-            .toFile()
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
 
-    // Leoz icon for OSX packages
-    g_osx_icon = Paths.get(project.rootDir.toURI())
-            .resolve('images')
-            .resolve('DEKU.icon.icns')
-            .toFile()
-
-    // Leoz icon for windows packages
-    g_windows_icon = Paths.get(project.rootDir.toURI())
-            .resolve('images')
-            .resolve('DEKU.icon.ico')
-            .toFile()
-
-    // Distribution path for local dev VM
-    g_vm_dist_path = project.rootDir.toPath()
-            .resolve('vm')
-            .resolve('dist')
-            .toFile()
+repositories {
+    mavenCentral()
+    jcenter()
+    google()
+    maven { url "https://jitpack.io" }
 }
 
-// Common configuration for all subprojects (including android)
-subprojects {
+android {
+    compileSdkVersion 27
+    buildToolsVersion v_android_buildtools
 
-    // Common subproject buildscript configuration
-    buildscript {
-        repositories {
-            mavenCentral()
-            jcenter()
+    defaultConfig {
+        minSdkVersion 18
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_7
+            targetCompatibility JavaVersion.VERSION_1_7
         }
     }
 
-    // Global repositories
-    repositories {
-        mavenCentral()
-        jcenter()
+    dataBinding {
+        enabled true
     }
 
-    // For generating dependency reports
-    apply plugin: 'project-report'
-    // Plugin for showing dependency updates
-    apply plugin: 'com.github.ben-manes.versions'
-    // Plugin for showing code statistics (Sourcefiles, LOC) `gradlew stats`
-    apply plugin: 'org.kordamp.gradle.stats'
-
-    ext {
-        // Unified classes dir
-        classesDir = new File(buildDir, "classes/main")
-        testClassesDir = new File(buildDir, "classes/test")
-
-        globalPlatformDir = new File(project.rootDir, 'platform')
-        rsyncPlatformDir = new File(project(':sx-rsync').projectDir, 'platform')
-
-        buildSupplementalsDir = new File(project.buildDir, 'supplementals')
-        buildPlatformDir = new File(buildSupplementalsDir, 'platform')
-        projectPlatformDir = new File(project.projectDir, 'platform')
+    lintOptions {
+        abortOnError true
     }
 
-    plugins.withType(org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper).whenPluginAdded {
-        // Unify kotlin classes output dir
-        sourceSets.main.kotlin.outputDir = classesDir
-        sourceSets.test.kotlin.outputDir = testClassesDir
-
-        // Unify resources output dir
-        sourceSets.main.output.resourcesDir = classesDir
-        sourceSets.test.output.resourcesDir = testClassesDir
-
-        // Copy kotlin classes to java classes output directory
-        // masc20180430. as of gradle-4.7, disabling unification of java/kotlin classes as it's not compatible with gradle build cache
-        // This implies that the project can only be run via gradle delegation, as IJ does not support multiple language outputs per module
-        kotlin.copyClassesToJavaOutput = false
-
-        if (kotlin.copyClassesToJavaOutput) {
-            // When using `copyClassesToJavaOutput` the (old) classesDirs has to be amended as well
-            // to prevent duplicate classpaths / test runs.
-            sourceSets.main.output.classesDirs.setFrom(classesDir)
-            sourceSets.test.output.classesDirs.setFrom(testClassesDir)
-        }
-    }
-
-    plugins.withType(JavaPlugin).whenPluginAdded {
-        //region Since IJ-2017.2, default output path is `out`. Unify so both build toolchains share the same output path
-        // REMARK: possibly a better approach would be to synchronize gradle build output to IJ out directories
-        project.apply plugin: 'idea'
-
-        // Unify java classes output dir
-        sourceSets.main.java.outputDir = classesDir
-        sourceSets.test.java.outputDir = testClassesDir
-
-        // Unify resources output dir
-        sourceSets.main.output.resourcesDir = classesDir
-        sourceSets.test.output.resourcesDir = testClassesDir
-
-        project.idea {
-            module {
-                outputDir = project.sourceSets.main.output.classesDirs.first()
-                testOutputDir = project.sourceSets.test.output.classesDirs.first()
-            }
-        }
-        //endregion
-
-        project.test {
-            ignoreFailures true
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
-        // Global jar configuration
-        project.jar {
-            doFirst {
-                jar {
-                    manifest {
-                        if (project.hasProperty('mainClassName')) {
-                            attributes(
-                                    'Main-Class': project.mainClassName
-                            )
-                        }
-
-                        attributes(
-                                'Implementation-Name': project.name,
-                                'Implementation-Version': project.version,
-                                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
-                        )
-                    }
-
-                    entryCompression ZipEntryCompression.DEFLATED
-                }
-            }
+        debug {
+            minifyEnabled false
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-rules-debug.pro'
         }
-
-        // Remove dependency to check task, as analysis plugin is good for hinting at dependency, but there's also false positives
-        check.dependsOn.remove('analyzeDependencies')
-    }
-
-    // Setup common sx-packager-gradle plugin properties for all subprojects
-    plugins.withType(sx.packager.gradle.PackagerPlugin).whenPluginAdded {
-        SshTunnelProvider mySshTunnelProvider = new SshTunnelProvider(
-                new kotlin.ranges.IntRange(13300, 13350),
-                new SshHost(
-                        "",
-                        13003,
-                        "leoz",
-                        "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
-
-        packager {
-            sshTunnelProvider = mySshTunnelProvider
-            bundleRepository = new BundleRepository(
-                    new Rsync.URI("rsync://leoz@leoz.derkurier.de:13002/bundles"),
-                    '2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x',
-                    mySshTunnelProvider)
-
-            releaseBasePath = g_release_path
-            osxIcon = g_osx_icon
-            windowsIcon = g_windows_icon
-            nativePlatformDir = new File(project(':sx-rsync').projectDir, 'platform')
-            supplementalPlatformDirs(
-                    (buildPlatformDir): new File('platform')
-            )
-        }
-    }
-
-    plugins.withType(DistributionPlugin).whenPluginAdded {
-        project.gradle.projectsEvaluated {
-            tasks.installDist {
-                doLast {
-                    def src = project.buildDir.toPath()
-                            .resolve("install")
-                            .resolve(project.name)
-
-                    def dst = g_vm_dist_path
-                            .toPath()
-                            .resolve(project.name)
-
-                    println("Moving [${src}] to [${dst}]")
-
-                    if (Files.exists(dst)) dst.deleteDir()
-                    g_vm_dist_path.mkdirs()
-                    Files.move(src, dst)
-                }
-            }
-        }
-    }
-
-    plugins.withType(ApplicationPlugin).whenPluginAdded {
-        // Workaround for windows path limit (CreateProcess error 206)
-        if (PlatformId.current().operatingSystem == OperatingSystem.WINDOWS) {
-            task pathingJar(type: Jar) {
-                dependsOn configurations.runtime
-                appendix = 'pathing'
-
-                doFirst {
-                    manifest {
-                        // Build the Class-Path for absolute paths based on runtime dependencies.
-                        attributes "Class-Path": configurations.runtime.files.collect {
-                            it.toURL().toString().replaceFirst(/file:\/+/, '/')
-                        }.join(' ')
-                    }
-                }
-            }
-
-            // Do the same for like for bootRun for the run task executable by `gradle run`.
-            run {
-                dependsOn pathingJar
-                doFirst {
-                    classpath = files(sourceSets.main.output.classesDirs
-                            .plus(pathingJar.archivePath))
-                }
-            }
-        }
-    }
-
-    /**
-     * Task copying platform specific files from sx-rsync to project dir
-     */
-    task copyRsyncPlatformDirToProject(type: Copy) {
-        from rsyncPlatformDir
-        into projectPlatformDir
-        // Rename generic name to leoz specific process name, as it's easier to handle,
-        // when eg. looking at process names while leoz is running
-        rename 'sx-rsync(.*)', 'leoz-rsync$1'
-    }
-
-    /**
-     * Task copying platform specific files from sx-rsync to project build dir
-     */
-    task copyRsyncPlatformDirToBuild(type: Copy) {
-        from rsyncPlatformDir
-        into buildPlatformDir
-        // Rename generic name to leoz specific process name, as it's easier to handle,
-        // when eg. looking at process names while leoz is running
-        rename 'sx-rsync(.*)', 'leoz-rsync$1'
-    }
-    tasks.copyRsyncPlatformDirToBuild.dependsOn(tasks.copyRsyncPlatformDirToProject)
-
-    /**
-     * Task copying architecture specific global files to project dir
-     */
-    task copyGlobalPlatformDirToProject(type: Copy) {
-        from globalPlatformDir
-        into projectPlatformDir
-    }
-
-    /**
-     * Task copying architecture specific global files to project build dir
-     */
-    task copyGlobalPlatformDirToBuild(type: Copy) {
-        from globalPlatformDir
-        into buildPlatformDir
-    }
-    tasks.copyGlobalPlatformDirToBuild.dependsOn(tasks.copyGlobalPlatformDirToProject)
-}
-
-// GIT maintenance tasks
-
-// Provide session factory to jgit
-SshSessionFactory.setInstance(new sx.jsch.ConfigSessionFactory())
-
-/**
- * Removes GIT tags in root in local and remote repositories
- */
-task gitRemoveRootTags {
-    group = 'git'
-
-    doLast {
-        def git = Git.open(project.rootDir)
-
-        def lc = git.tagList()
-        def tags = lc.call()
-
-        def toDelete = tags
-                .findAll {
-            def file = new File(it.name)
-            def root = new File("refs/tags")
-            (file.parentFile.equals(root))
-        }
-
-        toDelete.forEach {
-            println("Removing ${it.name} ${it.leaf}")
-        }
-
-        def push = git.push()
-                .setRefSpecs(
-                toDelete.collect {
-                    new RefSpec().setSource(null).setDestination(it.name)
-                })
-        push.call()
-
-        def td = git.tagDelete()
-        td.setTags(*toDelete.collect { it.name })
-        td.call()
-
-        git.close()
     }
 }
 
-/**
- * GIT subtrees
- */
-def subtrees = [
-        [
-                name : 'CentralSchema',
-                path : 'leoz-central-schema',
-                repo : 'ssh://git@git.derkurier.de:13020/leoz/leoz-central-schema.git',
-                ref  : 'master',
-                group: 'git'
-        ],
-        [
-                name: 'SxAndroid',
-                path: 'libs/sx-android',
-                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-android.git',
-                ref : 'master'
-        ],
-        [
-                name: 'SxAndroidHoneywell',
-                path: 'libs/sx-android-honeywell',
-                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-android-honeywell.git',
-                ref : 'master'
-        ],
-        [
-                name: 'SxCommon',
-                path: 'libs/sx-common',
-                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-common.git',
-                ref : 'master'
-        ],
-        [
-                name: 'SxDiscovery',
-                path: 'libs/sx-discovery',
-                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-discovery.git',
-                ref : 'master'
-        ],
-        [
-                name: 'SxFx',
-                path: 'libs/sx-fx',
-                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-fx.git',
-                ref : 'master'
-        ],
-        [
-                name: 'SxMq',
-                path: 'libs/sx-mq',
-                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-mq.git',
-                ref : 'master'
-        ],
-        [
-                name: 'SxPackager',
-                path: 'libs/sx-packager',
-                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-packager.git',
-                ref : 'master'
-        ],
-        [
-                name: 'SxPackagerGradle',
-                path: 'libs/sx-packager-gradle',
-                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-packager-gradle.git',
-                ref : 'master'
-        ],
-        [
-                name: 'SxRsync',
-                path: 'libs/sx-rsync',
-                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-rsync.git',
-                ref : 'master'
-        ],
-        [
-                name: 'SxSerialization',
-                path: 'libs/sx-serialization',
-                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-serialization.git',
-                ref : 'master'
-        ],
-        [
-                name: 'SxSsh',
-                path: 'libs/sx-ssh',
-                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-ssh.git',
-                ref : 'master'
-        ],
-        [
-                name: 'MaterialSheetFab',
-                path: 'leoz-mobile/libs/material-sheet-fab',
-                repo: 'ssh://git@github.com/masc3d/material-sheet-fab.git',
-                ref : 'master'
-        ]
-]
+dependencies {
+    implementation(
+            project(":sx-common"),
 
-/**
- * Push all subtrees at once
- */
-task gitSubtreePushAll {
-}
+            fileTree(dir: 'libs', include: ['*.jar']),
 
-task gitSubtreePullAll {
-}
+            "com.jakewharton.threetenabp:threetenabp:1.0.5",
 
-task gitSubtreeRejoinAll {
-}
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
-def runCommand(command) {
-    try {
-        ProcessExecutor.run(command)
-    } catch (ProcessRunException e) {
-        throw new IllegalStateException(e.result.error)
-    }
-}
+            // Anko
+            "org.jetbrains.anko:anko-sqlite:$v_anko",
 
-// Build tasks dynamically for each subtree
-subtrees.each { subtree ->
-    def taskNamePull = "gitSubtreePull${subtree['name']}"
-    task "${taskNamePull}" {
-        group = subtree['group']
+            // Android support libs
+            "com.android.support:support-annotations:$v_android_support",
+            "com.android.support:appcompat-v7:$v_android_support",
+            "com.android.support:support-v4:$v_android_support",
+            "com.android.support:design:$v_android_support",
 
-        doLast {
-            println "Pulling subtree ${subtree}"
+            // rx
+            "io.reactivex.rxjava2:rxjava:2.1.8",
+            "io.reactivex.rxjava2:rxandroid:2.0.1",
+            "io.reactivex:rxkotlin:2.0.0-RC1",
 
-            def sw = new Stopwatch().start()
+            // rxlifecycle
+            "com.trello.rxlifecycle2:rxlifecycle:$v_rxlifecycle",
+            "com.trello.rxlifecycle2:rxlifecycle-kotlin:$v_rxlifecycle",
+            "com.trello.rxlifecycle2:rxlifecycle-components:$v_rxlifecycle",
+            "com.trello.rxlifecycle2:rxlifecycle-android:$v_rxlifecycle",
+            "com.jakewharton.rxbinding2:rxbinding:2.0.0",
 
-            runCommand(
-                    ['git', 'subtree', 'pull', '--squash', '-P', subtree['path'], subtree['repo'], subtree['ref']]
-            )
+            // Logging
+            "org.slf4j:slf4j-api:$v_slf4j",
+            "org.slf4j:jcl-over-slf4j:$v_slf4j",
 
-            println "Completed in ${sw}"
-        }
-    }
-    tasks.gitSubtreePullAll.dependsOn "${taskNamePull}"
+            // JavaMail
+            "com.sun.mail:android-mail:$v_javamail",
+            "com.sun.mail:android-activation:$v_javamail"
+    )
 
-    def taskNamePush = "gitSubtreePush${subtree['name']}"
-    task "${taskNamePush}" {
-        group = subtree['group']
+    compileOnly(
+            project(':sx-mq'),
 
-        doLast {
-            println "Pushing subtree ${subtree}"
+            "com.journeyapps:zxing-android-embedded:3.5.0",
 
-            def sw = new Stopwatch().start()
+            // MQTT persistence
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
 
-            runCommand(
-                    ['git', 'subtree', 'push', '-P', subtree['path'], subtree['repo'], subtree['ref']]
-            )
+            // Dialog
+            "com.afollestad.material-dialogs:core:$v_material_dialogs",
+            "com.afollestad.material-dialogs:commons:$v_material_dialogs",
 
-            println "Completed in ${sw}"
-        }
-    }
-    tasks.gitSubtreePushAll.dependsOn "${taskNamePush}"
+            // ReactiveNetwork
+            "com.github.pwittchen:reactivenetwork-rx2:0.12.3",
 
-    def taskNameRejoin = "gitSubtreeRejoin${subtree['name']}"
-    task "${taskNameRejoin}" {
-        doLast {
-            println "Rejoining subtree ${subtree}"
+            // Flexible adapter
+            "eu.davidea:flexible-adapter:5.0.0-rc4",
+            "com.eightbitlab:blurview:1.3.4",
 
-            def branchName = "rejoin/${subtree['path']}".toString()
+            // Requery sqlite
+            "io.requery:sqlite-android:3.21.0",
 
-            def sw = new Stopwatch().start()
+            // GMS
+            "com.google.android.gms:play-services-location:$v_android_gms",
 
-            runCommand(
-                    ['git', 'subtree', 'split', '--rejoin', '-P', subtree['path'], '-b', branchName, '--annotate', "[${subtree['path'].replace('/', '-')}] ".toString()]
-            )
+            // TrueTime
+            "com.github.instacart.truetime-android:library:$v_truetime",
+            "com.github.instacart.truetime-android:library-extension-rx:$v_truetime"
+    )
 
-            // Remove rejoin branch
-            runCommand(
-                    ['git', 'branch', '-d', branchName]
-            )
+    testImplementation(
+            project(':sx-mq'),
 
-            // Prune unreachable (rejoin) commits (of deleted rejoin branch)
-            runCommand(['git', 'reflog', 'expire', '--expire-unreachable=now', '--all'])
-            runCommand(['git', 'gc', '--prune=now'])
+            "junit:junit:$v_junit",
+            "org.robolectric:robolectric:$v_roboelectric",
+            "org.robolectric:shadows-multidex:$v_roboelectric",
 
-            println "Completed in ${sw}"
-        }
-    }
-    tasks.gitSubtreeRejoinAll.dependsOn "${taskNameRejoin}"
+            // MQTT client
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
+    )
+
+    androidTestImplementation(
+            "junit:junit:$v_junit",
+
+            "com.android.support:support-annotations:$v_android_support",
+            "com.android.support.test:runner:$v_android_test",
+            "com.android.support.test:rules:$v_android_test",
+
+            // Logging
+            dependencies.create("com.github.tony19:logback-android-classic:1.1.1-6") {
+                exclude group: 'com.google.android', module: 'android'
+            },
+
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
+    )
+
+    kapt(
+            "com.android.databinding:compiler:$v_android_gradle"
+    )
 }
