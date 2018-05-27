@@ -70,15 +70,15 @@ class MqttClientPersistenceSQLiteTest {
 
     @Test
     fun testKeys() {
-        log.info {
-            this.mqttPersistence.keys().toList()
-        }
+        log.info(
+                this.mqttPersistence.keys().toList()
+        )
     }
 
     @Test
     fun testContains() {
-        log.info {
-            this.mqttPersistence.containsKey("123")
-        }
+        log.info(
+                this.mqttPersistence.containsKey("123")
+        )
     }
 }

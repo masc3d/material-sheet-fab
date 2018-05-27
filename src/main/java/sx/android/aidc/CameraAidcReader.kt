@@ -3,7 +3,6 @@ package sx.android.aidc
 import android.content.Context
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
-import com.google.zxing.client.android.Intents
 import com.journeyapps.barcodescanner.*
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import io.reactivex.subjects.BehaviorSubject
@@ -42,7 +41,7 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
                                 this@CameraAidcReader.mapBarcodeFormats(),
                                 null,
                                 null,
-                                Intents.Scan.NORMAL_SCAN
+                                false
                         ))
                     }
 

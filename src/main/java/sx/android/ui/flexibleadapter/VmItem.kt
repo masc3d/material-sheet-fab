@@ -3,7 +3,6 @@ package sx.android.ui.flexibleadapter
 import android.support.annotation.AnyRes
 import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
@@ -58,7 +57,7 @@ open class VmItem<VM, IVM>(
     val itemReleasedEvent by lazy { itemReleasedEventSubject.hide() }
 
     override fun bindViewHolder(
-            adapter: FlexibleAdapter<IFlexible<*>>,
+            adapter: FlexibleAdapter<out IFlexible<*>>,
             viewHolder: VmHolder,
             position: Int,
             payloads: MutableList<Any?>) {
@@ -78,14 +77,14 @@ open class VmItem<VM, IVM>(
         )
     }
 
-    override fun unbindViewHolder(adapter: FlexibleAdapter<IFlexible<*>>, holder: VmHolder?, position: Int) {
+    override fun unbindViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, holder: VmHolder?, position: Int) {
         super.unbindViewHolder(adapter, holder, position)
 
         // Unbind view holder
         holder?.binding?.unbind()
     }
 
-    override fun createViewHolder(view: View, adapter: FlexibleAdapter<IFlexible<*>>): VmHolder {
+    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): VmHolder {
         // Blur view support
         if (view is BlurView) {
             val rootView = adapter.recyclerView

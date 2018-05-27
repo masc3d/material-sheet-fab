@@ -1,7 +1,5 @@
 package sx.android.aidc
 
-import io.reactivex.disposables.CompositeDisposable
-
 /**
  * Composite aidc reader
  * @param readers AidcReaders for composition
@@ -11,22 +9,20 @@ class CompositeAidcReader(vararg readers: AidcReader) : AidcReader() {
 
     val readers: List<AidcReader>
 
-    private var readerBindings = CompositeDisposable()
-
     init {
         this.readers = readers.toList()
 
         this.enabledProperty
                 .distinctUntilChanged()
                 .subscribe { update ->
-                    readers.forEach { it.enabled = update.value }
-                }
+            readers.forEach { it.enabled = update.value }
+        }
 
         this.decodersUpdatedSubject
                 .distinctUntilChanged()
                 .subscribe { decoders ->
-                    readers.forEach { it.decoders.set(*decoders) }
-                }
+            readers.forEach { it.decoders.set(*decoders) }
+        }
 
         readers.forEach {
             it.readEvent.subscribe {
@@ -36,12 +32,10 @@ class CompositeAidcReader(vararg readers: AidcReader) : AidcReader() {
     }
 
     override fun onBind() {
-        readerBindings.addAll(
-                *this.readers.map { it.bind() }.toTypedArray()
-        )
+        this.readers.forEach { it.onBindInternal() }
     }
 
     override fun onUnbind() {
-        readerBindings.clear()
+        this.readers.forEach { it.onUnbindInternal() }
     }
 }
