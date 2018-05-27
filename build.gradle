@@ -1,0 +1,83 @@
+group 'sx'
+version '1.0'
+
+buildscript {
+    ext {
+        v_activemq = '5.15.4'
+        v_artemis = '2.6.0'
+        v_kodein = '4.1.0'
+        v_kotlin = '1.2.41'
+        v_kryo = '4.0.2'
+        v_kryo_serializers = '0.42'
+        v_protostuff = '1.5.3'
+        v_spring = '5.0.6.RELEASE'
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'project-report'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        // masc20181101. android support
+        // API levels < 24 are not compatible with some java8 bytecode kt compiler produces
+        jvmTarget = JavaVersion.VERSION_1_6
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+//region Prototype test setup
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
+    }
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs += file('src/prototype/java')
+        }
+    }
+}
+//endregion
+
+dependencies {
+    compile(
+            project(':sx-common'),
+            project(':sx-serialization'),
+
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+    )
+
+    compileOnly(
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:1.3.6",
+
+            // MQTT client
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
+    )
+
+    testCompile(
+            "junit:junit:4.12",
+
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:1.3.6",
+    )
+}
