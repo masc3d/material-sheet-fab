@@ -11,7 +11,6 @@ import sx.android.anko.sqlite.getByteArray
 import sx.android.anko.sqlite.getInt
 import sx.android.anko.sqlite.getString
 import sx.android.database.sqlite.backupTo
-import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.mq.mqtt.IMqttPersistence
 import sx.mq.mqtt.MqttPersistentMessage
@@ -108,6 +107,16 @@ class MqttSqlitePersistence constructor(
         }
     }
 
+    override fun getTopics(): List<String> {
+        return this.db.select(TABLE_NAME, COL_TOPIC)
+                .distinct()
+                .exec {
+                    asSequence()
+                            .map { StringParser.parseRow(it) }
+                            .toList()
+                }
+    }
+
     override fun get(topicName: String?): Observable<MqttPersistentMessage> {
         return Observable.create<MqttPersistentMessage> { emitter ->
             try {
@@ -123,9 +132,18 @@ class MqttSqlitePersistence constructor(
 
                     //region Determine batch size
                     // Peek payload sizes
-                    val sizes = Stopwatch.createStarted(this, "SELECT BATCH SIZES", { _, _ ->
+                    val sizes = Stopwatch.createStarted(this, "SELECT BATCH SIZES", {
                         val COL_SIZE = "LENGTH(${COL_PAYLOAD})"
                         this.db.select(TABLE_NAME, COL_SIZE)
+                                .let {
+                                    if (topicName != null)
+                                        it.whereArgs(
+                                                select = "${COL_TOPIC} = {${COL_TOPIC}}",
+                                                args = *arrayOf(COL_TOPIC to topicName)
+                                        )
+                                    else
+                                        it
+                                }
                                 .orderBy(COL_ID)
                                 .limit(MAX_BATCH_SIZE)
                                 .exec {
@@ -136,7 +154,7 @@ class MqttSqlitePersistence constructor(
 
                     })
 
-                    log.info { "Maximum batch size ${sizes.count()} -> ${sizes.sum()} bytes" }
+                    log.trace { "Maximum batch size ${sizes.count()} -> ${sizes.sum()} bytes" }
 
                     for (size in sizes) {
                         batchSizeBytes += size
@@ -147,13 +165,28 @@ class MqttSqlitePersistence constructor(
                     batchSize = if (batchSize > 0) batchSize else 1
                     //endregion
 
-                    log.info { "Processing batch size ${batchSize} -> ${batchSizeBytes} bytes" }
-                    val batch = Stopwatch.createStarted(this, "SELECT BATCH", { _, _ ->
+                    log.trace { "Processing batch size ${batchSize} -> ${batchSizeBytes} bytes" }
+                    val batch = Stopwatch.createStarted(this, "SELECT BATCH", {
                         this.db.select(TABLE_NAME)
-                                .whereArgs(
-                                        select = "${COL_ID} > {${COL_ID}}",
-                                        args = *arrayOf(COL_ID to lastId)
-                                )
+                                .let {
+                                    when {
+                                        topicName != null ->
+                                            it.whereArgs(
+                                                    select = "${COL_ID} > {${COL_ID}} AND ${COL_TOPIC} = {${COL_TOPIC}}",
+                                                    args = *arrayOf(
+                                                            COL_ID to lastId,
+                                                            COL_TOPIC to (topicName)
+                                                    )
+                                            )
+                                        else ->
+                                            it.whereArgs(
+                                                    select = "${COL_ID} > {${COL_ID}}",
+                                                    args = *arrayOf(
+                                                            COL_ID to lastId)
+
+                                            )
+                                    }
+                                }
                                 .orderBy(COL_ID)
                                 .limit(batchSize)
                                 .exec {
