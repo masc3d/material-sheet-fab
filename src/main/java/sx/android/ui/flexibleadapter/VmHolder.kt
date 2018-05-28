@@ -44,7 +44,7 @@ class VmHolder(
     private var beginDelayedTransition = false
 
     init {
-        this.binding = DataBindingUtil.bind(view)
+        this.binding = DataBindingUtil.bind(view)!!
 
         this.binding.addOnRebindCallback(object : OnRebindCallback<ViewDataBinding>() {
             /** Track transition animations to avoid overlapping transitions */

@@ -7,7 +7,7 @@ import io.reactivex.Observer
 import io.reactivex.subjects.BehaviorSubject
 
 /** Bindable field update container */
-class FieldUpdate<T>(val value: T)
+data class FieldUpdate<T>(val value: T)
 
 /**
  * Base observable for android data binding with support for rx observable fields.
@@ -43,6 +43,14 @@ abstract class BaseRxObservable : BaseObservable() {
             this.emitValue()
         }
 
+        /**
+         * Reset observable field.
+         * This may be required after refresh, as requery does not updated `@Bindable`s in this case
+         */
+        fun reset() {
+            this.emitValue()
+        }
+
         internal fun emitValue() {
             this.subject.onNext(FieldUpdate(valueSupplier.invoke()))
         }
@@ -72,7 +80,7 @@ fun <T> ObservableField<T>.toObservable(): io.reactivex.Observable<T> {
 
         val callback = object : Observable.OnPropertyChangedCallback() {
             override fun onPropertyChanged(observable: android.databinding.Observable, i: Int) {
-                e.onNext(this@toObservable.get())
+                e.onNext(this@toObservable.get()!!)
             }
         }
 

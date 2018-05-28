@@ -4,12 +4,16 @@ import com.trello.rxlifecycle2.LifecycleProvider
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import org.slf4j.LoggerFactory
+import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
-import sx.rx.ObservableRxProperty
+import org.slf4j.LoggerFactory
 import sx.aidc.SymbologyType
+import sx.log.slf4j.trace
+import sx.rx.ObservableRxProperty
 import java.util.*
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * Abstract barcode reader
@@ -79,6 +83,7 @@ abstract class AidcReader {
     }
 
     private var bindRefCount = 0
+    private var bindRefLock = ReentrantLock()
 
     /**
      * Barcode reader event
@@ -91,20 +96,46 @@ abstract class AidcReader {
      * Observable for binding to rxlifecycle
      */
     private val lifecycle by lazy {
-        PublishSubject.create<Unit>().hide()
+        PublishSubject.create<Unit>()
+                .hide()
                 .doOnSubscribe {
-                    if (bindRefCount == 0)
-                        this.onBind()
-                    bindRefCount++
-                    log.trace("Bind ref count [${bindRefCount}]")
+                    bindRefLock.withLock {
+                        if (bindRefCount == 0) this.onBind()
+                        bindRefCount++
+                        log.trace { "Bind ref count [${bindRefCount}]" }
+                    }
                 }
                 .doOnDispose {
-                    bindRefCount--
-                    if (bindRefCount == 0)
-                        this.onUnbind()
-                    log.trace("Bind ref count [${bindRefCount}]")
+                    bindRefLock.withLock {
+                        bindRefCount--
+                        if (bindRefCount == 0) this.onUnbind()
+                        log.trace { "Bind ref count [${bindRefCount}]" }
+                    }
                 }
     }
+
+    private var exclusiveBinding: Disposable? = null
+
+    /**
+     * Bind reader exclusively
+     */
+    var bindExclusively: Boolean
+        get() = exclusiveBinding != null
+        set(value) {
+            when (value) {
+                true -> if (exclusiveBinding == null) exclusiveBinding = this.bind()
+                false -> {
+                    exclusiveBinding?.dispose()
+                    exclusiveBinding = null
+                }
+            }
+        }
+
+    /**
+     * Bind reader
+     */
+    fun bind(): Disposable =
+        this.lifecycle.subscribe()
 
     /**
      * Bind lifecycle to fragment
