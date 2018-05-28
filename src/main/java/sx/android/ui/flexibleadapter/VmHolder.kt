@@ -53,6 +53,7 @@ class VmHolder(
             override fun onPreBind(binding: ViewDataBinding): Boolean {
                 if (!started && this@VmHolder.beginDelayedTransition) {
                     TransitionManager.beginDelayedTransition(binding.root as ViewGroup, AutoTransition().also {
+                        it.setDuration(200)
                         it.addListener(object : TransitionListenerAdapter() {
                             override fun onTransitionStart(transition: Transition) {
                                 started = true
