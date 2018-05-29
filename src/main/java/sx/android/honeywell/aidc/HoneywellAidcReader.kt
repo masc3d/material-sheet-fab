@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
+import sx.log.slf4j.debug
 import sx.rx.toHotReplay
 
 /**
@@ -118,7 +119,10 @@ class HoneywellAidcReader private constructor(
      * Honeywell barcode reader
      */
     private val honeywellReaderInstance = LazyInstance<BarcodeReader>({
+        this.aidcManager.addBarcodeDeviceListener(this.listener)
+
         val bc = this.aidcManager.createBarcodeReader()
+
         bc.addBarcodeListener(this.listener)
         bc.addTriggerListener(this.listener)
 
@@ -267,7 +271,16 @@ class HoneywellAidcReader private constructor(
     /**
      * Honeywell barcode reader listener
      */
-    private val listener = object : BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener {
+    private val listener = object
+        :
+            BarcodeReader.BarcodeListener,
+            BarcodeReader.TriggerListener,
+            AidcManager.BarcodeDeviceListener
+    {
+        override fun onBarcodeDeviceConnectionEvent(p0: BarcodeDeviceConnectionEvent) {
+            log.debug { "Barcode device [${p0.barcodeReaderInfo.friendlyName}] status [${p0.connectionStatus}]" }
+        }
+
         override fun onBarcodeEvent(evt: BarcodeReadEvent) {
             val barcodeType = CodeId.values()
                     .firstOrNull { it.value == evt.codeId }
