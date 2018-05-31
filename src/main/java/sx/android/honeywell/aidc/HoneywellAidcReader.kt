@@ -73,8 +73,15 @@ class HoneywellAidcReader private constructor(
         try {
             this.honeywellReader.claim()
         } catch (t: Throwable) {
-            log.error("Claiming reader failed [${t.message}]", t)
-            throw t
+            // Claiming reader may sporadically fail some short while after
+            // the application has resumed, without apparent reason.
+            // (An error occurred while communicating with the scanner services)
+
+            log.warn("Claiming reader failed [${t.message}], attempting recovery")
+
+            // TODO: attempting one-shot recovery, this should be reported upstream (honeywell)
+            this.honeywellReaderInstance.reset()
+            this.honeywellReader.claim()
         }
 
         this.subscriptions.add(
@@ -174,7 +181,6 @@ class HoneywellAidcReader private constructor(
     var centerDecode: Boolean
         get() =
             this.honeywellReader.getBooleanProperty(BarcodeReader.PROPERTY_CENTER_DECODE)
-
         set(value) {
             this.honeywellReader.setProperty(BarcodeReader.PROPERTY_CENTER_DECODE, value)
         }
@@ -275,8 +281,7 @@ class HoneywellAidcReader private constructor(
         :
             BarcodeReader.BarcodeListener,
             BarcodeReader.TriggerListener,
-            AidcManager.BarcodeDeviceListener
-    {
+            AidcManager.BarcodeDeviceListener {
         override fun onBarcodeDeviceConnectionEvent(p0: BarcodeDeviceConnectionEvent) {
             log.debug { "Barcode device [${p0.barcodeReaderInfo.friendlyName}] status [${p0.connectionStatus}]" }
         }
