@@ -99,6 +99,9 @@ dependencies {
 
             // Logback
             "ch.qos.logback:logback-classic:$v_logback",
+
+            // ReflectASM
+            "com.esotericsoftware:reflectasm:1.11.3"
     )
 
     testCompile(
