@@ -275,12 +275,13 @@ class Stopwatch {
          */
         fun <T> createStarted(instance: Any, name: String, level: Level = Level.TRACE, block: () -> T): T {
             val log = LoggerFactory.getLogger(instance.javaClass)
-            val sw = Stopwatch.createStarted()
+            var sw: Stopwatch? = null
             try {
                 log.message(level, name)
+                sw = Stopwatch.createStarted()
                 return block()
             } finally {
-                log.message(level, { this.createLogMessage(sw, name) })
+                log.message(level, { this.createLogMessage(sw!!, name) })
             }
         }
 
