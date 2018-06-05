@@ -44,12 +44,15 @@ class Bundle : Serializable {
 
     val executable: File by lazy {
         val extension = when {
-            SystemUtils.IS_OS_WINDOWS -> ".exe"
+            this.platform?.operatingSystem == OperatingSystem.WINDOWS -> ".exe"
             else -> ""
         }
 
         when {
-            SystemUtils.IS_OS_MAC -> File(this.contentPath.resolve("MacOS"), this.name!!)
+            this.platform?.operatingSystem == OperatingSystem.OSX -> File(
+                    this.contentPath.resolve("MacOS"),
+                    this.name!!
+            )
             else -> File(this.path!!, "${this.name!!}${extension}")
         }
     }
@@ -553,6 +556,21 @@ class Bundle : Serializable {
     }
 
     /**
+     * Ensures this bundle is executable (from the command line)
+     */
+    fun makeExecutable() {
+        this.executable.setExecutable(true)
+
+        if (SystemUtils.IS_OS_MAC) {
+            // On OSX jspawnhelper must be executable (in case the bundle is executing itself, as leoz-ui does when executing with `start`)
+            val spawnHelper = File(this.contentPath, "PlugIns/Java.runtime/Contents/Home/jre/lib/jspawnhelper")
+            if (spawnHelper.exists()) {
+                spawnHelper.setExecutable(true)
+            }
+        }
+    }
+
+    /**
      * Execute bundle process
      * @param args Arguments
      */
@@ -563,14 +581,7 @@ class Bundle : Serializable {
         command.add(this.executable.toString())
         command.addAll(args)
 
-        this.executable.setExecutable(true)
-        if (SystemUtils.IS_OS_MAC) {
-            // On OSX jspawnhelper must be executable (in case the bundle is executing itself, as leoz-ui does when executing with `start`)
-            val spawnHelper = File(this.contentPath, "PlugIns/Java.runtime/Contents/Home/jre/lib/jspawnhelper")
-            if (spawnHelper.exists()) {
-                spawnHelper.setExecutable(true)
-            }
-        }
+        this.makeExecutable()
 
         log.info("Invoking bundle process interface [${command}]")
 

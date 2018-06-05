@@ -315,7 +315,10 @@ class BundleRepository(
         if (verify) {
             val bundlePath = destPath
             log.info("Verifying bundle [${bundlePath}]")
-            Bundle.load(bundlePath).verify()
+            Bundle.load(bundlePath).also {
+                it.verify()
+                it.makeExecutable()
+            }
         }
 
         if (onProgress != null) onProgress(currentFile, 1.0)
@@ -354,7 +357,10 @@ class BundleRepository(
             this.walkPlatformFolders(destPath.toPath()).forEach { p ->
                 val bundlePath = p.toFile()
                 logInfo("Verifying bundle [${bundlePath}]")
-                Bundle.load(bundlePath).verify()
+                Bundle.load(bundlePath).also {
+                    it.verify()
+                    it.makeExecutable()
+                }
             }
         }
 
