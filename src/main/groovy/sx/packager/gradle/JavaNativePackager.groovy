@@ -263,7 +263,7 @@ class ReleaseUpdateTask extends ReleaseTask {
                     platformId,
                     Bundle.Version.parse(this.extension.version))
 
-            bundle.executable.setExecutable(true)
+            bundle.makeExecutable()
         }
     }
 }
