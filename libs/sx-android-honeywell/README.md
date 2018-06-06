@@ -1,1 +1,0 @@
-# Honeywell specific android components #
