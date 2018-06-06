@@ -12,6 +12,9 @@ import sx.rx.limit
  * Created by masc on 06.06.18.
  */
 fun List<AutoCloseable>.close(maxConcurrency: Int = this.count()) {
+    if (this.count() == 0)
+        return
+
     val log = LoggerFactory.getLogger(AutoCloseable::class.java)
 
     log.info { "Closing ${this.count()} with concurrency=${maxConcurrency}" }
