@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.2.41'
+        v_kotlin = '1.2.10'
     }
 
     repositories {
@@ -16,15 +16,6 @@ buildscript {
 }
 
 apply plugin: 'kotlin'
-
-sourceCompatibility = JavaVersion.VERSION_1_10
-targetCompatibility = JavaVersion.VERSION_1_10
-
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
-    }
-}
 
 repositories {
     mavenCentral()
@@ -48,7 +39,7 @@ sourceSets {
 
 dependencies {
     compile(
-            project(':sx-core'),
+            project(':sx-common'),
             project(':sx-ssh'),
 
             // JSR-310 / java.time drop-in replacement
@@ -60,7 +51,7 @@ dependencies {
             // Ini/conf file support
             "org.ini4j:ini4j:0.5.4",
 
-            "com.github.jnr:jnr-posix:3.0.45"
+            "com.github.jnr:jnr-posix:3.0.42"
     )
 
     testCompile(
