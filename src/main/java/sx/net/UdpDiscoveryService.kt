@@ -167,15 +167,10 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     private val lock = ReentrantLock()
 
     /**
-     * Info block for this host.
-     * Setting the info block triggers a publish cycle.
+     * Info block for this host
      */
-    var info: TInfo?
+    val info: TInfo?
         get() = _info.get()
-        set(value) {
-            _info.resetIf({ it != value }, value)
-            this.trigger()
-        }
 
     private var _info = LazyInstance<TInfo?>({ null })
 
@@ -282,6 +277,18 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
             }
         }
     }
+
+    /**
+     * Updates info for this host. Triggers a publish cycle
+     */
+    var nodeInfo: TInfo?
+        get() {
+            return _info.get()
+        }
+        set(value) {
+            _info.resetIf({ it != value }, value)
+            this.trigger()
+        }
 
     /**
      * Discovery server

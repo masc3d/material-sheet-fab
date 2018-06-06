@@ -54,7 +54,7 @@ class UdpDiscoveryServicePrototype {
 
         ds.start()
         Thread.sleep(5000)
-        ds.info = Info("type-b")
+        ds.nodeInfo = Info("type-b")
         Thread.sleep(Long.MAX_VALUE)
         ds.stop()
     }
