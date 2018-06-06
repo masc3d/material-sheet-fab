@@ -13,7 +13,8 @@ class MqttListener(
         private val mqttEndpoint: MqttEndpoint
 )
     : MqListener() {
-    private var isStarted: Boolean = false
+
+    override var isRunning: Boolean = false
 
     private val mqttClient by lazy {
         this.mqttEndpoint.context.client()
@@ -37,15 +38,15 @@ class MqttListener(
                             this.onError(it)
                         })
 
-        this.isStarted = true
+        this.isRunning = true
     }
 
     @Synchronized override fun stop() {
-        if (this.isStarted) {
+        if (this.isRunning) {
             this.mqttClient.unsubscribe(this.mqttEndpoint.topicName)
                     .blockingAwait()
 
-            this.isStarted = false
+            this.isRunning = false
         }
     }
 }

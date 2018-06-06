@@ -31,6 +31,8 @@ abstract class MqListener
 
     abstract fun stop()
 
+    abstract val isRunning: Boolean
+
     protected fun handleMessage(messageObject: Any, replyChannel: MqChannel? = null) {
         val mqHandler: MqHandler<*>?
 
