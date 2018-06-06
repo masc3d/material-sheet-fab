@@ -1,2 +1,2 @@
-include ':material-sheet-fab'
-include ':sample'
+rootProject.name = 'leoz-central-schema'
+
