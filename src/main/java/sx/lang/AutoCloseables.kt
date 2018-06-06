@@ -21,7 +21,6 @@ fun List<AutoCloseable>.close(maxConcurrency: Int = this.count()) {
 
     val scheduler = Schedulers.io().limit(maxConcurrency)
     Observable.fromIterable(this)
-            .subscribeOn(scheduler)
             .flatMap {
                 Observable.just(it)
                         .map {
