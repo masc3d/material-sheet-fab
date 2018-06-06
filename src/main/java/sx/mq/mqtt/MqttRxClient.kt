@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.rx.toHotCache
 import sx.rx.toHotReplay
-import java.util.concurrent.TimeUnit
 
 /**
  * MQTT reactive client interface
@@ -109,7 +108,7 @@ class MqttRxClient(
                         null,
                         object : IMqttActionListener {
                             override fun onSuccess(asyncActionToken: IMqttToken?) {
-                                if (!emitter.isDisposed) emitter.onComplete()
+                                emitter.onComplete()
                             }
 
                             override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
@@ -119,11 +118,9 @@ class MqttRxClient(
                         }
                 )
             } catch (e: Throwable) {
-                if (!emitter.isDisposed) emitter.onError(e)
+                emitter.onError(e)
             }
         }
-                // TODO: shouldn't require a timeout, but publish action callback may not report back under specific conditions, resulting in deadlock
-                .timeout(5, TimeUnit.SECONDS)
                 .toHotCache()
     }
 
@@ -154,11 +151,11 @@ class MqttRxClient(
                         },
                         object : IMqttMessageListener {
                             override fun messageArrived(topic: String, message: MqttMessage) {
-                                if (!emitter.isDisposed) emitter.onNext(message)
+                                emitter.onNext(message)
                             }
                         })
             } catch (e: Throwable) {
-                if (!emitter.isDisposed) emitter.onError(e)
+                emitter.onError(e)
             }
         }
                 .toHotReplay()
@@ -173,7 +170,7 @@ class MqttRxClient(
             try {
                 this.parent.unsubscribe(topicName, null, object : IMqttActionListener {
                     override fun onSuccess(asyncActionToken: IMqttToken?) {
-                        if (!emitter.isDisposed) emitter.onComplete()
+                        emitter.onComplete()
                     }
 
                     override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
@@ -183,7 +180,7 @@ class MqttRxClient(
 
                 })
             } catch (e: Throwable) {
-                if (!emitter.isDisposed) emitter.onError(e)
+                emitter.onError(e)
             }
         }
                 .toHotCache()
@@ -200,7 +197,7 @@ class MqttRxClient(
                         null,
                         object : IMqttActionListener {
                             override fun onSuccess(asyncActionToken: IMqttToken?) {
-                                if (!emitter.isDisposed) emitter.onComplete()
+                                emitter.onComplete()
                             }
 
                             override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
@@ -216,11 +213,9 @@ class MqttRxClient(
                     log.warn(e.message, e)
                 }
 
-                if (!emitter.isDisposed) emitter.onError(e)
+                emitter.onError(e)
             }
         }
-                // TODO: temporary outer timeout for detecting deadlock
-                .timeout(20, TimeUnit.SECONDS)
                 .toHotCache()
     }
 
@@ -237,7 +232,7 @@ class MqttRxClient(
                             null,
                             object : IMqttActionListener {
                                 override fun onSuccess(asyncActionToken: IMqttToken?) {
-                                    if (!emitter.isDisposed) emitter.onComplete()
+                                    emitter.onComplete()
                                 }
 
                                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
@@ -246,7 +241,7 @@ class MqttRxClient(
                                 }
                             })
                 } catch (e: Throwable) {
-                    if (!emitter.isDisposed) emitter.onError(e)
+                    emitter.onError(e)
                 }
             }
         }
