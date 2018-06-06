@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.2.41'
+        v_kotlin = '1.2.10'
         v_slf4j = '1.7.25'
     }
 
@@ -17,16 +17,6 @@ buildscript {
 }
 
 apply plugin: 'kotlin'
-
-sourceCompatibility = JavaVersion.VERSION_1_10
-targetCompatibility = JavaVersion.VERSION_1_10
-
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
-    }
-}
-
 
 repositories {
     mavenCentral()
