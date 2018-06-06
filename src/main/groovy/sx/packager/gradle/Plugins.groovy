@@ -3,7 +3,6 @@ package sx.packager.gradle
 import org.apache.commons.lang3.SystemUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPlugin
 import sx.packager.BundleRepository
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
@@ -90,7 +89,7 @@ abstract class PackagerPlugin implements Plugin<Project> {
 
     void apply(Project project) {
 
-        // Add extension extension
+        // Add extension extensino
         packagerExtension = project.extensions.create('packager', PackagerPluginExtension)
         packagerExtension.packagerBaseDir = new File(project.buildDir, 'packager')
         packagerExtension.releaseBasePath = Paths.get(packagerExtension.packagerBaseDir.toURI())
@@ -164,7 +163,7 @@ class JavaPackagerPlugin extends PackagerPlugin {
             extension = packagerExtension
         }
 
-        project.plugins.withType(JavaPlugin) {
+        project.gradle.projectsEvaluated {
             project.tasks.buildNativeBundle.dependsOn(project.tasks.jar)
             project.tasks.releaseUpdate.dependsOn(project.tasks.jar)
         }

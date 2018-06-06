@@ -61,7 +61,6 @@ class BuildNativeBundleTask extends Task {
             this.packageDescription = this.extension.title
 
         def packagerPlatformDir = this.getPackagerPlatformDir()
-        def packagerPlatformBundlesDir = this.getPackagerPlatformBundlesDir()
 
         def mainJar = this.getMainJar()
         def mainClassName = this.getMainClassName();
@@ -72,8 +71,7 @@ class BuildNativeBundleTask extends Task {
         // JDK/JRE
         def jvm = org.gradle.internal.jvm.Jvm.current()
         def jdk_home = jvm.javaHome
-        // With jdk9, jre won't be available, thus reverting to jdk home
-        def jre_home = jvm.jre?.homeDir ?: jdk_home
+        def jre_home = jvm.jre.homeDir
         println "JDK home [${jdk_home}]"
         println "JRE home [${jre_home}]"
 
@@ -102,7 +100,7 @@ class BuildNativeBundleTask extends Task {
                     "-title", this.extension.title,
                     "-description", this.packageDescription,
                     "-name", this.packageName,
-                    "-outdir", packagerPlatformBundlesDir,
+                    "-outdir", packagerPlatformDir,
                     "-outfile", this.extension.bundleName,
                     "-srcdir", packagerLibsDir,
                     "-appclass", mainClassName,
@@ -145,9 +143,10 @@ class ReleaseNativeBundleTask extends ReleaseTask {
 
         def releasePlatformPath = this.getReleasePlatformPath()
 
-        def packagerPlatformBundlesDir = this.getPackagerPlatformBundlesDir()
+        def packagerPlatformDir = this.getPackagerPlatformDir()
 
-        def packagerBundlePath = Paths.get(packagerPlatformBundlesDir.toURI())
+        def packagerBundlePath = Paths.get(packagerPlatformDir.toURI())
+                .resolve('bundles')
                 .resolve(SystemUtils.IS_OS_MAC ? "" : this.extension.bundleName)
                 .toFile()
 
@@ -263,7 +262,7 @@ class ReleaseUpdateTask extends ReleaseTask {
                     platformId,
                     Bundle.Version.parse(this.extension.version))
 
-            bundle.makeExecutable()
+            bundle.executable.setExecutable(true)
         }
     }
 }
