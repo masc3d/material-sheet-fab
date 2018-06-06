@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="header"
+            type="org.deku.leoz.mobile.ui.vm.SectionViewModel"/>
+    </data>
+
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/uxBlurView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:blurOverlayColor="@color/colorBlurOverlay"
+        >
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.75"
+            android:background="@{header.background, default=@drawable/section_background_accent}"
+            />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_gravity="bottom"
+            android:alpha="0.5"
+            android:background="@color/colorWhiteSmoke"/>
+
+        <FrameLayout
+            style="@style/AppTheme.Layout.Content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                >
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size"
+                    android:layout_height="@dimen/icon_size"
+                    android:layout_gravity="center_vertical"
+                    android:tint="@{header.colorInt}"
+                    android:src="@{header.icon, default=@drawable/ic_truck}"
+                    android:layout_marginEnd="@dimen/large_margin"
+                    android:contentDescription="TODO"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@{header.title, default=`Parcels`}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="@dimen/margin"
+                    android:text="@{header.amountText, default=`0`}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_large"
+                    android:layout_height="@dimen/icon_size_large"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_expand"
+                    android:tint="@color/colorDarkGrey"
+                    android:contentDescription="TODO">
+
+                </ImageView>
+
+            </LinearLayout>
+        </FrameLayout>
+
+
+    </eightbitlab.com.blurview.BlurView>
+</layout>

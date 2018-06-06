@@ -1,0 +1,12 @@
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.deku.leoz.mobile">
+
+    <application
+        android:name="org.deku.leoz.mobile.DebugApplication"
+        tools:replace="android:name">
+
+    </application>
+
+</manifest>

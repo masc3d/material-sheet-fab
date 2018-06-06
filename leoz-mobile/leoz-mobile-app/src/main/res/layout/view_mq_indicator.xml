@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="mqStatistics"
+            type="org.deku.leoz.mobile.ui.vm.MqStatisticsViewModel"
+            />
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:animatedVisibility="@{safeUnbox(mqStatistics.isVisible) ? View.VISIBLE : View.GONE}"
+        >
+
+        <sx.android.ui.view.BadgeTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{mqStatistics.mainCount, default = 60}"
+            android:background="@color/colorAccent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            />
+
+    </FrameLayout>
+</layout>

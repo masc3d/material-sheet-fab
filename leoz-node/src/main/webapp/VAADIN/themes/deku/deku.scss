@@ -1,0 +1,35 @@
+// Modify the base color of the theme
+$v-font-size: 12px;
+$v-font-weight: 600;
+
+// Import valo after setting the parameters
+@import "../valo/valo";
+
+@mixin deku {
+  @include valo;
+
+  // Your theme's rules go here
+  &.v-app {
+    margin-left: 16px;
+    margin-right: 16px;
+    background: transparent;
+  }
+
+  .title-bar {
+  }
+
+  .title {
+    padding-top: 1em;
+    padding-left: 0.2em;
+    font-size: 2em;
+  }
+}
+
+.v-generated-body {
+  @include linear-gradient(to bottom, #CECECE 2%, #ffffff 99%);
+  background-repeat: no-repeat;
+  background-color: white;
+  border-top-color: #FFB601;
+  border-top-width: 3px;
+  border-top-style: solid;
+}

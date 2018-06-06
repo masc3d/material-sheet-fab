@@ -1,0 +1,153 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              style="@style/AppTheme.Layout.Screen">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/AppTheme.Layout.Content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginEnd="@dimen/medium_margin"
+            android:layout_marginBottom="@dimen/medium_margin"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size"
+                    android:layout_height="@dimen/icon_size"
+                    android:layout_marginEnd="@dimen/medium_margin"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/ic_sigma"
+                    android:contentDescription="TODO"/>
+
+                <TextView
+                    android:id="@+id/uxCashValue"
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_width="0dp"
+                    android:gravity="end"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingEnd="@dimen/small_margin"
+                    android:paddingStart="@dimen/small_margin"
+                    android:ems="10"
+                    android:text="10,99 €"
+                    tools:ignore="HardcodedText"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/large_margin"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginEnd="@dimen/medium_margin"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size"
+                    android:layout_height="@dimen/icon_size"
+                    android:layout_marginEnd="@dimen/medium_margin"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/ic_money_handover"
+                    android:contentDescription="TODO"/>
+
+                <com.blackcat.currencyedittext.CurrencyEditText
+                    android:id="@+id/uxCashGiven"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:maxLength="14"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:ems="10"
+                    android:hint="00,00"
+                    android:inputType="numberDecimal"
+                    app:allow_negative_values="false"
+                    app:decimal_digits="2"
+                    tools:ignore="HardcodedText"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginEnd="@dimen/medium_margin"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size"
+                    android:layout_height="@dimen/icon_size"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="@dimen/medium_margin"
+                    app:srcCompat="@drawable/ic_return"
+                    android:contentDescription="TODO"/>
+
+                <TextView
+                    android:id="@+id/uxCashChange"
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:gravity="end"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:paddingEnd="@dimen/small_margin"
+                    android:paddingStart="@dimen/small_margin"
+                    android:ems="10"
+                    android:hint="00,00"
+                    tools:ignore="HardcodedText"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:gravity="top"
+        android:layout_marginTop="@dimen/medium_margin"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/uxOrderCashList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"/>
+
+    </LinearLayout>
+
+</LinearLayout>

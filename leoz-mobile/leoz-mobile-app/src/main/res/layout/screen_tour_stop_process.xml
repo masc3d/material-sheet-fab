@@ -1,0 +1,44 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/tools"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="stats"
+            type="org.deku.leoz.mobile.ui.process.tour.StopProcessScreen.StatsViewModel"/>
+    </data>
+
+    <LinearLayout
+        style="@style/AppTheme.Layout.Screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="org.deku.leoz.mobile.ui.process.tour.StopProcessScreen">
+
+        <include layout="@layout/item_stop"/>
+
+        <include
+            layout="@layout/view_tour_stop_stats"
+            bind:stats="@{stats}"
+            />
+
+        <!-- FlexibleAdapter/RecyclerView wrapper layout for sticky headers -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/uxRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:longClickable="false"
+                android:scrollbars="none"
+                android:focusable="true"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</layout>

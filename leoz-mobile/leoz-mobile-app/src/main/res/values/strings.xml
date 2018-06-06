@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources>
+    <string name="accept_always">Accept always</string>
+
+    <string name="action_retry">Retry</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+
+    <string name="active_stop">Active stop</string>
+
+    <string name="alternative_recipient">Alternative Recipient</string>
+
+    <string name="app_name" translatable="false">mobileX</string>
+    <string name="app_name_long" translatable="false">mobileX</string>
+    <string name="app_project_name" translatable="false">leoz-mobile</string>
+
+    <string name="attach_note">Attach a note</string>
+
+    <string name="authentication_failed">Authentication failed</string>
+
+    <string name="authority">Authority</string>
+
+    <string name="back">Back</string>
+    <string name="back_choose_new_delivery_options">Back, choose new delivery option</string>
+
+    <string name="barcode_label">Barcode label</string>
+
+    <string name="bike">Bike</string>
+
+    <string name="call">Call</string>
+
+    <string name="cancel">Cancel</string>
+    <string name="cancel_process">Cancel process</string>
+
+    <string name="capture_image">Capture image</string>
+
+    <string name="car">Car</string>
+
+    <string name="cash_not_sufficient">Cash amount not sufficient</string>
+    <string name="cash_service">Cash-Service</string>
+    <string name="cash_value">Cash value</string>
+
+    <string name="change">Change</string>
+
+    <string name="check_for_updates">Check for updates</string>
+
+    <string name="choose_item">Choose Item</string>
+
+    <string name="clear">Clear</string>
+
+    <string name="close">Close</string>
+
+    <string name="closed">Closed</string>
+
+    <string name="contact">Contact</string>
+
+    <string name="continue_text">Continue</string>
+    <string name="continue_without">Continue without</string>
+
+    <string name="damaged">Damaged</string>
+
+    <string name="data_protection">Data protecion</string>
+    <string name="data_protection_policy">Data protection policy</string>
+    <string name="data_protection_accept">I accept this policy</string>
+
+    <string name="delay_reason_bad_weather">Bad Weather</string>
+    <string name="delay_reason_car_accident">Car Accident</string>
+    <string name="delay_reason_other">Other</string>
+    <string name="delay_reason_traffic_jam">Traffic Jam</string>
+    <string name="delay_reason_vehicle_breakdown">Vehicle Breakdown</string>
+
+    <string name="delivered">Delivered</string>
+
+    <string name="delivery">Delivery</string>
+    <string name="delivery_failed">Delivery failed</string>
+    <string name="delivery_list_number">Delivery list number</string>
+
+    <string name="dev_login">Developer login</string>
+
+    <string name="device_check">Device-Check</string>
+    <string name="device_check_instruction_to_continue">You are not allowed to continue the delivery without completing this check.</string>
+    <string name="device_check_instructions">You have got 3 attempts to enter the correct digits. If all three fail, the devlivery failed.</string>
+
+    <string name="dialog_content_developer_enabled">Developer options are enabled on your device. To continue, you must disable developer options!</string>
+    <string name="dialog_content_gps_disabled">You disabled either GPS or Network locations. Both must be enabled to continue.</string>
+    <string name="dialog_content_missing_signature">There is no signature provided. Did the customer signed on the paper list?</string>
+    <string name="dialog_content_mobile_data_disabled">Mobile data is disabled. To continue you must enable it</string>
+    <string name="dialog_content_outdated_orders">Orders are outdated. All data must be erased in order to proceed. Continue?</string>
+    <string name="dialog_content_stop_merge">Do you want to merge this stop?</string>
+    <string name="dialog_content_stop_reopen">Re-open this stop?</string>
+    <string name="dialog_content_time_misconfigured">The time on your device seems to be wrong configured. Please enable auto-configuration for Time(-zones) for the best conformity or correct the time manually.\n\nDifference of time: %s seconds</string>
+    <string name="dialog_title_developer_enabled">Developer options enabled</string>
+    <string name="dialog_title_event_selection">Event selection</string>
+    <string name="dialog_title_gps_disabled">GPS location provider is not enabled</string>
+    <string name="dialog_title_mobile_data_disabled">Mobile data disabled</string>
+    <string name="dialog_title_stop_reopen">Stop activation</string>
+    <string name="dialog_title_time_misconfigured">Date/Time misconfiguration</string>
+
+    <string name="dismiss">Dismiss</string>
+
+    <string name="doc_no">Doc.-No.</string>
+
+    <string name="document">Document</string>
+    <string name="document_no">Document No.</string>
+    <string name="document_type">Document type</string>
+
+    <string name="enter_imei_instructions">Please enter last 4 IMEI digits of the returned device</string>
+
+    <string name="error_connectivity">Could not connect to remote server</string>
+    <string name="error_database_inconsistent">Inconsistent database state</string>
+    <string name="error_empty_field">Field cannot be empty.</string>
+    <string name="error_fatal">Fatal error</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_format_mail">This is not a valid email format</string>
+    <string name="error_imager_scan_failed">Incomplete or failed scan</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_barcode">Invalid barcode</string>
+    <string name="error_invalid_credentials">Email/Password combination could not be found.</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_parcel">Invalid parcel</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_invalid_tour">Invalid tour</string>
+    <string name="error_no_corresponding_order">No corresponding order</string>
+    <string name="error_no_corresponding_stop">No corresponding stop</string>
+    <string name="error_unknown_parcel">Unkonwn parcel</string>
+
+    <string name="event_reason_absent">Consignee absent</string>
+    <string name="event_reason_address_wrong">Wrong address</string>
+    <string name="event_reason_could_want_not_pay">No Payment</string>
+    <string name="event_reason_damaged">Damaged</string>
+    <string name="event_reason_moved">Customer moved</string>
+    <string name="event_reason_no_ident_doc">No ident document</string>
+    <string name="event_reason_pin_imei_wrong">PIN / IMEI wrong</string>
+    <string name="event_reason_refuse">Consignee refused</string>
+    <string name="event_reason_signature_refused">Signature refused</string>
+    <string name="event_reason_unknown" translatable="false">N/A</string>
+    <string name="event_reason_vacation">In vacation</string>
+    <string name="event_reason_xc_code_wrong">XC code wrong</string>
+    <string name="event_reason_xc_damaged">XC object damaged</string>
+    <string name="event_reason_xc_not_ready">XC object not ready</string>
+    <string name="event_reason_xc_wrong">XC wrong object</string>
+
+    <string name="exclude">Exclude</string>
+
+    <string name="excluded">Excluded</string>
+
+    <string name="exit_application">Exit application</string>
+    <string name="exit_application_prompt">Do you really want to exit the application?</string>
+
+    <string name="expiry">Expiry</string>
+
+    <string name="given_cash">Given cash</string>
+    <string name="given_cash_eg_15_00">Given cash (eg. 15,00)</string>
+
+    <string name="gps_active">GPS active</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="help">Help</string>
+
+    <string name="hint_field_mail">Email Address</string>
+    <string name="hint_field_password">Password</string>
+    <string name="hint_field_station_no">Station No</string>
+    <string name="hint_leadseal_white_not_yellow">Scan white lead-seal! Not yellow!</string>
+    <string name="hint_not_available">Not available</string>
+    <string name="hint_scan_label_upper_bc">Scan upper barcode on label!</string>
+
+    <string name="hub" translatable="false">HUB</string>
+
+    <string name="identity_check">Identity-Check</string>
+
+    <string name="imei_last_4">IMEI (last 4)</string>
+
+    <string name="linehaul">Linehaul</string>
+
+    <string name="load_delivery_list">Load delivery list</string>
+
+    <string name="loaded">Loaded</string>
+
+    <string name="login" translatable="false">Login</string>
+    <string name="login_pending">Authenticating</string>
+
+    <string name="logout">Logout</string>
+
+    <string name="manual_label_input">Manual barcode label input</string>
+
+    <string name="menu">Menu</string>
+
+    <string name="missing">Missing</string>
+
+    <string name="name">Name</string>
+    <string name="name_of_authority">Name of Authority</string>
+
+    <string name="navigate">Navigate</string>
+
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+
+    <string name="news">News</string>
+
+    <string name="no_go_back">No, go back</string>
+
+    <string name="number_short_no">No.</string>
+
+    <string name="optimize">Optimize</string>
+
+    <string name="order">Order</string>
+    <string name="order_list">Order list</string>
+    <string name="order_not_on_delivery_list">Order not on delivery list</string>
+    <string name="order_not_on_delivery_list_confirmation">Do you want to store the corresponding order?</string>
+
+    <string name="orders">Orders</string>
+
+    <string name="parcel">Parcel</string>
+    <string name="parcel_damaged">Parcel damaged</string>
+    <string name="parcel_missing">Parcel missing</string>
+
+    <string name="parcels">Parcels</string>
+
+    <string name="passport_drivers_license">Passport/Drivers license</string>
+
+    <string name="pending">Pending</string>
+
+    <string name="please_wait">Please wait</string>
+
+    <string name="privacy_disclaimer_text">
+        mobileX ist eine Software Applikation (im Folgenden „mobileX“) der DER KURIER GmbH &amp; Co. KG, Dörrwiese 2, 36286 Neuenstein (im Folgenden „DER KURIER“).\n
+        DER KURIER respektiert Ihr Recht auf Datenschutz und richtet sich nach den geltenden Gesetzen und Regelungen zum Schutz persönlicher Daten. Der Zweck dieser Datenschutzerklärung besteht darin, Sie darüber zu informieren, welche Daten DER KURIER mit mobileX erhebt und wie diese erfassten persönlichen Daten verwendet werden. Für die ordnungsgemäße Funktion von mobileX verwendet DER KURIER Standortinformationen ihres Gerätes. Hierfür ist es erforderlich, dass die Ortungsfunktion Ihres Geräts eingeschaltet ist.
+        mobileX sendet die von Ihnen eingegebenen Daten (u.a. Scans, Fotodokumentation, Standortdaten, Informationen zur Geräteidentifizierung) an DER KURIER. Zusätzlich kann der Ihnen zugeordnete DER KURIER Systempartner die erfassten Daten, sowie den Standort und die Route bis zu 90 Tage zu Dispositions- und Optimierungszwecken einsehen. Diese Informationen können auch Sie als mobileX Nutzer mit ihrem persönlichen Login über command.derkurier.de jederzeit einsehen.
+        Durch Ihre Genehmigung ermöglichen Sie mobileX die Verwendung Ihrer Informationen und Aktivierung der nachfolgend genannten Funktionen:\n
+        \t-	Kamera\n
+        \t-	Speicher\n
+        \t-	Standort\n
+        \t-	Telefon\n
+        \t-	Datenverbindung\n
+        Alle Daten werden verschlüsselt über das Internet gesendet. Je nach Gerät wird die eigene Funk-Verbindung oder eine WLAN-Verbindung verwendet. Hierbei können je nach Vertrag bei Ihrem Mobilfunkanbieter Kosten entstehen. Wenn keine Internetverbindung verfügbar ist, werden die Informationen für einen späteren Upload sicher auf Ihrem Gerät gespeichert.
+        Darüber hinaus benötigen wir Ihre Genehmigung zur Erhebung und Verwendung Ihrer Daten. Wenn Sie uns diese Genehmigung nicht erteilen, werden keine Informationen an DER KURIER gesendet. Sie haben auch jederzeit die Möglichkeit Ihre erteilte Zustimmung im Nachhinein zu widerrufen. In diesem Fall kann mobileX nicht mehr verwendet werden.
+        Zusätzlich verwenden wir die Daten zur technischen Diagnose, um Betrug und Missbrauch zu erkennen und um die Qualität unserer Dienste zu verbessern. Diese Daten werden nur zu diesem Zweck und für einen begrenzten Zeitraum erfasst, nach welchem sie automatisch gelöscht werden. DER KURIER bemüht sich intensiv darum, das ihre Daten vor unbefugtem Zugriff auf oder vor unbefugter Veränderung, Weitergabe oder Zerstörung von Daten zu schützen. DER KURIER wird zu keinem Zeitpunkt die erhobenen Informationen für Dritte freigeben und sie nicht für andere Zwecke, sofern dies nicht durch rechtliche Verfahren ausdrücklich und in rechtmäßiger Weise angeordnet wird, verwenden.
+    </string>
+
+    <string name="proceed">Proceed</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email" translatable="false">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="prompt_reinstall">Please reinstall the application</string>
+
+    <string name="prototype">Prototype</string>
+
+    <string name="question_remove_damaged_status">Remove damaged status?</string>
+    <string name="question_remove_damaged_status_title">Parcel has been declared damaged</string>
+
+    <string name="reason">Reason</string>
+
+    <string name="recipient">Recipient</string>
+    <string name="recipient_dialog_content">Who accepted the shipment?</string>
+
+    <string name="report_delay">Report delay</string>
+
+    <string name="reset">Reset</string>
+
+    <string name="running">running</string>
+
+    <string name="salutation_mr">Mr.</string>
+    <string name="salutation_ms">Ms.</string>
+
+    <string name="send_diagnostic_data">Send diagnostic data</string>
+
+    <string name="service_cash_delivery">Cash on delivery</string>
+    <string name="service_department_delivery">Department delivery</string>
+    <string name="service_documented_personal">Documented personal delivery</string>
+    <string name="service_fair">Fair service</string>
+    <string name="service_fixed">Fixed appointment</string>
+    <string name="service_ident_contract">Ident contract</string>
+    <string name="service_message_documented_personal_delivery">Fill out the attached document with information from an official ID card</string>
+    <string name="service_message_ident_contract">Please check together with the consignee the attached contract. Send the signed contract back.</string>
+    <string name="service_message_package_recirculation">Please return the packaging of the parcel</string>
+    <string name="service_message_receipt_acknowledgement">Please fill out the attached receipt</string>
+    <string name="service_message_security_return">Exchange device required! Please check the IMEI number of the device</string>
+    <string name="service_message_submission">Submission participation!</string>
+    <string name="service_message_xchange">Exchange object required! Delivery only with exchange</string>
+    <string name="service_no_alternative">No alternative delivery</string>
+    <string name="service_packaging_recirculation">Packaging recirculation</string>
+    <string name="service_pharmaceuticals" translatable="false">Pharmaceuticals</string>
+    <string name="service_phone_receipt">Phone receipt</string>
+    <string name="service_postbox_delivery">Postbox delivery</string>
+    <string name="service_receipt_acknowledgement">Receipt acknowledgement</string>
+    <string name="service_security_return" translatable="false">Security return</string>
+    <string name="service_self_completion_duty">Self completion of duty</string>
+    <string name="service_selfpickup">Self-Pickup</string>
+    <string name="service_submission">Submission participation</string>
+    <string name="service_suitcase">Suitcase shipping</string>
+    <string name="service_valuables">Valuables</string>
+    <string name="service_xchange" translatable="false">X-Change</string>
+
+    <string name="services">Services</string>
+
+    <string name="signature_heading">Summary</string>
+    <string name="signature_on_paper">Signature on paper</string>
+    <string name="signature_signed_by_name">Signature (%s)</string>
+
+    <string name="skip">Skip</string>
+
+    <string name="sort_appointment">By appointment</string>
+    <string name="sort_distance">By distance</string>
+    <string name="sort_optimize">Optimize</string>
+    <string name="sort_zip">By zip</string>
+
+    <string name="station_id">Station ID</string>
+
+    <string name="stop_to_be_added">Stop to be added</string>
+
+    <string name="street">Street</string>
+
+    <string name="submit">Submit</string>
+    <string name="summary">Summary</string>
+
+    <string name="title_activity_delivery">Delivery</string>
+    <string name="title_cash_collection">Cash collection</string>
+    <string name="title_closed_stop_list">Closed Stops</string>
+    <string name="title_confirm_call">Confirm call</string>
+    <string name="title_missing_signature">Signature missing</string>
+    <string name="title_phone_number">Phone number:</string>
+    <string name="title_reset_data">Reset data</string>
+    <string name="title_specify_deliverylist">Specify a delivery list</string>
+    <string name="title_stop_detailt">Stop Details</string>
+    <string name="title_stop_list">Tour</string>
+    <string name="title_stop_merge">Stop merge</string>
+    <string name="title_stop_process">Delivery</string>
+
+    <string name="to_neighbour">To neighbour</string>
+    <string name="to_postbox">To postbox</string>
+    <string name="to_recipient">To recipient</string>
+
+    <string name="tour">Tour</string>
+    <string name="tour_optimization_failed">Tour optimization failed</string>
+    <string name="tour_optimization_in_progress">Optimizing tour</string>
+    <string name="tour_optimization_settings">Optimization settings</string>
+    <string name="tour_optimization_settings_omit_appointments">Omit appointments</string>
+    <string name="tour_optimization_settings_shift_appointments">Shift appointments</string>
+    <string name="tour_optimization_settings_traffic">Traffic</string>
+
+    <string name="truck">Truck</string>
+
+    <string name="unknown">Unknown</string>
+
+    <string name="unloaded">Unloaded</string>
+
+    <string name="update">Update</string>
+
+    <string name="user">User</string>
+
+    <string name="van">Van</string>
+
+    <string name="vehicle_loading">Loading</string>
+    <string name="vehicle_loading_finalize_dialog">All pending parcels will be marked missing.</string>
+    <string name="vehicle_loading_finalize_dialog_title">Finalize loading</string>
+    <string name="vehicle_loading_unload_parcel_dialog">Unload parcel?</string>
+    <string name="vehicle_loading_unload_parcel_dialog_title">Parcel has been loaded</string>
+    <string name="vehicle_unloading">Unloading</string>
+    <string name="vehicle_unloading_finalize_dialog">All pending parcels will be marked missing.</string>
+    <string name="vehicle_unloading_finalize_dialog_title">Finalize unloading</string>
+
+    <string name="version">Version</string>
+    <string name="version_available">v%s is available</string>
+
+    <string name="warehouse">Warehouse</string>
+
+    <string name="yes_start_tour">Yes, start tour</string>
+</resources>

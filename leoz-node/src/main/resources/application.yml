@@ -1,0 +1,103 @@
+spring:
+    application:
+        name: leoz-node
+
+logging:
+    level:
+        # Global log level
+        ROOT: INFO
+        # Application logic log level
+        org.deku.leoz: INFO
+        # Shows config loading details on DEBUG log level
+        org.springframework.boot.context.config: INFO
+        # Entity sync log level
+        org.deku.leoz.node.data.sync: INFO
+        # ActiveMQ
+        org.apache.activemq: INFO
+        # Get rid of transport warnings (produces plenty of log spam when client connections are disrupted, which happens frequently with mobile nodes)
+        org.apache.activemq.broker.TransportConnection.Transport: ERROR
+
+server:
+    # Spring web server port
+    port: 13000
+    # Path for spring dispatcher servlet
+    servlet-path: /spring
+    ssl:
+        # SSL is disabled by default for egular leoz-nodes
+        enabled: false
+
+persistence:
+    h2:
+        server:
+            # Enable h2 server for connecting to the embedded database while the application is running
+            enabled: false
+            # H2 server TCP port
+            port: 13100
+            # Allows connections on all network interfaces
+            allow-others: false
+
+# Broker settings
+broker:
+    native-port: 13001
+    # This context path is relative to server.context-path
+    http-context-path: /jms
+
+# Peer node connectivity settings
+remote:
+    host: 10.0.10.10
+    # Remote peer web service
+    http-path: /
+    http-port: 13000
+    # Remote peer message broker
+    broker:
+       http-path: /jms
+       native-port: 13001
+    rsync:
+       port: 13002
+    # Remote gls endpoints
+    gls:
+       soap:
+          shipment-processing:
+             namespace: 'http://extest-cs-backend.gls-group.eu:8080/backend/ShipmentProcessingService'
+             username: 'tag'
+             password: 'wrapper'
+
+# Rsync server
+rsync:
+    server:
+        port: 13002
+
+# Updater configuration
+update:
+    enabled: true
+    # Run updater on broker connection and message notification
+    automatic: true
+    cleanup: true
+    rsync-host: leoz.derkurier.de
+
+# Vaadin configuration
+vaadin:
+    servlet:
+        production-mode: false
+        url-mapping: /ui/*
+
+# SSH tunnel configuration
+ssh:
+    server:
+        port: 13003
+    tunnel:
+        # Default settings for establishing ssh tunneled connections
+        username: leoz
+        password: MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8
+        port: 13003
+        local-port-range-start: 13200
+        local-port-range-end: 13399
+
+        # Host specific overrides
+#        hosts:
+#            central:
+#                hostname: leoz.derkurier.de
+#                password: MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8
+#                port: 13003
+#                username: leoz
+

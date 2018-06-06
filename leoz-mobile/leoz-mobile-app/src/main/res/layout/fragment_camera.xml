@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/uxContainer"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@android:color/black"
+    >
+
+    <com.wonderkiln.camerakit.CameraView
+        android:id="@+id/uxCameraView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"/>
+
+    <FrameLayout
+        android:id="@+id/uxProgressContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        >
+
+        <ImageView
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_menu_camera"
+            android:alpha="0.6"
+            />
+
+        <ProgressBar
+            android:indeterminateTint="@color/colorGrey"
+            android:layout_width="194dp"
+            android:layout_height="194dp"
+            />
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/uxPreviewImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"/>
+
+</FrameLayout>

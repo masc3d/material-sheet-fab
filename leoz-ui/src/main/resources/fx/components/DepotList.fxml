@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:id="fxRoot" fx:controller="org.deku.leoz.ui.fx.components.DepotListController">
+   <children>
+      <VBox alignment="CENTER" spacing="10.0" styleClass="leoz-pane" stylesheets="@../../css/leoz.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+          <children>
+            <AnchorPane nodeOrientation="LEFT_TO_RIGHT" VBox.vgrow="NEVER">
+               <children>
+                    <HBox alignment="CENTER_LEFT" spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <children>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+                                <image>
+                                    <Image url="@../../images/search-144px.png" />
+                                </image>
+                            </ImageView>
+                            <TextField fx:id="fxSearchText" HBox.hgrow="ALWAYS" />
+                        </children>
+                    </HBox>
+               </children>
+            </AnchorPane>
+              <TableView fx:id="fxDepotTableView" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
+                  <columns>
+                      <TableColumn fx:id="fxDepotTableMatchcodeColumn" prefWidth="77.0" text="%depot.id" />
+                      <TableColumn fx:id="fxDepotTableCompany1Column" prefWidth="162.0" text="%depot.company1" />
+                  <TableColumn fx:id="fxDepotTableCompany2Column" minWidth="0.0" prefWidth="146.0" text="%depot.company2" />
+                  <TableColumn fx:id="fxDepotTableCountryColumn" minWidth="4.0" prefWidth="61.0" text="%depot.country" />
+                  <TableColumn fx:id="fxDepotTableZipCodeColumn" minWidth="7.0" prefWidth="63.0" text="%depot.zip" />
+                  <TableColumn fx:id="fxDepotTableCityColumn" prefWidth="172.0" text="%depot.city" />
+                  <TableColumn fx:id="fxDepotTableStreetColumn" prefWidth="242.0" text="%depot.street" />
+                  </columns>
+              </TableView>
+          </children>
+      </VBox>
+   </children>
+</AnchorPane>

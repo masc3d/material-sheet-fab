@@ -1,0 +1,180 @@
+<form [formGroup]="stateofshipmentForm">
+  <div class="ui-fluid ui-g">
+    <div class="ui-g-12" style="padding: 0;">
+      <p-fieldset [style]="{'height': '100px'}" legend="{{'shipmentstatus' | translate}}">
+        <div class="ui-g ui-g-nopad">
+          <div class="ui-g-12 ui-lg-5 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div>{{'from_loadingdate' | translate}}:</div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div><input pInputText ></div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div>{{'to_loadingdate' | translate}}:</div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div><input pInputText ></div>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-1 ui-g-nopad">&nbsp;</div>
+            <div class="ui-g-12 ui-lg-9 ui-g-nopad">
+              <button pButton label="{{'filter' | translate}}" type="button"></button>
+            </div>
+            <div class="ui-g-12 ui-lg-2 ui-g-nopad">&nbsp;</div>
+          </div>
+          <div class="ui-g-12 ui-lg-5 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div><input pInputText placeholder="{{ 'shipmentnumber' | translate }}"></div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <p-dropdown [style]="{'min-width': '150px', 'width': 'auto'}" [options]="actionOptions" placeholder="{{ 'actions' | translate }}"></p-dropdown>
+            </div>
+          </div>
+        </div>
+      </p-fieldset>
+      <p-fieldset legend="{{'details' | translate}}">
+        <div class="ui-g ui-g-nopad">
+          <div class="ui-g-12 ui-lg-5 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-4 ui-g-nopad">
+              <div>{{'orderingParty' | translate}}:</div>
+              <div class="ui-g-12 ui-g-nopad inputFieldSoS"></div>
+            </div>
+            <div class="ui-g-12 ui-lg-4 ui-g-nopad">
+              <div>{{'collector' | translate}}:</div>
+              <div class="ui-g-12 ui-g-nopad inputFieldSoS"></div>
+            </div>
+            <div class="ui-g-12 ui-lg-4 ui-g-nopad">
+              <div>{{'deliverystation' | translate}}:</div>
+              <div class="ui-g-12 ui-g-nopad inputFieldSoS"></div>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-1 ui-g-nopad">&nbsp;</div>
+            <div class="ui-g-12 ui-lg-9 ui-g-nopad">
+              <button pButton label="{{'ad_hoc_accounting' | translate}}" type="button"></button>
+            </div>
+            <div class="ui-g-12 ui-lg-2 ui-g-nopad">&nbsp;</div>
+          </div>
+          <div class="ui-g-12 ui-lg-5 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div>{{'shipment-No' | translate}}:</div>
+              <div class="ui-g-12 ui-g-nopad inputFieldSoS"></div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div>{{'package-No' | translate}}:</div>
+              <div class="ui-g-12 ui-g-nopad inputFieldSoS"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ui-g ui-g-nopad" style="margin-top: 5px;">
+          <div class="ui-g-12 ui-lg-5 ui-g-nopad shadow padding5px bgLightYellow">
+            <div class="ui-g-12 ui-lg-12 ui-g-nopad" style="margin-top: 10px;">
+              <div>{{'consignee' | translate}}:</div>
+            </div>
+            <div class="ui-g-12 ui-lg-12 ui-g-nopad" style="margin-top: 5px;">
+              <div>Frau Bei Spiel</div>
+            </div>
+            <div class="ui-g-12 ui-lg-12 ui-g-nopad">
+              <div>- Abgabe am Empfang -</div>
+            </div>
+            <div class="ui-g-12 ui-lg-12 ui-g-nopad">
+              <div>- oder WE -</div>
+            </div>
+            <div class="ui-g-12 ui-lg-12 ui-g-nopad">
+              <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+                <div>Beispielstrasse</div>
+              </div>
+              <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+                <div>8</div>
+              </div>
+            </div>
+            <div class="ui-g-12 ui-lg-12 ui-g-nopad">
+              <div class="ui-g-12 ui-lg-1 ui-g-nopad">
+                <div>DE</div>
+              </div>
+              <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+                <div>34123</div>
+              </div>
+              <div class="ui-g-12 ui-lg-9 ui-g-nopad">
+                <div>Kassel</div>
+              </div>
+            </div>
+            <div class="ui-g-12 ui-lg-12 ui-g-nopad">
+              <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+                <div>{{'phone' | translate}}:</div>
+              </div>
+              <div class="ui-g-12 ui-lg-8 ui-g-nopad">
+                <div>98765 - 123456789</div>
+              </div>
+              <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+                <div style="color: red;">WR</div>
+              </div>
+            </div>
+            <div class="ui-g-12 ui-lg-12 ui-g-nopad">
+              <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+                <div>{{'fax' | translate}}:</div>
+              </div>
+              <div class="ui-g-12 ui-lg-8 ui-g-nopad">
+                <div>98765 - 123456789</div>
+              </div>
+              <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+                <div style="color: red;">IN</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ui-g-12 ui-lg-2 ui-g-nopad padding5px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div>{{'date' | translate}}:</div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div><input pInputText ></div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div>{{'from' | translate}}:</div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div><input pInputText ></div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div>{{'until' | translate}}:</div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div><input pInputText ></div>
+            </div>
+
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div>{{'packs' | translate}}:</div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div><input pInputText ></div>
+            </div>
+
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div>{{'weight' | translate}}:</div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div><input pInputText ></div>
+            </div>
+
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div>{{'vol.' | translate}}:</div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <div><input pInputText ></div>
+            </div>
+
+
+
+          </div>
+          <div class="ui-g-12 ui-lg-5 ui-g-nopad">
+          </div>
+        </div>
+
+      </p-fieldset>
+    </div>
+  </div>
+</form>

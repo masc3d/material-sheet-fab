@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="app_ok">#ff007700</color>
+    <color name="app_cancel">#ffaa0000</color>
+    <color name="dark_gray">#555555</color>
+    <color name="colorDarkGrey">#494949</color>
+</resources>

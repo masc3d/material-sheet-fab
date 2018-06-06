@@ -1,0 +1,160 @@
+variables:
+  # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
+  MYSQL_ROOT_PASSWORD: "root"
+  DB_MYSQL_JDBC_URL: "jdbc:mysql://mysql-db:3306?useSSL=false"
+  SPRING_APPLICATION_JSON: |
+    {
+      "persistence.central.datasource.url": "jdbc:mysql://mysql-db:3306/dekuclient?useSSL=false"
+    }
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.caching=true -Dorg.gradle.parallel=false"
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle-home"
+
+stages:
+  - build
+  - test
+
+.leoz-template: &leoz-template
+  image: ci-container.derkurier.de/leoz/docker-java10:latest
+  services:
+    - name: mysql:5.7
+      alias: mysql-db
+      command: ["mysqld", "--sql-mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"]
+
+.leoz-nightly-template: &leoz-nightly-template
+  <<: *leoz-template
+  only: [ schedules ]
+  except: { variables: [$NATIVE_BUNDLES] }
+  before_script:
+    - "rm -f  $GRADLE_USER_HOME/caches/modules-2/modules-2.lock"
+    - "rm -fr $GRADLE_USER_HOME/caches/*/plugin-resolution/"
+  cache:
+    key: "$CI_COMMIT_REF_NAME-leoz"
+    paths:
+      - ".gradle-home/wrapper"
+      - ".gradle-home/caches"
+      - ".gradle"
+      - "*/build"
+      - "libs/*/build"
+      - "libs/*/*/build"
+
+build-leoz:
+  <<: *leoz-nightly-template
+  stage: build
+  script:
+    - rm -fr $GRADLE_USER_HOME/caches/build-cache-*
+    - ./gradlew -p . cleanall
+    - ./gradlew -p . assemble -Pdb.mysql.jdbc.url=$DB_MYSQL_JDBC_URL --rerun-tasks --refresh-dependencies --continue
+  artifacts:
+    paths:
+      - "*/build/libs/*.jar"
+      - "libs/*/build/libs/*.jar"
+      - "libs/*/*/build/libs/*.jar"
+    expire_in: 1 week
+
+test-leoz:
+  <<: *leoz-nightly-template
+  stage:
+  script:
+    - ./gradlew -p . check -Pdb.mysql.jdbc.url=$DB_MYSQL_JDBC_URL -x :barbarywatchservice:test --refresh-dependencies --continue
+  artifacts:
+    paths:
+      - "*/build/reports"
+      - "libs/*/build/reports"
+      - "libs/*/*/build/reports"
+    expire_in: 1 month
+    when: on_failure
+  dependencies:
+    - build-leoz
+
+.mobile-nightly-template: &mobile-nightly-template
+  image: ci-container.derkurier.de/leoz/docker-builder:latest
+  allow_failure: true
+  only: [ schedules ]
+  except: { variables: [$NATIVE_BUNDLES] }
+  before_script:
+    - "rm -f  $GRADLE_USER_HOME/caches/modules-2/modules-2.lock"
+    - "rm -fr $GRADLE_USER_HOME/caches/*/plugin-resolution/"
+  cache:
+    key: "$CI_COMMIT_REF_NAME-mobile"
+    paths:
+      - ".gradle-home/wrapper"
+      - ".gradle-home/caches"
+      - "leoz-mobile/.gradle"
+      - "*/build"
+      - "*/*/build"
+      - "*/*/*/*/build"
+
+build-mobile:
+  <<: *mobile-nightly-template
+  stage: build
+  script:
+    - rm -fr $GRADLE_USER_HOME/caches/build-cache-*
+    - rm -fr $GRADLE_USER_HOME/caches/transforms-*
+    - ./gradlew -p leoz-mobile cleanall
+    - ./gradlew -p leoz-mobile assemble --rerun-tasks --refresh-dependencies
+  artifacts:
+    paths:
+      - "libs/*/build/leoz-mobile/libs/*.jar"
+      - "libs/*/build/leoz-mobile/generated/*.jar"
+      - "leoz-mobile/*/build/libs/*.jar"
+      - "leoz-mobile/*/build/generated/*.jar"
+      - "leoz-mobile/libs/*/*/build/generated/*.jar"
+    expire_in: 1 week
+
+test-mobile:
+  <<: *mobile-nightly-template
+  stage: test
+  script:
+    - ./gradlew -p leoz-mobile check --refresh-dependencies --continue
+  artifacts:
+    paths:
+      - "libs/*/build/leoz-mobile/reports"
+      - "leoz-mobile/*/build/reports"
+      - "leoz-mobile/libs/*/*/build/reports"
+    expire_in: 1 month
+    when: on_failure
+  dependencies:
+    - build-mobile
+
+release-native-bundles:linux:
+  <<: *leoz-template
+  variables:
+    GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.caching=false -Dorg.gradle.parallel=true"
+  stage: build
+  script:
+    - ./gradlew releaseClean
+    - ./gradlew releaseNativeBundle -Pdb.mysql.jdbc.url=$DB_MYSQL_JDBC_URL
+    - ./gradlew releasePush -Pdb.mysql.jdbc.url=$DB_MYSQL_JDBC_URL
+  only:
+    variables: [$NATIVE_BUNDLES]
+    refs: [schedules]
+
+release-native-bundles:windows:
+  stage: build
+  variables:
+    MYSQL_IMAGE: ci-container.derkurier.de/leoz/docker-mysql:nanoserver
+    JAVA10_IMAGE: ci-container.derkurier.de/leoz/docker-java10:nanoserver
+    DB_SRV_NAME: mysql-db-$CI_COMMIT_SHA
+    ErrorActionPreference: STOP
+    GRADLE_OPTS: "$JVM_PROXY_OPTS -Dorg.gradle.daemon=false -Dorg.gradle.caching=false -Dorg.gradle.parallel=true"
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker run --rm -e MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD" --name $DB_SRV_NAME -d $MYSQL_IMAGE `
+        mysqld --sql-mode=`'`"ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION`"`'
+    - $env:DB_IP_ADDR = $(docker inspect $DB_SRV_NAME -f "{{ .NetworkSettings.Networks.nat.IPAddress }}")
+  after_script:
+    - docker stop $DB_SRV_NAME
+  script:
+    - >-
+      docker run --rm -v "$(pwd):C:\work" "$JAVA10_IMAGE" powershell -Command "& {
+        `$env:ErrorActionPreference=\`"STOP\`" ;  
+        cd /work ;
+        `$env:GRADLE_OPTS=\`"$GRADLE_OPTS\`" ;
+        ./gradlew releaseClean ;
+        ./gradlew releaseNativeBundle --project-prop db.mysql.jdbc.url=`"jdbc:mysql://${env:DB_IP_ADDR}:3306?useSSL=false`" ;
+        ./gradlew releasePush --project-prop db.mysql.jdbc.url=`"jdbc:mysql://${env:DB_IP_ADDR}:3306?useSSL=false`"
+      }"
+  tags: [ windows ]
+  only:
+    variables: [$NATIVE_BUNDLES]
+    refs: [schedules]

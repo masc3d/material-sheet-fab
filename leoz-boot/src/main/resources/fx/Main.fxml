@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import sx.fx.controls.MaterialProgressIndicator?>
+
+<VBox prefHeight="426.0" prefWidth="650.0" styleClass="leoz-undecorated" stylesheets="@../css/leoz-boot.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leoz.boot.fx.MainController">
+    <children>
+        <AnchorPane maxWidth="1.7976931348623157E308">
+            <children>
+                <BorderPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                    <center>
+                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                            <children>
+                                <AnchorPane>
+                                    <children>
+                                        <MaterialProgressIndicator fx:id="uxProgressIndicator" prefHeight="24.0" prefWidth="24.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <image>
+                                                <Image url="@../images/DEKU.icon.256px.png" />
+                                            </image>
+                                        </ImageView>
+                                    </children>
+                                </AnchorPane>
+                                <Label fx:id="uxTitle" maxWidth="1.7976931348623157E308" text="Installing Leoz">
+                                    <font>
+                                        <Font name="System Bold" size="24.0" />
+                                    </font>
+                                </Label>
+                                <AnchorPane />
+                            </children>
+                        </HBox>
+                    </center>
+                    <right>
+                        <Button fx:id="uxClose" mnemonicParsing="false" text="Close" BorderPane.alignment="CENTER" />
+                    </right>
+                </BorderPane>
+            </children>
+            <VBox.margin>
+                <Insets bottom="12.0" />
+            </VBox.margin>
+        </AnchorPane>
+        <ProgressBar fx:id="uxProgressBar" maxWidth="1.7976931348623157E308" progress="0.34">
+            <VBox.margin>
+                <Insets bottom="12.0" />
+            </VBox.margin>
+        </ProgressBar>
+        <TextArea fx:id="uxTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-text-fill: gray;" VBox.vgrow="ALWAYS" />
+    </children>
+    <padding>
+        <Insets bottom="24.0" left="24.0" right="24.0" top="12.0" />
+    </padding>
+</VBox>

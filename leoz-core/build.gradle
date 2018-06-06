@@ -1,0 +1,188 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+sourceCompatibility = JavaVersion.VERSION_1_10
+targetCompatibility = JavaVersion.VERSION_1_10
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+}
+
+group = 'org.deku.leoz'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+//region Prototype test setup
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
+    }
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs += file('src/prototype/java')
+        }
+    }
+}
+//endregion
+
+dependencies {
+    compile(
+            project(':sx-common'),
+            project(':sx-mq-jms'),
+            project(':sx-rsync'),
+            project(':sx-serialization'),
+            project(':sx-discovery'),
+            project(':sx-packager'),
+            // Watchservice replacement for OSX
+            project(':barbarywatchservice'),
+            project(':leoz-common'),
+
+            //region TODO: workaround for kotlin compiler not seeing jdk9 modules in non-jigsaw projects
+            "com.sun.xml.bind:jaxb-core:$v_jaxb",
+            "com.sun.xml.bind:jaxb-impl:$v_jaxb",
+            //endregion
+            
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:$v_threeten",
+
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$v_kotlin",
+
+            // Kodein
+            "com.github.salomonbrys.kodein:kodein:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
+
+            // logging
+            "org.apache.commons:commons-lang3:$v_commons_lang",
+            "ch.qos.logback:logback-classic:$v_logback",
+            "org.slf4j:jcl-over-slf4j:$v_slf4j",
+
+            // Guava
+            "com.google.guava:guava:$v_guava",
+
+            // Commons
+            "commons-io:commons-io:$v_commons_io",
+
+            // kryo
+            "com.esotericsoftware:kryo:$v_kryo",
+            "de.javakaffee:kryo-serializers:$v_kryo_serializers",
+            "net.java.dev.jna:jna:$v_jna",
+            "net.java.dev.jna:jna-platform:$v_jna",
+
+            // YAML
+            "org.yaml:snakeyaml:$v_snakeyaml",
+
+            // JAX-RS
+            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
+            "org.zalando:problem:$v_rest_problem",
+    )
+
+    compileOnly(
+            // Swagger for json doc
+            "io.swagger:swagger-annotations:$v_swagger",
+
+            // Jackson
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
+
+            // ActiveMQ
+            "org.apache.activemq:activemq-broker:$v_activemq",
+            "org.apache.activemq:activemq-kahadb-store:$v_activemq",
+            "org.apache.activemq:activemq-jms-pool:$v_activemq",
+            "org.apache.activemq:activemq-jaas:$v_activemq",
+            "org.apache.activemq:activemq-mqtt:$v_activemq",
+            dependencies.create("org.apache.activemq:activemq-http:$v_activemq") {
+                exclude group: 'org.springframework'
+                exclude group: 'org.apache.activemq', module: 'activemq-spring'
+                exclude group: 'org.eclipse.jetty.aggregate'
+            },
+            // Artemis
+            dependencies.create("org.apache.activemq:artemis-jms-server:$v_artemis") {
+                // Conflicts with jms 1.1 which is required by activemq 5.x
+                exclude group: 'org.apache.activemq', module: 'artemis-jms-client'
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
+            dependencies.create("org.apache.activemq:artemis-jms-client:$v_artemis") {
+                // Conflicts with jms 1.1 which is required by activemq 5.x
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
+            dependencies.create("org.apache.activemq:artemis-amqp-protocol:$v_artemis") {
+                exclude group: 'org.apache.activemq', module: 'artemis-jms-client'
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
+            // HTTP support
+            "org.apache.httpcomponents:httpclient:$v_apache_httpclient",
+            "com.thoughtworks.xstream:xstream:$v_xstream",
+
+            // Spring
+            "org.springframework:spring-jms:$v_spring",
+    )
+
+    testCompile(
+            "junit:junit:$v_junit",
+            "ch.qos.logback:logback-classic:1.2.3",
+
+            // webservice client libraries for test cases
+            "org.jboss.resteasy:resteasy-client:$v_resteasy",
+
+            // jackson JSON serializer
+            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
+            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",
+
+            "io.github.openfeign:feign-core:$v_feign",
+            "io.github.openfeign:feign-jackson:$v_feign",
+            "io.github.openfeign:feign-okhttp:$v_feign",
+            "io.github.openfeign:feign-jaxrs2:$v_feign",
+
+            // ActiveMQ
+            "org.apache.activemq:activemq-broker:$v_activemq",
+            "org.apache.activemq:activemq-kahadb-store:$v_activemq",
+            "org.apache.activemq:activemq-jms-pool:$v_activemq",
+            "org.apache.activemq:activemq-jaas:$v_activemq",
+            "org.apache.activemq:activemq-mqtt:$v_activemq",
+            dependencies.create("org.apache.activemq:activemq-http:$v_activemq") {
+                exclude group: 'org.springframework'
+                exclude group: 'org.apache.activemq', module: 'activemq-spring'
+                exclude group: 'org.eclipse.jetty.aggregate'
+            },
+
+            // Spring
+            "org.springframework:spring-jms:$v_spring",
+
+            // MQTT client
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
+    )
+}
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+                details.useVersion v_jackson
+            }
+        }
+    }
+}
+
+// Include sx platform/binaries
+tasks.testClasses.dependsOn(copyRsyncPlatformDirToProject)

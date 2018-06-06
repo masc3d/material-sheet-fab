@@ -1,0 +1,6 @@
+ALTER TABLE tad_tour ALTER COLUMN timestamp RENAME TO modified;
+ALTER TABLE tad_tour ADD COLUMN (created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) AFTER optimized;
+ALTER TABLE tad_tour ADD COLUMN date VARCHAR NOT NULL DEFAULT FORMATDATETIME(CURRENT_TIMESTAMP, 'yyyy-MM-dd') AFTER deliverylist_id;
+
+CREATE INDEX ix_tad_tour_date
+  ON tad_tour (date);

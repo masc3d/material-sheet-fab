@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<VBox maxHeight="1.7976931348623157E308" prefHeight="233.0" prefWidth="167.0" stylesheets="@../../css/leoz.css"
+    xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="org.deku.leoz.ui.fx.components.SidebarController">
+    <children>
+        <Accordion fx:id="fxMenuAccordion" maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+            <panes>
+                <TitledPane fx:id="fxMenuPane" text="%menu.title">
+                    <content>
+                        <VBox alignment="TOP_CENTER" styleClass="leoz-menu-pane">
+                            <children>
+                                <Button fx:id="fxHomeButton" alignment="CENTER_LEFT" graphicTextGap="10.0"
+                                    maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onHomeButton"
+                                    text="%menu.home" VBox.vgrow="ALWAYS">
+                                    <graphic>
+                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
+                                            preserveRatio="true">
+                                            <viewport>
+                                                <Rectangle2D minX="11.0" width="11.0" />
+                                            </viewport>
+                                            <image>
+                                                <Image url="@../../images/home-144px.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <Button fx:id="fxDepotsButton" alignment="CENTER_LEFT" graphicTextGap="10.0"
+                                    maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDepotButton"
+                                    text="%menu.depots">
+                                    <graphic>
+                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
+                                            preserveRatio="true">
+                                            <image>
+                                                <Image url="@../../images/depot-144px.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <Button fx:id="fxDebugButton" alignment="CENTER_LEFT" graphicTextGap="10.0"
+                                    maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDebugButton"
+                                    text="Debug">
+                                    <graphic>
+                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
+                                            preserveRatio="true">
+                                            <image>
+                                                <Image url="@../../images/debug-144px.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                            </children>
+                        </VBox>
+                    </content>
+                </TitledPane>
+                <TitledPane expanded="false" text="More">
+                    <content>
+                        <VBox />
+                    </content>
+                </TitledPane>
+            </panes>
+        </Accordion>
+    </children>
+</VBox>

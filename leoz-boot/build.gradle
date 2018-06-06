@@ -1,0 +1,113 @@
+buildscript {
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'application'
+apply plugin: 'distribution'
+apply plugin: 'sx-packager'
+
+sourceCompatibility = JavaVersion.VERSION_1_10
+targetCompatibility = JavaVersion.VERSION_1_10
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+}
+
+version '0.50-RELEASE'
+mainClassName = "org.deku.leoz.boot.Application"
+
+//region Prototype test setup
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
+    }
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs += file('src/prototype/java')
+        }
+    }
+}
+//endregion
+
+dependencies {
+    compile(
+            project(':sx-core'),
+            project(':sx-fx'),
+            project(':sx-ssh'),
+            project(':leoz-core'),
+
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+
+            // Logging
+            "ch.qos.logback:logback-classic:$v_logback",
+            "org.slf4j:jcl-over-slf4j:$v_slf4j",
+
+            // RX
+            // RX
+            "io.reactivex.rxjava2:rxjava:$v_rxjava",
+            "io.reactivex:rxkotlin:$v_rxkotlin",
+            "io.reactivex:rxjavafx:$v_rxjavafx",
+            "com.github.thomasnield:rxkotlinfx:$v_rxkotlinfx",
+            "org.reactfx:reactfx:2.0-M5",
+
+            // command line
+            "com.beust:jcommander:1.72",
+
+            // ini/conf file
+            "org.ini4j:ini4j:$v_ini4j",
+
+            // ssh support
+            "org.apache.sshd:sshd-core:$v_sshd",
+
+            "com.dooapp.fxform2:core:$v_fxform2",
+            "org.jfxtras:jfxtras-all:9.0-r1",
+
+            // REST client
+            "org.jboss.resteasy:resteasy-client:$v_resteasy",
+            "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy"
+    )
+
+    testCompile group: 'junit', name: 'junit', version: v_junit
+}
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+                details.useVersion v_jackson
+            }
+        }
+    }
+}
+
+sourceSets {
+    // Add resources (like .fxml files) from souce path.
+    // Non-standard, but nicer to keep .fxml files together with classes
+    main.resources.srcDir 'src/main/java'
+}
+
+tasks.classes.dependsOn(copyRsyncPlatformDirToBuild)
+tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
+
+distributions {
+    main {
+        contents {
+            from buildSupplementalsDir
+        }
+    }
+}
+tasks.distTar.enabled = false
+
+packager {
+    title = "Leoz Boot"
+    createSelfExtractingArchive = true
+}

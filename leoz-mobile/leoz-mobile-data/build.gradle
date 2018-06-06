@@ -1,0 +1,109 @@
+buildscript {
+    dependencies {
+        classpath(
+                "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+        )
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'idea'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        // masc20181101. android support
+        // API levels < 24 are not compatible with some java8 bytecode kt compiler produces
+        jvmTarget = JavaVersion.VERSION_1_6
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    google()
+    maven { url 'https://jitpack.io' }
+}
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion v_android_buildtools
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    dataBinding {
+        enabled true
+    }
+
+    lintOptions {
+        abortOnError true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
+        }
+    }
+}
+
+kapt {
+    useBuildCache = true
+}
+
+dependencies {
+    implementation(
+            project(':sx-android'),
+            fileTree(dir: 'libs', include: ['*.jar']),
+
+            project(':leoz-common'),
+            project(':sx-serialization'),
+
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+
+            // Requery
+            "com.github.masc3d.requery:requery:$v_requery",
+            "com.github.masc3d.requery:requery-kotlin:$v_requery",
+
+            // Jackson
+            "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson"
+    )
+
+    kapt(
+            "com.github.masc3d.requery:requery-processor:$v_requery"
+    )
+
+    testImplementation(
+            "junit:junit:$v_junit",
+            "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
+
+            // Kodein
+            "com.github.salomonbrys.kodein:kodein:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
+
+            // rx
+            "io.reactivex.rxjava2:rxjava:$v_rxjava",
+            "io.reactivex:rxkotlin:$v_rxkotlin",
+    )
+}

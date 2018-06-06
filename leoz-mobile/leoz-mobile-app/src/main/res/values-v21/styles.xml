@@ -1,0 +1,15 @@
+<resources>
+    <!-- Application theme for API level >= 21 (native material design support) -->
+    <style name="AppTheme" parent="@style/AppThemeBase">
+        <item name="android:statusBarColor">@color/colorDarkGrey</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="StartupTheme" parent="AppTheme">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+
+</resources>

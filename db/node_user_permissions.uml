@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_key</OriginalElement>
+  <nodes>
+    <node x="144.94746585190012" y="825.3141150250284">908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_key</node>
+    <node x="863.4217373417308" y="832.6097856717671">908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_node_station</node>
+    <node x="134.93291473991064" y="1324.3121478607782">908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_user</node>
+    <node x="447.4724381213947" y="384.58337478085144">908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_node</node>
+    <node x="580.6520086248773" y="1064.6988906497622">908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_station</node>
+  </nodes>
+  <notes>
+    <note x="16.77892234548338" y="549.6026446314017">
+      <node>908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_key</node>
+      <value>Type field only required for \nreverse lookup using a key, \nto avoid having to walk multiple \ntables to determine which entity \nmaps to it</value>
+      <edge>
+        <point x="0.0" y="0.0" />
+        <point x="0.0" y="0.0" />
+      </edge>
+    </note>
+  </notes>
+  <edges>
+    <edge source="908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_node" target="908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_key">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_user" target="908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_station">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_node_station" target="908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_node">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_user" target="908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_key">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_node_station" target="908ac2d1-02f5-43ae-91ce-83187acf41dc.TABLE:dekuclient.mst_station">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.6555844155844156" x="942.5" y="1011.8122028526149" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Key columns</Category>
+    <Category>Columns</Category>
+  </Categories>
+</Diagram>
+

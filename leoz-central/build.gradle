@@ -1,0 +1,344 @@
+import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.MigrationType
+import org.flywaydb.core.api.MigrationVersion
+import org.flywaydb.gradle.task.FlywayInfoTask
+import org.flywaydb.gradle.task.FlywayValidateTask
+import sx.platform.OperatingSystem
+
+import java.nio.file.Files
+
+buildscript {
+    ext {
+        v_mysql = '5.1.45'
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$v_kotlin"
+        classpath "org.jetbrains.kotlin:kotlin-noarg:$v_kotlin"
+
+        // JOOQ plugin
+        classpath "nu.studer:gradle-jooq-plugin:2.0.11"
+        classpath "org.jooq:jooq:$v_jooq"
+        classpath "org.jooq:jooq-meta:$v_jooq"
+        classpath "org.jooq:jooq-codegen:$v_jooq"
+
+        // masc20180508. use `slf4j-simple` instead of `slf4j-nop` for more detailed (jooq generation) logging
+        classpath "org.slf4j:slf4j-nop:$v_slf4j"
+
+        // Flyway
+        classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
+        classpath "mysql:mysql-connector-java:$v_mysql"
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-spring'
+apply plugin: 'kotlin-jpa'
+apply plugin: 'application'
+apply plugin: 'distribution'
+apply plugin: 'nu.studer.jooq'
+apply plugin: 'org.flywaydb.flyway'
+apply plugin: 'sx-packager'
+
+sourceCompatibility = JavaVersion.VERSION_1_10
+targetCompatibility = JavaVersion.VERSION_1_10
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+}
+
+version = '0.239-SNAPSHOT'
+mainClassName = "org.deku.leoz.central.Main"
+
+// Database constants
+def DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
+def DB_MYSQL_JDBC_URL = findProperty('db.mysql.jdbc.url') ?: 'jdbc:mysql://10.0.10.10:3306?useSSL=false'//&noAccessToProcedureBodies=true'
+
+// Flyway constants
+def FLYWAY_TARGET = 88
+def FLYWAY_MIGRATION_DIR = new File(project(':leoz-central-schema').projectDir, 'db/migration')
+def FLYWAY_PROJECT_MIGRATION_DIR = file('src/main/resources/db/central/migration')
+
+// Location for generated sources
+// Directory for apt must be dedicated (no other generators may write here)
+// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
+def JOOQ_GENERATED_DIR = file("$projectDir/src/generated/jooq")
+
+sourceSets {
+    main {
+        java {
+            srcDirs += JOOQ_GENERATED_DIR
+        }
+    }
+}
+
+//region Prototype test setup
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
+    }
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs += file('src/prototype/java')
+        }
+    }
+}
+//endregion
+
+// TODO: to be removed when spring-boot goes final
+repositories {
+    maven { url 'http://repo.spring.io/libs-milestone' }
+}
+
+dependencies {
+    // leoz webservice dependencies
+    compile(
+            project(':sx-core'),
+            project(':leoz-core'),
+            project(':leoz-node'),
+
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+
+            // db
+            "mysql:mysql-connector-java:$v_mysql",
+
+            // jooq
+            "org.jooq:jooq:$v_jooq",
+
+            // JDBC connection pooling
+            "org.apache.commons:commons-dbcp2:2.3.0",
+
+            // For SVG image conversions
+            dependencies.create("org.apache.xmlgraphics:batik-transcoder:$v_batik") {
+                exclude module: 'jython'
+            },
+
+            dependencies.create("org.apache.xmlgraphics:batik-codec:$v_batik") {
+                exclude module: 'jython'
+            }
+    )
+
+    testCompile(
+            project(':sx-common'),
+
+            "junit:junit:$v_junit",
+            // webservice client libraries for test cases
+            "org.jboss.resteasy:resteasy-client:$v_resteasy",
+            "org.springframework:spring-test:$v_spring",
+
+            dependencies.create("org.springframework.boot:spring-boot-starter-test:$v_springboot") {
+                exclude group: 'com.vaadin.external.google', module: 'android-json'
+            }
+    )
+
+    jooqRuntime(
+            "mysql:mysql-connector-java:$v_mysql",
+            "org.slf4j:slf4j-api:$v_slf4j"
+    )
+}
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            // JOOQ plugin comes with some rather intrusive configuration (`jooqRuntime`) which enforces downgrade of jooq in distribution packages.
+            // Only way to work around this is to hard override this dependency group (apparently)
+            if (details.requested.group == 'org.jooq') {
+                details.useVersion v_jooq
+            } else if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+                details.useVersion v_jackson
+            }
+        }
+    }
+}
+
+/**
+ * Copies applied migrations
+ */
+class FlywayCopyTask extends FlywayInfoTask {
+    /**
+     * Source directory
+     */
+    @InputDirectory
+    File source
+
+    /**
+     * Destination directory
+     */
+    @OutputDirectory
+    File destination
+
+    FlywayCopyTask() {
+        super()
+        // don't show this as a regular task, it's an internal supplemental task.
+        this.group = null
+        setDescription("Copies migration files")
+    }
+
+    @Override
+    protected Object run(Flyway flyway) {
+        this.destination.deleteDir()
+        this.destination.mkdirs()
+        flyway.info().all().findAll { it.type == MigrationType.SQL && it.state.isApplied() }.forEach {
+            // Copy applied migrations up to target version
+            def targetVersion = MigrationVersion.fromVersion(extension.target)
+            if (it.version.compareTo(targetVersion) <= 0) {
+                Files.copy(
+                        this.source.toPath().resolve(it.script),
+                        this.destination.toPath().resolve(it.script))
+            }
+        }
+        return null
+    }
+}
+
+flyway {
+    driver = DB_MYSQL_JDBC_DRIVER
+    url = DB_MYSQL_JDBC_URL
+    user = 'root'
+    password = 'root'
+    schemas = ['dekuclient', 'dekutmp', 'mobile']
+    ignoreFutureMigrations = false
+    target = FLYWAY_TARGET
+    locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
+}
+
+tasks.flywayValidate.mustRunAfter tasks.flywayMigrate
+
+task flywayCopy(type: FlywayCopyTask) {
+    // FlywayCopy task properties
+    source FLYWAY_MIGRATION_DIR
+    destination FLYWAY_PROJECT_MIGRATION_DIR
+
+    // Gradle task properties
+    mustRunAfter tasks.flywayMigrate
+
+    // Task must never be uptodate, so migrations are always copied.
+    outputs.upToDateWhen { false }
+}
+
+jooq {
+    main(sourceSets.main) {
+        jdbc {
+            url = DB_MYSQL_JDBC_URL
+            driver = DB_MYSQL_JDBC_DRIVER
+            user = 'root'
+            password = 'root'
+        }
+        generator {
+            database {
+                name = 'org.jooq.util.mysql.MySQLDatabase'
+
+                schemata {
+                    schema {
+                        inputSchema = 'dekuclient'
+                    }
+                    schema {
+                        inputSchema = 'mobile'
+                    }
+                }
+
+                includes = [
+                        // Sorted alphanumerically
+                        'f_.*',
+                        'his_.*',
+                        'hubfahrzeugbeladung',
+                        'mst_.*',
+                        'rkkopf',
+                        'rkdetails',
+                        'scaerror',
+                        'sdd_.*',
+                        'sectiondepotlist',
+                        'sso_.*',
+                        'sys_.*',
+                        'tblauftrag',
+                        'tblauftragcollies',
+                        'tbldepotliste',
+                        'tblhistorie',
+                        'tblhublinien',
+                        'tblhublinienplan',
+                        'tblsyscollections',
+                        'tblstatus',
+                        'usystblzaehler',
+                        'tad_.*',
+                        'tblfeldhistorie',
+                        'tblmailqueue',
+                        'tblroutendepot'
+
+                ].join('|')
+            }
+
+            generate {
+                varargSetters = false
+            }
+
+            target {
+                packageName = 'org.deku.leoz.central.data.jooq'
+                directory = JOOQ_GENERATED_DIR.toString()
+            }
+        }
+    }
+}
+// JOOQ generation depends on schema migration
+tasks.generateMainJooqSchemaSource {
+    inputs.dir FLYWAY_PROJECT_MIGRATION_DIR
+
+    dependsOn tasks.flywayMigrate
+    dependsOn tasks.flywayValidate
+    dependsOn tasks.flywayCopy
+}
+
+tasks.generateMainJooqSchemaSource.with {
+    javaExecSpec = { JavaExecSpec s ->
+        // Pass buildscript classpath to provide slf4j
+        s.classpath = buildscript.configurations.classpath
+        // JDK>=9 support
+        s.jvmArgs '--add-modules', 'java.xml.bind'
+    }
+}
+
+clean {
+    doFirst {
+        JOOQ_GENERATED_DIR.deleteDir()
+        FLYWAY_PROJECT_MIGRATION_DIR.deleteDir()
+    }
+}
+
+flywayClean {
+    doFirst {
+        JOOQ_GENERATED_DIR.deleteDir()
+        FLYWAY_PROJECT_MIGRATION_DIR.deleteDir()
+    }
+}
+
+run {
+    errorOutput = System.err
+    standardOutput = System.out
+    standardInput = System.in
+}
+
+tasks.classes.dependsOn(copyRsyncPlatformDirToBuild)
+tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
+tasks.compileJava.dependsOn(tasks.generateMainJooqSchemaSource)
+tasks.compileKotlin.dependsOn(tasks.generateMainJooqSchemaSource)
+
+distributions {
+    main {
+        contents {
+            from project.buildSupplementalsDir
+        }
+    }
+}
+tasks.distTar.enabled = false
+
+// Packager task
+packager {
+    title = "Leoz Central"
+    operatingSystems = [OperatingSystem.WINDOWS, OperatingSystem.LINUX]
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+     x="0" y="0" width="48" height="48" viewBox="0, 0, 48, 48">
+    <g id="surface1">
+        <path d="M18,32.398 L9.602,24 L6.797,26.797 L18,38 L42,14 L39.203,11.203 z M18,32.398"
+              fill="#000000"/>
+        <path
+            d="M36.645,24.612 L36.645,29.967 L42,29.967 L42,32.645 L36.645,32.645 L36.645,38 L33.967,38 L33.967,32.645 L28.612,32.645 L28.612,29.967 L33.967,29.967 L33.967,24.612 L36.645,24.612 z"
+            fill="#000000"/>
+    </g>
+</svg>
