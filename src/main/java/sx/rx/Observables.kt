@@ -1,44 +1,22 @@
 package sx.rx
 
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.observables.ConnectableObservable
-import io.reactivex.rxkotlin.combineLatest
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.threeten.bp.Duration
-import java.util.concurrent.Callable
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
-/** Create observable from a single object */
-fun <T> T.just(): Observable<T> = Observable.just(this)
-
-/** Convert throwable to observable error */
+fun <T> T.toSingletonObservable(): Observable<T> = Observable.just(this)
 fun <T> Throwable.toObservable(): Observable<T> = Observable.error(this)
 
-/**
- * A safe wrapper for callables with support for null values
- * @return Observable emitting the callables result or an empty observable if the result was null
- */
-fun <T> Callable<T?>.toObservable(): Observable<T> {
-    return Observable.fromPublisher<T> { p ->
-        try {
-            this.call()?.also {
-                p.onNext(it)
-            }
-            p.onComplete()
-        } catch (e: Throwable) {
-            p.onError(e)
-        }
-    }
-}
-
-//region Composites
 interface CompositeDisposableSupplier : Disposable {
     val compositeDisposable: CompositeDisposable
 
@@ -50,16 +28,6 @@ interface CompositeDisposableSupplier : Disposable {
     }
 }
 
-/**
- * Bind disposable to a composite disposable
- */
-fun <T : Disposable> T.bind(supplier: CompositeDisposableSupplier): T {
-    supplier.compositeDisposable.add(this)
-    return this
-}
-//endregion
-
-//region Scheduling
 /**
  * Subscribe on a specific executor
  * @param executor Executor to subscribe on.
@@ -79,10 +47,6 @@ fun Completable.subscribeOn(executor: Executor? = null): Completable =
  */
 fun <T> Observable<T>.observeOn(executor: Executor? = null): Observable<T> =
         if (executor != null) this.observeOn(Schedulers.from(executor)) else this
-
-//endregion
-
-//region Behavioural
 
 /**
  * Connects to observable to force start emitting and returns the Observable (instead of the subscription
@@ -150,9 +114,6 @@ fun <T> Observable<T>.behave(composite: CompositeDisposable): Observable<T> =
 fun <T> Observable<T>.behave(supplier: CompositeDisposableSupplier? = null): Observable<T> =
         this.replay(1).connected(supplier?.compositeDisposable)
 
-//endregion
-
-//region Retry
 /**
  * Retry with specific count, action handler and timer provider
  * @param count Retry count
@@ -160,7 +121,7 @@ fun <T> Observable<T>.behave(supplier: CompositeDisposableSupplier? = null): Obs
  */
 fun <T> Observable<T>.retryWith(
         // TODO: Int.MAX_VALUE doesn't seem to work for this implementation (freezes), while it works with Completable which is essentially the same implementation
-        count: Short = Short.MAX_VALUE,
+        count: Short,
         action: (retry: Long, error: Throwable) -> Observable<Long> = { _, _ -> Observable.just(0) })
         : Observable<T> {
 
@@ -174,7 +135,7 @@ fun <T> Observable<T>.retryWith(
             if (retryCount <= count) {
                 try {
                     return@flatMap action(retryCount, error)
-                } catch (e: Throwable) {
+                } catch(e: Throwable) {
                     return@flatMap Observable.error<Throwable>(error)
                 }
             } else {
@@ -185,12 +146,20 @@ fun <T> Observable<T>.retryWith(
 }
 
 /**
+ * Bind disposable to a composite disposable
+ */
+fun <T : Disposable> T.bind(supplier: CompositeDisposableSupplier): T {
+    supplier.compositeDisposable.add(this)
+    return this
+}
+
+/**
  * Retry with specific count, action handler and timer provider
  * @param count Retry count
  * @param action Callback invoked for every retry/error, returning a (timer) Observable
  */
 fun Completable.retryWith(
-        count: Short = Short.MAX_VALUE,
+        count: Short,
         action: (retry: Long, error: Throwable) -> Observable<Long> = { _, _ -> Observable.just(0) })
         : Completable {
 
@@ -244,4 +213,4 @@ fun Completable.retryWithExponentialBackoff(
     )
 }
 
-//endregion
+

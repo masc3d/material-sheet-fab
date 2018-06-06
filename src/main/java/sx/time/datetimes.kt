@@ -1,5 +1,6 @@
 package sx.time
 
+import org.threeten.bp.*
 import java.sql.Timestamp
 import java.util.*
 
@@ -11,13 +12,17 @@ fun java.time.LocalDate.toTimestamp(): Timestamp = this.toDate().toTimestamp()
 
 fun java.time.LocalDate.toDate(): Date = java.sql.Date.valueOf(this)
 
-// Legacy date conversions
-
 fun Date.toTimestamp(): Timestamp = Timestamp(this.time)
 
 fun Date.toSqlDate(): java.sql.Date = java.sql.Date(this.time)
 
 fun Date.toLocalDate(): java.time.LocalDate = java.sql.Date(this.time).toLocalDate()
+
+// JSR-310 replacement / threetenbp conversion methods
+
+fun Date.toLocalDateTime(): LocalDateTime = Instant.ofEpochMilli(this.time).let { LocalDateTime.ofInstant(it, ZoneOffset.UTC) }
+
+fun LocalDateTime.toDate(): Date = Date(this.toInstant(ZoneOffset.UTC).toEpochMilli())
 
 /**
  * Replaces the date portion of a specific date and keeps the time
@@ -97,3 +102,5 @@ fun Date.toCalendar(timezone: TimeZone = TimeZone.getDefault()): Calendar {
 fun Date.minusHours(amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date =
         this.minusHours( amount, timezone = timezone)
 
+fun java.time.LocalDateTime.workDate(): java.time.LocalDate =
+    this.minusHours(5).toLocalDate()

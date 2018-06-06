@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response
  * Default problem kt implementation
  * Created by masc on 28/03/2017.
  */
-class RestProblem(
+class DefaultProblem(
         type: URI = URI.create("about:blank"),
         title: String? = null,
         status: Status = Status.BAD_REQUEST,

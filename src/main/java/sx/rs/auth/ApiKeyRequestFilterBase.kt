@@ -20,14 +20,7 @@ abstract class ApiKeyRequestFilterBase(
     @Context
     private lateinit var resourceInfo: ResourceInfo
 
-    /**
-     * Verify api key
-     */
-    protected abstract fun verify(
-            requestContext: ContainerRequestContext,
-            resourceInfo: ResourceInfo,
-            apiKey: String
-    ): Boolean
+    protected abstract fun verify(apiKey: String): Boolean
 
     @Throws(IOException::class)
     override fun filter(requestContext: ContainerRequestContext) {
@@ -55,7 +48,7 @@ abstract class ApiKeyRequestFilterBase(
             if (apiKey == null) {
                 throw WebApplicationException("Not authorized, missing api key", Response.Status.UNAUTHORIZED)
             }
-            if (!this.verify(requestContext, resourceInfo, apiKey)) {
+            if (!this.verify(apiKey)) {
                 throw WebApplicationException("Not authorized, invalid api key", Response.Status.UNAUTHORIZED)
             }
         }

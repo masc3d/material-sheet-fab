@@ -3,8 +3,11 @@ package sx.security
 import org.junit.Assert
 import org.junit.Test
 import sx.text.parseHex
+import sx.text.toHexString
+import java.math.BigInteger
 import java.nio.charset.Charset
 import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
 
 /**
  * Created by masc on 02.05.17.
@@ -18,7 +21,7 @@ class SecurityTest {
         val cipher = CipherType.AES
         val key = cipher.createKey(KEY.parseHex())
 
-        val c = cipher.instance()
+        val c = cipher.getInstance()
         c.init(Cipher.ENCRYPT_MODE, key)
 
         val encrypted = c.doFinal(VALUE.toByteArray())

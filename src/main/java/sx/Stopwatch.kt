@@ -1,8 +1,7 @@
 package sx
 
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.slf4j.event.Level
-import sx.log.slf4j.message
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -249,7 +248,7 @@ class Stopwatch {
         fun createStarted(ticker: Ticker): Stopwatch = Stopwatch(ticker).start()
 
         private fun createLogMessage(stopwatch: Stopwatch, name: String): String =
-                "${name} took ${stopwatch}"
+                "${name} [${stopwatch}]"
 
         /**
          * Creates (and starts) a new stopwatch and executes a block with automatic logging
@@ -260,7 +259,6 @@ class Stopwatch {
         fun <T> createStarted(name: String, log: LogAction = {}, block: (Stopwatch, LogAction) -> T): T {
             val sw = Stopwatch.createStarted()
             try {
-                log.invoke(name)
                 return block(sw, log)
             } finally {
                 log.invoke(this.createLogMessage(sw, name))
@@ -273,26 +271,15 @@ class Stopwatch {
          * @param name Name of operation to measure
          * @param block Block to execute/measure
          */
-        fun <T> createStarted(instance: Any, name: String, level: Level = Level.TRACE, block: () -> T): T {
+        fun <T> createStarted(instance: Any, name: String, block: (Stopwatch, Logger) -> T): T {
             val log = LoggerFactory.getLogger(instance.javaClass)
-            var sw: Stopwatch? = null
+            val sw = Stopwatch.createStarted()
             try {
-                log.message(level, name)
-                sw = Stopwatch.createStarted()
-                return block()
+                return block(sw, log)
             } finally {
-                log.message(level, { this.createLogMessage(sw!!, name) })
+                log.info(this.createLogMessage(sw, name))
             }
         }
-
-        /**
-         * Creates (and starts) a new stopwatch and executes a block with automatic logging via slf4j
-         * @param instance Instane using stopwatch( (used for logging)
-         * @param name Name of operation to measure
-         * @param block Block to execute/measure
-         */
-        fun <T> createStarted(instance: Any, name: String, block: () -> T): T =
-                this.createStarted(instance, name, Level.TRACE, block)
 
         private fun chooseUnit(nanos: Long): TimeUnit {
             if (TimeUnit.DAYS.convert(nanos, TimeUnit.NANOSECONDS) > 0) {

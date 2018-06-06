@@ -31,9 +31,13 @@ class ObservableLazyRxProperty<T>(
                 .subscribe(observer)
     }
 
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T = value.get()
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        return value.get()
+    }
 
-    fun get(): T = this.value.get()
+    fun get(): T {
+        return this.value.get()
+    }
 
     fun reset(supplier: (() -> T)? = null) {
         this.value.reset(supplier)
