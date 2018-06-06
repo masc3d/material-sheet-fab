@@ -2,13 +2,12 @@ package sx.android.honeywell.aidc
 
 import android.content.Context
 import com.honeywell.aidc.*
+import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
-import org.slf4j.LoggerFactory
 import sx.LazyInstance
-import sx.aidc.SymbologyType
 import sx.android.aidc.*
-import sx.log.slf4j.debug
+import sx.aidc.SymbologyType
 import sx.rx.toHotReplay
 
 /**
@@ -17,51 +16,29 @@ import sx.rx.toHotReplay
  * Created by masc on 28/02/2017.
  */
 class HoneywellAidcReader private constructor(
-        private var aidcManager: AidcManager
-) : AidcReader() {
+        private val aidcManager: AidcManager
+) : AidcReader(), BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener {
 
     companion object {
         private val log = LoggerFactory.getLogger(HoneywellAidcReader::class.java)
 
         /**
          * Creates HoneywellAidcReader instance. This method is asynchronous.
-         * @return Hot observable emitting AidcReader when it is (or has become) available
+         * @return Hot reply observable emitting AidcReader when it is (or has become) available
          */
         fun create(context: Context): Observable<AidcReader> {
-            return Observable.create<AidcReader> { emitter ->
-                var _reader: HoneywellAidcReader? = null
-
+            return Observable.create<AidcReader> { onSubscribe ->
                 try {
-                    log.debug("Creating aidc manager")
-                    // Create callback may return multiple times as underlying service reconnects
-                    AidcManager.create(context) { aidcManager ->
-                        log.debug("Aidc manager created")
-
-                        val reader = _reader
-
-                        if (reader == null) {
-                            log.debug("Emitting initial aidc reader")
-
-                            // Emit aidc reader instance initially
-                            _reader = HoneywellAidcReader(aidcManager).also {
-                                if (!emitter.isDisposed) {
-                                    emitter.onNext(it)
-                                    emitter.onComplete()
-                                }
-                            }
-                        } else {
-                            log.debug("Updating aidc manager")
-
-                            // Update aidc manager on subsequent callbacks
-                            reader.aidcManager = aidcManager
-                            reader.honeywellReaderInstance.reset()
-                        }
+                    log.debug("Creating AidcManager")
+                    AidcManager.create(context) {
+                        log.debug("AidcManager created")
+                        onSubscribe.onNext(HoneywellAidcReader(it))
+                        onSubscribe.onComplete()
                     }
-                } catch (t: Throwable) {
-                    if (!emitter.isDisposed) emitter.onError(t)
+                } catch(e: Throwable) {
+                    onSubscribe.onError(e)
                 }
-            }
-                    .toHotReplay()
+            }.toHotReplay()
         }
     }
 
@@ -69,37 +46,19 @@ class HoneywellAidcReader private constructor(
 
     override fun onBind() {
         log.debug("Claiming reader")
-
-        try {
-            this.honeywellReader.claim()
-        } catch (t: Throwable) {
-            // Claiming reader may sporadically fail some short while after
-            // the application has resumed, without apparent reason.
-            // (An error occurred while communicating with the scanner services)
-
-            log.warn("Claiming reader failed [${t.message}], attempting recovery")
-
-            // TODO: attempting one-shot recovery, this should be reported upstream (honeywell)
-            this.honeywellReaderInstance.reset()
-            this.honeywellReader.claim()
-        }
+        this.honeywellReader.claim()
 
         this.subscriptions.add(
                 this.enabledProperty
                         .distinctUntilChanged()
                         .subscribe {
-                            when (it.value) {
-                                false -> {
-                                    log.debug("Disabling reader/decode")
-
-                                    try {
-                                        this.honeywellReader.decode(false)
-                                    } catch (t: Throwable) {
-                                        log.error("Disabling reader failed [${t.message}]", t)
-                                    }
-                                }
-                            }
-                        })
+                    when(it.value) {
+                        false -> {
+                            log.debug("Closing")
+                            this.honeywellReader.decode(false)
+                        }
+                    }
+                })
 
         this.subscriptions.add(
                 this.decodersUpdatedSubject.subscribe {
@@ -111,27 +70,18 @@ class HoneywellAidcReader private constructor(
         log.debug("Releasing reader")
         this.subscriptions.forEach { it.dispose() }
         this.subscriptions.clear()
-
-        try {
-            this.honeywellReader.release()
-        } catch (t: Throwable) {
-            log.error("Releasing reader failed [${t.message}]", t)
-            throw t
-        }
+        this.honeywellReader.release()
     }
 
     private val honeywellReader: BarcodeReader
-        get() = honeywellReaderInstance.get()
+            get() { return honeywellReaderInstance.get() }
     /**
      * Honeywell barcode reader
      */
     private val honeywellReaderInstance = LazyInstance<BarcodeReader>({
-        this.aidcManager.addBarcodeDeviceListener(this.listener)
-
         val bc = this.aidcManager.createBarcodeReader()
-
-        bc.addBarcodeListener(this.listener)
-        bc.addTriggerListener(this.listener)
+        bc.addBarcodeListener(this)
+        bc.addTriggerListener(this)
 
         // Default settings
         bc.setProperties(mapOf<String, Any>(
@@ -179,8 +129,9 @@ class HoneywellAidcReader private constructor(
     })
 
     var centerDecode: Boolean
-        get() =
-            this.honeywellReader.getBooleanProperty(BarcodeReader.PROPERTY_CENTER_DECODE)
+        get() {
+            return this.honeywellReader.getBooleanProperty(BarcodeReader.PROPERTY_CENTER_DECODE)
+        }
         set(value) {
             this.honeywellReader.setProperty(BarcodeReader.PROPERTY_CENTER_DECODE, value)
         }
@@ -274,41 +225,23 @@ class HoneywellAidcReader private constructor(
         QrCode("s", SymbologyType.QrCode),
     }
 
-    /**
-     * Honeywell barcode reader listener
-     */
-    private val listener = object
-        :
-            BarcodeReader.BarcodeListener,
-            BarcodeReader.TriggerListener,
-            AidcManager.BarcodeDeviceListener {
-        override fun onBarcodeDeviceConnectionEvent(p0: BarcodeDeviceConnectionEvent) {
-            log.debug { "Barcode device [${p0.barcodeReaderInfo.friendlyName}] status [${p0.connectionStatus}]" }
-        }
+    override fun onBarcodeEvent(evt: BarcodeReadEvent) {
+        val barcodeType = CodeId.values()
+                .firstOrNull { it.value == evt.codeId }
+                ?.symbologyType ?: SymbologyType.Unknown
 
-        override fun onBarcodeEvent(evt: BarcodeReadEvent) {
-            val barcodeType = CodeId.values()
-                    .firstOrNull { it.value == evt.codeId }
-                    ?.symbologyType ?: SymbologyType.Unknown
+        this.readEventSubject.onNext(ReadEvent(data = evt.barcodeData, symbologyType = barcodeType))
+    }
 
-            readEventSubject.onNext(ReadEvent(data = evt.barcodeData, symbologyType = barcodeType))
-        }
+    override fun onFailureEvent(evt: BarcodeFailureEvent) {
+        log.error("Honeywell aidc failure event ${evt}")
+    }
 
-        override fun onFailureEvent(evt: BarcodeFailureEvent) {
-            log.error("Honeywell aidc failure event ${evt}")
-        }
-
-        override fun onTriggerEvent(evt: TriggerStateChangeEvent) {
-            if (enabled) {
-                try {
-                    honeywellReader.aim(evt.state)
-                    honeywellReader.light(evt.state)
-                    honeywellReader.decode(evt.state)
-                } catch (t: Throwable) {
-                    log.error("Enabling reader failed [${t.message}]", t)
-                    throw t
-                }
-            }
+    override fun onTriggerEvent(evt: TriggerStateChangeEvent) {
+        if (this.enabled) {
+            this.honeywellReader.aim(evt.state)
+            this.honeywellReader.light(evt.state)
+            this.honeywellReader.decode(evt.state)
         }
     }
 }
