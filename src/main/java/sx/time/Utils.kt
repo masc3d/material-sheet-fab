@@ -95,5 +95,5 @@ fun Date.toCalendar(timezone: TimeZone = TimeZone.getDefault()): Calendar {
  * Add hours
  */
 fun Date.minusHours(amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date =
-        this.minusHours( amount, timezone = timezone)
+        this.minusHours(amount, timezone = timezone)
 
