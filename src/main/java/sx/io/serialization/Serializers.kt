@@ -45,7 +45,7 @@ class SerializableType private constructor (
 
             val uid = if (annotation != null) {
                 // Use annotation id. Make sure it matches java's serialVersionUID if applicable
-                if (objectStreamClass != null && objectStreamClass.serialVersionUID != 0L && annotation.uid != objectStreamClass.serialVersionUID) {
+                if (objectStreamClass != null && annotation.uid != objectStreamClass.serialVersionUID) {
                     throw IllegalStateException("Class ${javaClass} has mismatch @Serializable uid [${java.lang.Long.toHexString(annotation.uid)}] with serialVersionUID [${java.lang.Long.toHexString(objectStreamClass.serialVersionUID)}]")
                 }
 
