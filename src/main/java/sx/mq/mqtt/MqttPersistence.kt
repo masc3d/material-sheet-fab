@@ -24,11 +24,6 @@ interface IMqttPersistence {
     fun get(topicName: String? = null): Observable<MqttPersistentMessage>
 
     /**
-     * Retrieve topics
-     */
-    fun getTopics(): List<String>
-
-    /**
      * Remove specific message
      */
     fun remove(message: MqttPersistentMessage)
@@ -62,10 +57,6 @@ class MqttInMemoryPersistence : IMqttPersistence {
         return Observable.fromIterable(
                 if (topicName == null) messages else messages.filter { it.topicName == topicName }
         )
-    }
-
-    override fun getTopics(): List<String> {
-        return this.messages.groupBy { it.topicName }.keys.toList()
     }
 
     override fun remove(message: MqttPersistentMessage) {

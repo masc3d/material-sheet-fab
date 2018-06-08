@@ -4,7 +4,9 @@ import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.io.serialization.Serializer
 import sx.reflect.allGenericInterfaces
+import java.lang.reflect.ParameterizedType
 import java.util.*
+import javax.jms.Message
 
 /**
  * Lightweight message listener abstraction with object conversion and dispatch support
@@ -16,9 +18,7 @@ import java.util.*
 abstract class MqListener
     :
         Disposable {
-
     protected val log = LoggerFactory.getLogger(this.javaClass)
-
     /** Object message handler delegates  */
     private val handlerDelegates = HashMap<Class<*>, MqHandler<Any?>>()
 
@@ -31,15 +31,13 @@ abstract class MqListener
 
     abstract fun stop()
 
-    abstract val isRunning: Boolean
-
     protected fun handleMessage(messageObject: Any, replyChannel: MqChannel? = null) {
         val mqHandler: MqHandler<*>?
 
         mqHandler = this.handlerDelegates.get(messageObject.javaClass)
 
         if (mqHandler == null) {
-            throw HandlingException("No delegate for message object type [${messageObject.javaClass}]")
+            throw HandlingException("No delegate for message object type [%s]".format(messageObject.javaClass, Message::class.java))
         }
 
         // Delegate to handler
@@ -71,19 +69,17 @@ abstract class MqListener
         // Lookup MqHandler interface
         val handlerInterface = delegate.javaClass.allGenericInterfaces
                 .first {
-                    it.parameterizedType?.rawType == MqHandler::class.java
-                }
+                    it is ParameterizedType && it.rawType == MqHandler::class.java
+                } as ParameterizedType
 
         // The generic interface parameter (=message type)
-        val handlerMessageType = handlerInterface.parameterizedType?.actualTypeArguments?.get(0) as Class<*>
+        val handlerMessageType = handlerInterface.actualTypeArguments.get(0) as Class<*>
 
         // Locate interface method for checking types annotation
-        val interfaceType = handlerInterface.parameterizedType?.rawType as Class<*>
+        val interfaceType = handlerInterface.rawType as Class<*>
         interfaceType.methods.forEach { interfaceMethod ->
-            // Lookup method of implementing type
-            val method = handlerInterface.implementingType.getMethod(interfaceMethod.name, *interfaceMethod.parameterTypes)
+            val method = delegate.javaClass.getMethod(interfaceMethod.name, *interfaceMethod.parameterTypes)
 
-            // Extract types from annotation
             val typesAnnotation = method.getAnnotation(MqHandler.Types::class.java)
             if (typesAnnotation != null) {
                 messageTypes.addAll(typesAnnotation.types.map { it.java })
@@ -91,8 +87,7 @@ abstract class MqListener
         }
 
         if (messageTypes.isEmpty()) {
-            // No message types specified via `MqHandler.Types`
-            // Using generic type from Handler interface (except for Object/Any)
+            // No message types specified, using generic type from Handler interface (except for Object/Any)
             if (handlerMessageType != Any::class.java)
                 messageTypes.add(handlerMessageType)
         }
